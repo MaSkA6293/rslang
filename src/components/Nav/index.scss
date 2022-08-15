@@ -1,0 +1,17 @@
+.nav {
+  height: 50px;
+  background-color: rgb(85, 233, 31);
+  &-list {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 40px;
+    list-style: none;
+
+    .list {
+      &__item {
+        margin: 0 5px;
+      }
+    }
+  }
+}
