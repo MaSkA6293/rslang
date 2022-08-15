@@ -5,6 +5,7 @@ import Error from './components/Error/Error';
 import DicionaryPage from './pages/dictionary';
 import AudioCallGamePage from './pages/audioCallGame';
 import SprintGamePage from './pages/sprintGame';
+import StatisticsPage from './pages/statistics';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="/dictionary" element={<DicionaryPage />} />
         <Route path="/audioCall" element={<AudioCallGamePage />} />
         <Route path="/sprint" element={<SprintGamePage />} />
+        <Route path="/statistics" element={<StatisticsPage />} />
         <Route path="*" element={<Error />} />
       </Routes>
     </div>

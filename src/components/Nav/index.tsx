@@ -1,22 +1,25 @@
 import './index.scss';
+import classnames from 'classnames';
 import { Link } from 'react-router-dom';
-import classNames from 'classnames';
 
 function Nav() {
   return (
     <div className="nav">
-      <ul className={classNames('nav-list', 'list')}>
+      <ul className={classnames('nav__list', 'list')}>
         <li className="list__item">
-          <Link to="/">MainPage</Link>
+          <Link to="/">Главная</Link>
         </li>
         <li className="list__item">
-          <Link to="/dictionary">Dictionart</Link>
+          <Link to="/dictionary">Учебник</Link>
         </li>
         <li className="list__item">
-          <Link to="/audioCall">AudioCall</Link>
+          <Link to="/audioCall">Аудиовызов</Link>
         </li>
         <li className="list__item">
-          <Link to="/sprint">SprintGame</Link>
+          <Link to="/sprint">Спринт</Link>
+        </li>
+        <li className="list__item">
+          <Link to="/statistics">Статистика</Link>
         </li>
       </ul>
     </div>
