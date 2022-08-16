@@ -1,12 +1,16 @@
 import './index.scss';
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
+import Container from './components/container';
+import StartScreen from './components/startScreen';
 
 function AudioCallGamePage() {
   return (
     <>
       <Header />
-      <h1>Audio Call</h1>
+      <Container>
+        <StartScreen />
+      </Container>
       <Footer />
     </>
   );
