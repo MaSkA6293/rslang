@@ -1,13 +1,17 @@
 import './index.scss';
 
-function StartScreen() {
+interface StartScreenProps {
+  onStart: () => void;
+}
+
+function StartScreen({ onStart }: StartScreenProps) {
   return (
     <>
       <h1 className="game__title">Аудиовызов</h1>
       <p className="game__description">
         Тренировка улучшает восприятие речи на слух.
       </p>
-      <button className="game__btn">Начать</button>
+      <button onClick={onStart} className="game__btn">Начать</button>
     </>
   );
 }
