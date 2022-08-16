@@ -5,9 +5,9 @@
 }
 
 .App {
-  text-align: center;
   display: flex;
   flex-direction: column;
+  min-width: 320px;
   height: 100%;
+  text-align: center;
 }
-

@@ -1,16 +1,43 @@
 .nav {
+  flex: 1;
   height: 50px;
-  background-color: rgb(85, 233, 31);
-  &-list {
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+
+  &__list {
     display: flex;
-    justify-content: center;
+    justify-content: space-evenly;
     align-items: center;
-    height: 40px;
     list-style: none;
+    height: 100%;
+    padding: 0 2%;
+    font-size: 20px;
 
     .list {
       &__item {
+        display: flex;
+        justify-content: center;
+        align-items: center;
         margin: 0 5px;
+
+        &:hover {
+          cursor: pointer;
+          a {
+            color: #6c6cfc;
+          }
+        }
+
+        a {
+          display: inline-flex;
+          justify-content: center;
+          align-items: center;
+          padding: 5px;
+          text-decoration: none;
+          color: black;
+          transition: 0.3s;
+        }
       }
     }
   }
