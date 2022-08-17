@@ -1,11 +1,14 @@
 import './index.scss';
+import GameButton from '../GameButton/indes';
+
+const playAudio = () => {};
 
 function GameIteraion() {
   return (
     <>
-      <button className="audio-btn">Проиграть</button>
+      <GameButton onClick={playAudio}>Прослушать</GameButton>
       <p>options</p>
-      <button>next</button>
+      <GameButton onClick={playAudio}>→</GameButton>
     </>
   );
 }

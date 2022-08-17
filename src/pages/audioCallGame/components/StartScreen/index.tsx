@@ -1,3 +1,5 @@
+
+import GameButton from '../GameButton/indes';
 import './index.scss';
 
 interface StartScreenProps {
@@ -11,9 +13,7 @@ function StartScreen({ onStart }: StartScreenProps) {
       <p className="audio-call-game__description">
         Тренировка улучшает восприятие речи на слух.
       </p>
-      <button onClick={onStart} className="audio-call-game__btn">
-        Начать
-      </button>
+      <GameButton onClick={onStart}>Начать</GameButton>
     </>
   );
 }
