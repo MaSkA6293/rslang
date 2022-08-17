@@ -11,7 +11,9 @@ function StartScreen({ onStart }: StartScreenProps) {
       <p className="game__description">
         Тренировка улучшает восприятие речи на слух.
       </p>
-      <button onClick={onStart} className="game__btn">Начать</button>
+      <button onClick={onStart} className="game__btn">
+        Начать
+      </button>
     </>
   );
 }
