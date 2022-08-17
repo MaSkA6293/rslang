@@ -1,0 +1,40 @@
+.advantages__cards {
+  .item {
+    display: flex;
+    flex-direction: column;
+    width: 250px;
+    height: 350px;
+    border-radius: 4%;
+    box-shadow: 2px 2px 5px rgb(188 191 196 / 55%),
+      -2px -2px 5px rgb(188 191 196 / 55%);
+    margin: 10px;
+    padding: 10px;
+    user-select: none;
+
+    &:hover {
+      cursor: default;
+    }
+
+    &__image {
+      width: 60%;
+      height: 40%;
+      margin: 0 auto;
+      padding: 10px;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+    }
+
+    &__title {
+      font-size: 26px;
+      margin: 12px 0px;
+    }
+
+    &__subtitle {
+      font-size: 17px;
+      text-align: center;
+      padding: 0 5px;
+      line-height: 23px;
+    }
+  }
+}
