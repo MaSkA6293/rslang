@@ -7,11 +7,11 @@ interface StartScreenProps {
 function StartScreen({ onStart }: StartScreenProps) {
   return (
     <>
-      <h1 className="game__title">Аудиовызов</h1>
-      <p className="game__description">
+      <h1 className="audio-call-game__title">Аудиовызов</h1>
+      <p className="audio-call-game__description">
         Тренировка улучшает восприятие речи на слух.
       </p>
-      <button onClick={onStart} className="game__btn">
+      <button onClick={onStart} className="audio-call-game__btn">
         Начать
       </button>
     </>

@@ -12,7 +12,9 @@ function AudioCallGame() {
 
   return (
     <div className="audio-call-game">
-      {isStarted ? <GameIteraion /> : <StartScreen onStart={handleStart} />}
+      <div className="audio-call-game__container">
+        {isStarted ? <GameIteraion /> : <StartScreen onStart={handleStart} />}
+      </div>
     </div>
   );
 }
