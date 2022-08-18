@@ -1,4 +1,4 @@
-import GameButton from '../GameButton/indes';
+import GameButton from '../GameButton';
 import './index.scss';
 
 interface StartScreenProps {

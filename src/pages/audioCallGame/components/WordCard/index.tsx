@@ -1,5 +1,5 @@
 import './index.scss';
-import GameButton from '../GameButton/indes';
+import GameButton from '../GameButton';
 
 interface WordCardProps {
   img: string;

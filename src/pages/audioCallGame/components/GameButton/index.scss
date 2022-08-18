@@ -38,6 +38,12 @@ $btnColor: #ffffff;
   &:hover,
   &:focus,
   &:active {
-    background-color: change-color($btnColor, $alpha: 0.2);
+    &:not(:disabled) {
+      background-color: change-color($btnColor, $alpha: 0.2);
+    }
+  }
+
+  &:disabled {
+    cursor: default;
   }
 }

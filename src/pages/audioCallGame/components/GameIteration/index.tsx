@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import GameButton from '../GameButton/indes';
-import WordCard from '../WordCard/index';
+import GameButton from '../GameButton';
+import WordCard from '../WordCard';
 
 import './index.scss';
 
@@ -49,20 +49,27 @@ function GameIteraion({ word, options, onNextWord }: GameIteraionProps) {
 
       <div className="game-iteration__answers">
         {options.map((option, i) => {
+          const isCorrect = option.word === word.word;
           const handleAnswer = () => {
-            setIsCorrectAnswer(option.word === word.word);
+            setIsCorrectAnswer(isCorrect);
             setHasAnswered(true);
           };
           const index = i;
           return (
-            <GameButton key={index} onClick={handleAnswer}>
+            <GameButton
+              key={index}
+              onClick={handleAnswer}
+              disabled={hasAnswered}
+            >
               {option.wordTranslate}
             </GameButton>
           );
         })}
       </div>
 
-      <GameButton onClick={handleNextWord}>→</GameButton>
+      <GameButton onClick={handleNextWord}>
+        {hasAnswered ? '→' : 'Не знаю'}
+      </GameButton>
     </div>
   );
 }
