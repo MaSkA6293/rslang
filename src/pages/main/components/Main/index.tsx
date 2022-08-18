@@ -1,6 +1,7 @@
 import './index.scss';
 import MainTitle from '../MainTitle';
 import Advantages from '../Advantages';
+import AboutTeam from '../AboutTeam';
 
 function Main() {
   return (
@@ -8,6 +9,7 @@ function Main() {
       <div className="main-page__container">
         <MainTitle />
         <Advantages />
+        <AboutTeam />
       </div>
     </div>
   );
