@@ -1,4 +1,3 @@
-
 import GameButton from '../GameButton/indes';
 import './index.scss';
 
