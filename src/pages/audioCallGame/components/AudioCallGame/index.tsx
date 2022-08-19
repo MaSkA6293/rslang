@@ -6,6 +6,7 @@ import GameIteraion from '../GameIteration';
 import './index.scss';
 import words from '../../data';
 import shuffle from '../../utils';
+import GameFinish from '../GameFinish/index';
 
 type Word = typeof words[0];
 
@@ -51,10 +52,6 @@ function AudioCallGame() {
     });
   };
 
-  if (iterationState.currentWordIndex >= words.length) {
-    console.log(results);
-  }
-
   return (
     <div className="audio-call-game">
       <div className="audio-call-game__container">
@@ -65,6 +62,9 @@ function AudioCallGame() {
             onNextWord={handleNextWord}
             options={iterationState.possibleAnswers}
           />
+        ) : null}
+        {isStarted && iterationState.currentWordIndex >= words.length ? (
+          <GameFinish words={words} results={results} />
         ) : null}
       </div>
     </div>
