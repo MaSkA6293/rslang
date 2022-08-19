@@ -1,13 +1,13 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { BACKEND_URL } from '../constants';
 
-interface IUser {
+export interface IUser {
   name: string;
   email: string;
   password: string;
 }
 
-interface IUserUpdate {
+export interface IUserUpdate {
   id: string;
   email: string;
   password: string;

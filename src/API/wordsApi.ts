@@ -2,12 +2,12 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { BACKEND_URL } from '../constants';
 import { pageType, groupType } from '../types';
 
-interface IGetWords {
+export interface IGetWords {
   page: pageType;
   group: groupType;
 }
 
-interface IGetWord {
+export interface IGetWord {
   id: string;
 }
 

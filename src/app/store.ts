@@ -14,6 +14,7 @@ import appReducer from '../features/app/app';
 import { userApi } from '../API/userApi';
 import { wordsApi } from '../API/wordsApi';
 import counterSlice from '../features/counter/counterSlice';
+import authSlice from '../features/auth/authSlice';
 
 const persistConfig = {
   key: 'root',
@@ -25,8 +26,9 @@ export const store = configureStore({
   reducer: {
     app: appReducer,
     counter: counterSlice,
-    [wordsApi.reducerPath]: wordsApi.reducer,
+    auth: authSlice,
     [userApi.reducerPath]: wordsApi.reducer,
+    [wordsApi.reducerPath]: wordsApi.reducer,
     persistedReducer,
   },
   middleware: (getDefaultMiddlware) =>
