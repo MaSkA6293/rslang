@@ -1,16 +1,15 @@
-import './index.scss';
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
-import Dictionary from '../../components/Dictionary';
+import TextBook from './components/TextBook';
 
-function DicionaryPage() {
+function TextbookPage() {
   return (
     <>
       <Header />
-      <Dictionary />
+      <TextBook />
       <Footer />
     </>
   );
 }
 
-export default DicionaryPage;
+export default TextbookPage;

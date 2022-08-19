@@ -1,5 +1,5 @@
 import './index.scss';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Nav from '../Nav';
 import Burger from './components/burger';
 import MobileMenu from './components/mobileMenu';
@@ -7,6 +7,10 @@ import SignInBtn from './components/signInBtn';
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    document.body.style.overflow = isOpen ? 'hidden' : 'scroll';
+  }, [isOpen]);
 
   return (
     <div className="header">

@@ -38,6 +38,10 @@
           color: black;
           transition: 0.3s;
         }
+
+        .list__item-active {
+          color: #6c6cfc;
+        }
       }
     }
   }
