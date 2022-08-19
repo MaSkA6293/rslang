@@ -1,0 +1,128 @@
+.about-team__cards {
+  display: flex;
+  flex-direction: column;
+  width: 700px;
+
+  @media (max-width: 768px) {
+    width: 500px;
+  }
+
+  @media (max-width: 530px) {
+    width: 320px;
+  }
+
+  .item {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    margin: 20px auto;
+    border-radius: 4%;
+    box-shadow: 2px 2px 5px rgb(188 191 196 / 55%),
+      -2px -2px 5px rgb(188 191 196 / 55%);
+    padding: 20px;
+    user-select: none;
+    align-items: center;
+
+    &:hover {
+      cursor: default;
+    }
+
+    @media (max-width: 530px) {
+      flex-direction: column;
+    }
+
+    &__contribution-list {
+      font-size: 20px;
+      text-align: initial;
+      margin-left: 50px;
+
+      .list {
+        &__item {
+          margin: 5px 0;
+        }
+      }
+    }
+
+    &__info {
+      width: 400px;
+      margin: auto;
+
+      @media (max-width: 530px) {
+        width: 100%;
+      }
+    }
+
+    &__image {
+      width: 200px;
+      height: 260px;
+      padding: 10px;
+      background-position: center -20px;
+      background-repeat: no-repeat;
+      background-size: cover;
+
+      @media (max-width: 768px) {
+        width: 150px;
+        height: 200px;
+      }
+    }
+
+    &__name {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 37px;
+      margin: 12px 0;
+
+      @media (max-width: 768px) {
+        font-size: 28px;
+      }
+    }
+
+    &__job {
+      font-size: 20px;
+      text-align: center;
+      padding: 0 5px;
+      line-height: 23px;
+
+      @media (max-width: 768px) {
+        font-size: 17px;
+      }
+    }
+
+    &__contribution {
+      margin: 10px auto;
+      font-size: 25px;
+
+      @media (max-width: 768px) {
+        margin: 5px auto;
+      }
+    }
+
+    &__contribution-list {
+      margin-bottom: 10px;
+
+      @media (max-width: 768px) {
+        font-size: 17px;
+      }
+    }
+
+    &__git-image {
+      margin-left: 20px;
+
+      width: 50px;
+
+      @media (max-width: 768px) {
+        width: 35px;
+      }
+    }
+
+    &__git-link {
+      text-decoration: none;
+      color: black;
+
+      &:visited {
+        color: black;
+      }
+    }
+  }
+}
