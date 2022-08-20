@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import classNames from 'classnames';
 import GameButton from '../GameButton';
 
@@ -28,19 +28,27 @@ const getIcon = (isSelected: boolean, isCorrect: boolean): string => {
 };
 
 function GameIteraion({ word, options, onNextWord }: GameIteraionProps) {
+  const wordAudioUrl = new URL(word.audio, BACKEND_URL).toString();
+  const wordImgUrl = new URL(word.image, BACKEND_URL).toString();
+
   const [hasAnswered, setHasAnswered] = useState(false);
   const [isCorrectAnswer, setIsCorrectAnswer] = useState(false);
   const [pickedOptIndex, setPickedOptIndex] = useState(-1);
 
-  const wordAudioUrl = new URL(word.audio, BACKEND_URL).toString();
-  const wordImgUrl = new URL(word.image, BACKEND_URL).toString();
+  const audioRef = useRef(new Audio(wordAudioUrl));
 
   const playAudio = () => {
-    new Audio(wordAudioUrl).play();
+    if (audioRef.current.paused) {
+      audioRef.current.play();
+    }
   };
 
   useEffect(() => {
+    if (audioRef.current.src !== wordAudioUrl) {
+      audioRef.current = new Audio(wordAudioUrl);
+    }
     playAudio();
+    return () => audioRef.current.pause();
   }, [word]);
 
   const handleNextWord = () => {
