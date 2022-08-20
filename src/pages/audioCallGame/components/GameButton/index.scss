@@ -1,4 +1,5 @@
 $btnColor: #ffffff;
+$btnHeight: 2.5em;
 
 .game-button {
   // style reset
@@ -20,15 +21,15 @@ $btnColor: #ffffff;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 0.25em;
 
   background-color: transparent;
   color: $btnColor;
-  border: 1px solid $btnColor;
-  border-radius: 1em;
+  border-radius: 0.5em;
   padding: 0 0.8em 0 0.8em;
 
   min-width: 10ch;
-  min-height: 2.5em;
+  min-height: $btnHeight;
 
   font-size: 1.1rem;
   text-align: center;
@@ -46,4 +47,20 @@ $btnColor: #ffffff;
   &:disabled {
     cursor: default;
   }
+
+  &--outlined {
+    border: 1px solid $btnColor;
+  }
+
+  &--round {
+    min-width: auto;
+    width: $btnHeight;
+    border-radius: 50%;
+  }
+}
+
+.game-button__icon {
+  display: block;
+  width: 1.4em;
+  height: 1.4em;
 }

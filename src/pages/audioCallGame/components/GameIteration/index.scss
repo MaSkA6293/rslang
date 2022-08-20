@@ -11,3 +11,40 @@
   justify-content: center;
   gap: 1rem;
 }
+
+.answer {
+  line-height: 1em;
+
+  &--not-selected {
+    opacity: 0.5;
+    font-size: 0.9em;
+  }
+
+  &--wrong {
+    position: relative;
+    opacity: 0.5;
+    text-decoration: line-through;
+    font-size: 0.9em;
+  }
+
+  &--correct {
+    opacity: 1;
+    font-size: 1em;
+  }
+}
+
+.word-card__word {
+  margin-bottom: 0.5em;
+  color: #fff;
+  font-size: 2.2rem;
+}
+
+.word-card__img {
+  $size: min(30vmin, 10rem);
+
+  width: $size;
+  height: $size;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid #fff;
+}

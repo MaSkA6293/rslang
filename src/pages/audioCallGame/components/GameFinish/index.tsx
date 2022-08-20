@@ -16,7 +16,9 @@ function GameFinish({ words, results }: GameFinishProps) {
       <div>
         {`${correctCount} слов угдадано верно, ${mistakesCount} не угадано`}
         <ul>
-          {words.map((word) => <li key={word.id}>{word.word}</li>)}
+          {words.map((word) => (
+            <li key={word.id}>{word.word}</li>
+          ))}
         </ul>
       </div>
     </div>
