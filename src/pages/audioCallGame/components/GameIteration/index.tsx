@@ -32,33 +32,35 @@ function GameIteraion({ word, options, onNextWord }: GameIteraionProps) {
   const wordImgUrl = new URL(word.image, BACKEND_URL).toString();
 
   const [hasAnswered, setHasAnswered] = useState(false);
-  const [isCorrectAnswer, setIsCorrectAnswer] = useState(false);
-  const [pickedOptIndex, setPickedOptIndex] = useState(-1);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
 
   const audioRef = useRef(new Audio(wordAudioUrl));
 
   const playAudio = () => {
     if (audioRef.current.paused) {
-      audioRef.current.play();
+      return audioRef.current.play();
     }
+    return Promise.resolve();
   };
 
   useEffect(() => {
     if (audioRef.current.src !== wordAudioUrl) {
       audioRef.current = new Audio(wordAudioUrl);
     }
-    playAudio();
-    return () => audioRef.current.pause();
+    playAudio().catch(() => {});
+    return () => {
+      audioRef.current.pause();
+    };
   }, [word]);
 
   const handleNextWord = () => {
     if (!hasAnswered) {
-      setIsCorrectAnswer(false);
       setHasAnswered(true);
+      setSelectedIndex(-1);
       return;
     }
     setHasAnswered(false);
-    onNextWord(isCorrectAnswer);
+    onNextWord(options[selectedIndex]?.word === word.word);
   };
 
   return (
@@ -76,10 +78,9 @@ function GameIteraion({ word, options, onNextWord }: GameIteraionProps) {
       <div className="game-iteration__answers">
         {options.map((option, i) => {
           const isCorrect = option.word === word.word;
-          const isSelected = i === pickedOptIndex;
+          const isSelected = i === selectedIndex;
           const handleAnswer = () => {
-            setPickedOptIndex(i);
-            setIsCorrectAnswer(isCorrect);
+            setSelectedIndex(i);
             setHasAnswered(true);
           };
           const index = i;
