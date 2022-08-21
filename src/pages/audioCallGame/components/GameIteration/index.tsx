@@ -39,6 +39,11 @@ function GameIteraion({ word, options, onNextWord }: GameIteraionProps) {
 
   const audioRef = useRef(new Audio(wordAudioUrl));
 
+  const handleAnswer = (index: number) => {
+    setSelectedIndex(index);
+    setHasAnswered(true);
+  };
+
   const playAudio = () => {
     if (audioRef.current.paused) {
       return audioRef.current.play();
@@ -75,6 +80,38 @@ function GameIteraion({ word, options, onNextWord }: GameIteraionProps) {
     onNextWord(options[selectedIndex]?.word === word.word);
   };
 
+  const handleKeyboard = (e: KeyboardEvent) => {
+    switch (e.code) {
+      case 'Digit1':
+        handleAnswer(0);
+        break;
+      case 'Digit2':
+        handleAnswer(1);
+        break;
+      case 'Digit3':
+        handleAnswer(2);
+        break;
+      case 'Digit4':
+        handleAnswer(3);
+        break;
+      case 'Digit5':
+        handleAnswer(4);
+        break;
+      case 'Space':
+      case 'ArrowRight':
+        handleNextWord();
+        break;
+      default:
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('keyup', handleKeyboard);
+    return () => {
+      window.removeEventListener('keyup', handleKeyboard);
+    };
+  });
+
   return (
     <div className="game-iteration">
       <div className="word-card">
@@ -91,15 +128,12 @@ function GameIteraion({ word, options, onNextWord }: GameIteraionProps) {
         {options.map((option, i) => {
           const isCorrect = option.word === word.word;
           const isSelected = i === selectedIndex;
-          const handleAnswer = () => {
-            setSelectedIndex(i);
-            setHasAnswered(true);
-          };
+
           const index = i;
           return (
             <GameButton
               key={index}
-              onClick={handleAnswer}
+              onClick={() => handleAnswer(i)}
               disabled={hasAnswered}
               icon={hasAnswered ? getIcon(isSelected, isCorrect) : ''}
             >
@@ -110,7 +144,7 @@ function GameIteraion({ word, options, onNextWord }: GameIteraionProps) {
                   'answer--correct': hasAnswered && isCorrect,
                 })}
               >
-                {option.wordTranslate}
+                {`${i + 1} ${option.wordTranslate}`}
               </span>
             </GameButton>
           );
