@@ -4,14 +4,16 @@ import classNames from 'classnames';
 
 type ButtonVariant = 'outlined';
 type ButtonShape = 'round';
+type ButtonSize = 'small';
 
-export interface StartScreenProps {
+interface StartScreenProps {
   onClick: () => void;
   children?: React.ReactNode;
   disabled?: boolean;
   icon?: string;
   variant?: ButtonVariant;
   shape?: ButtonShape;
+  size?: ButtonSize;
 }
 
 const defaultProps = {
@@ -20,6 +22,7 @@ const defaultProps = {
   variant: undefined,
   children: undefined,
   shape: undefined,
+  size: undefined,
 };
 
 function GameButton({
@@ -29,6 +32,7 @@ function GameButton({
   icon,
   variant,
   shape,
+  size,
 }: StartScreenProps) {
   return (
     <button
@@ -36,6 +40,7 @@ function GameButton({
       className={classNames('game-button', {
         'game-button--outlined': variant === 'outlined',
         'game-button--round': shape === 'round',
+        'game-button--small': size === 'small',
       })}
       disabled={disabled}
     >

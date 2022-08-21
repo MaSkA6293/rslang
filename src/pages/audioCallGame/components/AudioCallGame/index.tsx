@@ -5,7 +5,7 @@ import GameIteraion from '../GameIteration';
 
 import './index.scss';
 import words from '../../data';
-import shuffle from '../../utils';
+import { shuffle } from '../../utils';
 import GameFinish from '../GameFinish/index';
 
 type Word = typeof words[0];
@@ -52,10 +52,16 @@ function AudioCallGame() {
     });
   };
 
+  const handleRestart = () => {
+    setIterationState(initialState);
+    handleStart();
+  };
+
   return (
     <div className="audio-call-game">
       <div className="audio-call-game__container">
         {!isStarted ? <StartScreen onStart={handleStart} /> : null}
+
         {isStarted && iterationState.currentWordIndex < words.length ? (
           <GameIteraion
             word={words[iterationState.currentWordIndex]}
@@ -63,8 +69,12 @@ function AudioCallGame() {
             options={iterationState.possibleAnswers}
           />
         ) : null}
+
         {isStarted && iterationState.currentWordIndex >= words.length ? (
-          <GameFinish words={words} results={results} />
+          <GameFinish
+            words={words.map((word, i) => ({ ...word, result: results[i] }))}
+            onRestart={handleRestart}
+          />
         ) : null}
       </div>
     </div>

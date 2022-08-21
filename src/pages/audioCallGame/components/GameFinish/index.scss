@@ -1,0 +1,57 @@
+$color: #fff;
+
+.game-finish {
+  color: $color;
+  width: 100%;
+}
+
+.game-finish__title {
+  margin: 0;
+  margin-bottom: 0.75em;
+}
+
+.game-finish__words {
+  overflow: auto;
+}
+
+.list-title {
+  margin: 0.75em 0 0;
+  font-weight: 500;
+  text-align: left;
+  color: change-color($color: $color, $alpha: 0.7);
+}
+
+.badge {
+  padding: 0 0.5em;
+  color: $color;
+  border-radius: 0.6em;
+  &--success {
+    background-color: #44bb37;
+  }
+
+  &--fail {
+    background-color: #FC4A53;
+  }
+}
+
+.word-list {
+  list-style: none;
+  text-align: left;
+}
+
+.word-list__item {
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+}
+
+.word-list__word {
+  font-weight: 500;
+  text-decoration: underline;
+  color: currentColor;
+  transition: 220ms all ease-in-out;
+
+  &:hover {
+    text-decoration: none;
+  }
+}
