@@ -46,7 +46,7 @@ function GameIteraion({ word, options, onNextWord }: GameIteraionProps) {
 
   const playAudio = () => {
     if (audioRef.current.paused) {
-      return audioRef.current.play();
+      return audioRef.current.play().catch(() => {});
     }
     return Promise.resolve();
   };
@@ -55,7 +55,7 @@ function GameIteraion({ word, options, onNextWord }: GameIteraionProps) {
     if (audioRef.current.src !== wordAudioUrl) {
       audioRef.current = new Audio(wordAudioUrl);
     }
-    playAudio().catch(() => {});
+    playAudio();
     return () => {
       audioRef.current.pause();
     };
@@ -98,6 +98,9 @@ function GameIteraion({ word, options, onNextWord }: GameIteraionProps) {
         handleAnswer(4);
         break;
       case 'Space':
+        playAudio();
+        break;
+      case 'Enter':
       case 'ArrowRight':
         handleNextWord();
         break;

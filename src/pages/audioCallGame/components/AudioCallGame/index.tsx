@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import StartScreen from '../StartScreen';
+import GameStart from '../GameStart';
 import GameIteraion from '../GameIteration';
 
 import './index.scss';
@@ -60,7 +60,7 @@ function AudioCallGame() {
   return (
     <div className="audio-call-game">
       <div className="audio-call-game__container">
-        {!isStarted ? <StartScreen onStart={handleStart} /> : null}
+        {!isStarted ? <GameStart onStart={handleStart} /> : null}
 
         {isStarted && iterationState.currentWordIndex < words.length ? (
           <GameIteraion

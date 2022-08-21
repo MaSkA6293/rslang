@@ -8,6 +8,10 @@ $color: #fff;
 .game-finish__title {
   margin: 0;
   margin-bottom: 0.75em;
+
+  @media (max-width: 480px) {
+    font-size: 1.2rem;
+  }
 }
 
 .game-finish__words {
