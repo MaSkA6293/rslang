@@ -68,7 +68,7 @@ function GameIteraion({ word, options, onNextWord }: GameIteraionProps) {
       <div className="word-card">
         {hasAnswered ? (
           <>
-            <img className="word-card__img" src={wordImgUrl} alt={word} />
+            <img className="word-card__img" src={wordImgUrl} alt={word.word} />
             <div className="word-card__word">{word.word}</div>
           </>
         ) : null}

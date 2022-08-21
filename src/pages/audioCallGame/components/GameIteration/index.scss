@@ -1,8 +1,14 @@
+$wordImgSize: 15vmin;
+
 .game-iteration {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 2rem;
+
+  @media (max-width: 480px) {
+    gap: 1rem;
+  }
 }
 
 .game-iteration__answers {
@@ -10,6 +16,11 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 1rem;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    gap: 0.4rem;
+  }
 }
 
 .answer {
@@ -33,6 +44,14 @@
   }
 }
 
+.word-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: $wordImgSize;
+  gap: 1rem;
+}
+
 .word-card__word {
   margin-bottom: 0.5em;
   color: #fff;
@@ -40,10 +59,9 @@
 }
 
 .word-card__img {
-  $size: min(30vmin, 10rem);
-
-  width: $size;
-  height: $size;
+  width: $wordImgSize;
+  height: $wordImgSize;
+  aspect-ratio: 1 / 1;
   object-fit: cover;
   border-radius: 50%;
   border: 2px solid #fff;

@@ -1,10 +1,7 @@
-$textColor: #ffffff;
-
-.audio-call-game__title {
+.game-title {
   margin: 0;
   margin-bottom: 0.75em;
 
-  color: $textColor;
   font-size: 3rem;
   text-transform: uppercase;
 
@@ -15,11 +12,4 @@ $textColor: #ffffff;
   @media (max-width: 480px) {
     font-size: 2rem;
   }
-}
-
-.audio-call-game__description {
-  margin-bottom: 0.75em;
-
-  color: $textColor;
-  font-size: 1.25rem;
 }

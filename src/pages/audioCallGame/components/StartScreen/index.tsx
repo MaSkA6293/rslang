@@ -8,7 +8,7 @@ interface StartScreenProps {
 function StartScreen({ onStart }: StartScreenProps) {
   return (
     <>
-      <h1 className="audio-call-game__title">Аудиовызов</h1>
+      <h1 className="audio-call-game__title game-title">Аудиовызов</h1>
       <p className="audio-call-game__description">
         Тренировка улучшает восприятие речи на слух.
       </p>
