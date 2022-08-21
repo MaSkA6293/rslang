@@ -9,6 +9,9 @@ import WrongIcon from '../../assets/wrong.svg';
 
 import { BACKEND_URL } from '../../../../constants';
 
+const CorrectSound = require(`../../assets/audio/correct-choice.mp3`);
+const WrongSound = require(`../../assets/audio/wrong-choice.mp3`);
+
 type Word = any;
 
 interface GameIteraionProps {
@@ -52,6 +55,15 @@ function GameIteraion({ word, options, onNextWord }: GameIteraionProps) {
       audioRef.current.pause();
     };
   }, [word]);
+
+  useEffect(() => {
+    if (hasAnswered) {
+      const audioPath =
+        word.word === options[selectedIndex]?.word ? CorrectSound : WrongSound;
+      const audio = new Audio(audioPath);
+      audio.play();
+    }
+  }, [hasAnswered]);
 
   const handleNextWord = () => {
     if (!hasAnswered) {
