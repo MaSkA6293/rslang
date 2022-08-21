@@ -27,7 +27,7 @@ function GameFinish({ words, onRestart }: GameFinishProps) {
       <h2 className="game-finish__title">
         {correctCount >= mistakesCount
           ? 'Отличный результат!'
-          : 'В этот раз не получилось, по продолжай тренироваться!'}
+          : 'В этот раз не получилось, но продолжай тренироваться!'}
       </h2>
       <div className="game-finish__words">
         {`${correctCount} ${numWord(correctCount, [
