@@ -4,10 +4,9 @@ import GameButton from '../GameButton';
 import './index.scss';
 import SpeakerIcon from '../../assets/speaker.svg';
 
+import { Word } from '../../data';
 import { numWord } from '../../utils';
 import { BACKEND_URL } from '../../../../constants';
-
-type Word = any;
 
 interface WordWithResult extends Word {
   result: boolean;

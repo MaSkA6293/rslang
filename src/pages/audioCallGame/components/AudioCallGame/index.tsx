@@ -4,11 +4,9 @@ import GameStart from '../GameStart';
 import GameIteraion from '../GameIteration';
 
 import './index.scss';
-import words from '../../data';
+import words, { Word } from '../../data';
 import { shuffle } from '../../utils';
 import GameFinish from '../GameFinish/index';
-
-type Word = typeof words[0];
 
 interface IterationState {
   currentWordIndex: number;

@@ -7,12 +7,11 @@ import SpeakerIcon from '../../assets/speaker.svg';
 import CorrectIcon from '../../assets/correct.svg';
 import WrongIcon from '../../assets/wrong.svg';
 
+import { Word } from '../../data';
 import { BACKEND_URL } from '../../../../constants';
 
 const CorrectSound = require(`../../assets/audio/correct-choice.mp3`);
 const WrongSound = require(`../../assets/audio/wrong-choice.mp3`);
-
-type Word = any;
 
 interface GameIteraionProps {
   word: Word;

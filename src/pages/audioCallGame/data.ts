@@ -172,4 +172,6 @@ const words = [
   },
 ];
 
+export type Word = typeof words[0];
+
 export default words;
