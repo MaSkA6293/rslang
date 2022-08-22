@@ -82,7 +82,7 @@ function GameFinish({ words, onRestart, onClose }: GameFinishProps) {
       </div>
 
       <div className="game-finish__buttons">
-        <GameButton onClick={onRestart} variant="outlined">
+        <GameButton onClick={onRestart} variant="colored">
           Повторить
         </GameButton>
         <GameButton onClick={onClose} variant="outlined">

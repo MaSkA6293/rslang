@@ -27,7 +27,7 @@ function GameStart({ onStart }: GameStartProps) {
           перейти к следующему вопросу
         </li>
       </ul>
-      <GameButton onClick={onStart} variant="outlined">
+      <GameButton onClick={onStart} variant="colored">
         Начать
       </GameButton>
     </>

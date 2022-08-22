@@ -2,7 +2,7 @@ import React from 'react';
 import './index.scss';
 import classNames from 'classnames';
 
-type ButtonVariant = 'outlined';
+type ButtonVariant = 'outlined' | 'colored';
 type ButtonShape = 'round' | 'square';
 type ButtonSize = 'small';
 
@@ -42,6 +42,7 @@ function GameButton({
       onClick={onClick}
       className={classNames(className, 'game-button', {
         'game-button--outlined': variant === 'outlined',
+        'game-button--colored': variant === 'colored',
         'game-button--round': shape === 'round',
         'game-button--square': shape === 'square',
         'game-button--small': size === 'small',
