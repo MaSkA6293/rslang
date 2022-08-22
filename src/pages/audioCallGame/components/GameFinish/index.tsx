@@ -71,9 +71,9 @@ function GameFinish({ words, onRestart }: GameFinishProps) {
                 shape="round"
                 size="small"
               />
-              <Link to={`/dictionary/${word.id}`} className="word-list__word">
+              <span className="word-list__word">
                 {word.word}
-              </Link>
+              </span>
               —
               <span className="word-list__translation">
                 {word.wordTranslate}
