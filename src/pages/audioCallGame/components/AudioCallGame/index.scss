@@ -1,0 +1,62 @@
+$textColor: #ffffff;
+
+.audio-call-game {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  color: $textColor;
+  line-height: 1.4em;
+
+  background: hsla(266, 63%, 26%, 1);
+  background: linear-gradient(
+    90deg,
+    hsla(266, 63%, 26%, 1) 0%,
+    hsla(354, 55%, 63%, 1) 50%,
+    hsla(31, 100%, 74%, 1) 100%
+  );
+  background: -moz-linear-gradient(
+    90deg,
+    hsla(266, 63%, 26%, 1) 0%,
+    hsla(354, 55%, 63%, 1) 50%,
+    hsla(31, 100%, 74%, 1) 100%
+  );
+  background: -webkit-linear-gradient(
+    90deg,
+    hsla(266, 63%, 26%, 1) 0%,
+    hsla(354, 55%, 63%, 1) 50%,
+    hsla(31, 100%, 74%, 1) 100%
+  );
+}
+
+.audio-call-game__container {
+  max-width: 80%;
+  margin: 1rem auto;
+  padding: 3rem 4rem;
+
+  border-radius: 12px;
+  backdrop-filter: blur(30px);
+  box-shadow: 0 0.75rem 2rem 0 rgb(0 0 0 / 10%);
+
+  @media (max-width: 480px) {
+    padding: 1.5rem 2rem;
+    width: 80%;
+  }
+}
+
+.audio-call-game__text,
+.audio-call-game__list {
+  margin-bottom: 0.75em;
+  font-size: 1rem;
+
+  @media (max-width: 480px) {
+    text-align: left;
+    font-size: 0.9rem;
+  }
+}
+
+.audio-call-game__list {
+  list-style: none;
+  text-align: left;
+}

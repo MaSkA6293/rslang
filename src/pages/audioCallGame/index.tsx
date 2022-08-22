@@ -1,13 +1,14 @@
-import './index.scss';
 import Header from '../../components/Header/Header';
-import Footer from '../../components/Footer/Footer';
+
+import AudioCallGame from './components/AudioCallGame/index';
+
+import './index.scss';
 
 function AudioCallGamePage() {
   return (
     <>
       <Header />
-      <h1>Audio Call</h1>
-      <Footer />
+      <AudioCallGame />
     </>
   );
 }
