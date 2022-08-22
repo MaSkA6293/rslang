@@ -71,10 +71,7 @@ function GameFinish({ words, onRestart }: GameFinishProps) {
                 shape="round"
                 size="small"
               />
-              <span className="word-list__word">
-                {word.word}
-              </span>
-              —
+              <span className="word-list__word">{word.word}</span>—
               <span className="word-list__translation">
                 {word.wordTranslate}
               </span>

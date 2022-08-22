@@ -54,9 +54,13 @@ $btnHeight: 2.5em;
     border: 1px solid $btnColor;
   }
 
-  &--round {
+  &--round,
+  &--square {
     min-width: auto;
     width: var(--btn-height);
+  }
+
+  &--round {
     border-radius: 50%;
   }
 

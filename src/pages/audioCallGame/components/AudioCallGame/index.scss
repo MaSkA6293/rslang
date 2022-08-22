@@ -1,6 +1,7 @@
 $textColor: #ffffff;
 
 .audio-call-game {
+  position: relative;
   flex: 1;
   display: flex;
   align-items: center;
@@ -28,6 +29,12 @@ $textColor: #ffffff;
     hsla(354, 55%, 63%, 1) 50%,
     hsla(31, 100%, 74%, 1) 100%
   );
+}
+
+.audio-call-game__close-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
 }
 
 .audio-call-game__container {

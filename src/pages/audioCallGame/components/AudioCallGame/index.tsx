@@ -1,12 +1,16 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import GameStart from '../GameStart';
 import GameIteraion from '../GameIteration';
 
 import './index.scss';
+import CrossIcon from '../../assets/icons/cross.svg';
+
 import words, { Word } from '../../data';
 import { shuffle } from '../../utils';
 import GameFinish from '../GameFinish';
+import GameButton from '../GameButton';
 
 interface IterationState {
   currentWordIndex: number;
@@ -30,6 +34,7 @@ function AudioCallGame() {
   const [isStarted, setIsStarted] = useState(false);
   const [results, setResults] = useState<boolean[]>([]);
   const [iterationState, setIterationState] = useState(initialState);
+  const navigate = useNavigate();
 
   const handleStart = () => {
     setIterationState({
@@ -75,6 +80,13 @@ function AudioCallGame() {
           />
         ) : null}
       </div>
+
+      <GameButton
+        className="audio-call-game__close-btn"
+        onClick={() => navigate('/')}
+        icon={CrossIcon}
+        shape="square"
+      />
     </div>
   );
 }
