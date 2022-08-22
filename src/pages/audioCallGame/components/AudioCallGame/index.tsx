@@ -60,6 +60,10 @@ function AudioCallGame() {
     handleStart();
   };
 
+  const handleClose = () => {
+    navigate('/');
+  };
+
   return (
     <div className="audio-call-game">
       <div className="audio-call-game__container">
@@ -77,13 +81,14 @@ function AudioCallGame() {
           <GameFinish
             words={words.map((word, i) => ({ ...word, result: results[i] }))}
             onRestart={handleRestart}
+            onClose={handleClose}
           />
         ) : null}
       </div>
 
       <GameButton
         className="audio-call-game__close-btn"
-        onClick={() => navigate('/')}
+        onClick={handleClose}
         icon={CrossIcon}
         shape="square"
       />

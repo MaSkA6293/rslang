@@ -15,9 +15,10 @@ interface WordWithResult extends Word {
 interface GameFinishProps {
   words: WordWithResult[];
   onRestart: () => void;
+  onClose: () => void;
 }
 
-function GameFinish({ words, onRestart }: GameFinishProps) {
+function GameFinish({ words, onRestart, onClose }: GameFinishProps) {
   const guessedWords = words.filter((word) => word.result);
   const failedWords = words.filter((word) => !word.result);
   const correctCount = guessedWords.length;
@@ -80,9 +81,14 @@ function GameFinish({ words, onRestart }: GameFinishProps) {
         </ul>
       </div>
 
-      <GameButton onClick={onRestart} variant="outlined">
-        Повторить игру
-      </GameButton>
+      <div className="game-finish__buttons">
+        <GameButton onClick={onRestart} variant="outlined">
+          Повторить
+        </GameButton>
+        <GameButton onClick={onClose} variant="outlined">
+          Выйти
+        </GameButton>
+      </div>
     </div>
   );
 }

@@ -19,6 +19,11 @@ $color: #fff;
   margin-bottom: 1em;
 }
 
+.game-finish__buttons {
+  display: inline-flex;
+  gap: 1em;
+}
+
 .list-title {
   margin: 0.75em 0 0;
   font-weight: 500;
