@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import GameButton from '../GameButton';
 
 import './index.scss';
-import SpeakerIcon from '../../assets/speaker.svg';
+import SpeakerIcon from '../../assets/icons/speaker.svg';
 
 import { Word } from '../../data';
 import { numWord } from '../../utils';

@@ -6,7 +6,7 @@ import GameIteraion from '../GameIteration';
 import './index.scss';
 import words, { Word } from '../../data';
 import { shuffle } from '../../utils';
-import GameFinish from '../GameFinish/index';
+import GameFinish from '../GameFinish';
 
 interface IterationState {
   currentWordIndex: number;

@@ -3,9 +3,9 @@ import classNames from 'classnames';
 import GameButton from '../GameButton';
 
 import './index.scss';
-import SpeakerIcon from '../../assets/speaker.svg';
-import CorrectIcon from '../../assets/correct.svg';
-import WrongIcon from '../../assets/wrong.svg';
+import SpeakerIcon from '../../assets/icons/speaker.svg';
+import CorrectIcon from '../../assets/icons/correct.svg';
+import WrongIcon from '../../assets/icons/wrong.svg';
 
 import { Word } from '../../data';
 import { BACKEND_URL } from '../../../../constants';
