@@ -1,4 +1,9 @@
-import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
+import {
+  configureStore,
+  ThunkAction,
+  Action,
+  combineReducers,
+} from '@reduxjs/toolkit';
 import {
   persistReducer,
   persistStore,
@@ -14,21 +19,25 @@ import appReducer from '../features/app/app';
 import { userApi } from '../API/userApi';
 import { wordsApi } from '../API/wordsApi';
 import counterSlice from '../features/counter/counterSlice';
+import textBookReducer from '../features/textBook/textBook';
 
 const persistConfig = {
   key: 'root',
   storage,
 };
-const persistedReducer = persistReducer(persistConfig, appReducer);
+
+const rootReducer = combineReducers({
+  app: appReducer,
+  counter: counterSlice,
+  [wordsApi.reducerPath]: wordsApi.reducer,
+  [userApi.reducerPath]: wordsApi.reducer,
+  textBook: textBookReducer,
+});
+
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
-  reducer: {
-    app: appReducer,
-    counter: counterSlice,
-    [wordsApi.reducerPath]: wordsApi.reducer,
-    [userApi.reducerPath]: wordsApi.reducer,
-    persistedReducer,
-  },
+  reducer: persistedReducer,
   middleware: (getDefaultMiddlware) =>
     getDefaultMiddlware({
       serializableCheck: {

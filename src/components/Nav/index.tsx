@@ -4,8 +4,8 @@ import { NavLink } from 'react-router-dom';
 
 function Nav() {
   return (
-    <div className="nav">
-      <ul className={classnames('nav__list', 'list')}>
+    <div className="navigation">
+      <ul className={classnames('navigation__list', 'list')}>
         <li className="list__item">
           <NavLink
             to="/"
