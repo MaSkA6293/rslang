@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAppSelector } from '../../app/hooks';
 import { selectToken } from '../../features/auth/authSlice';
 import Nav from '../Nav';
@@ -11,6 +11,10 @@ import './index.scss';
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const token = useAppSelector(selectToken)
+
+  useEffect(() => {
+    document.body.style.overflow = isOpen ? 'hidden' : 'auto';
+  }, [isOpen]);
 
   return (
     <div className="header">
