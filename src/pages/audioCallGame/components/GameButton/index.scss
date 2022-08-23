@@ -2,6 +2,11 @@ $btnHeight: 2.5em;
 $btnColor: #ffffff;
 $btnBgColor: #ffb566;
 
+:root {
+  --btn-hover-bgc: #{change-color($btnColor, $alpha: 0.2)};
+  --btn-height: #{$btnHeight};
+}
+
 .game-button {
   // style reset
 
@@ -18,10 +23,6 @@ $btnBgColor: #ffb566;
   }
 
   // actual styles
-
-  --btn-hover-bgc: #{change-color($btnColor, $alpha: 0.2)};
-
-  --btn-height: #{$btnHeight};
 
   display: inline-flex;
   align-items: center;

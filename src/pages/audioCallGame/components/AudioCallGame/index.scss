@@ -3,6 +3,7 @@ $textColor: #ffffff;
 .audio-call-game {
   position: relative;
   flex: 1;
+  align-self: stretch;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -39,7 +40,7 @@ $textColor: #ffffff;
 
 .audio-call-game__container {
   max-width: 80%;
-  margin: 1rem auto;
+  margin: calc(var(--btn-height) + 0.75rem) auto;
   padding: 3rem 4rem;
 
   border-radius: 12px;
