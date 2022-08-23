@@ -6,6 +6,8 @@ import DicionaryPage from './pages/dictionary';
 import AudioCallGamePage from './pages/audioCallGame';
 import SprintGamePage from './pages/sprintGame';
 import StatisticsPage from './pages/statistics';
+import RequireAuth from './components/RequireAuth/RequireAuth';
+import Profile from './pages/Profile/Profile';
 
 function App() {
   return (
@@ -16,6 +18,7 @@ function App() {
         <Route path="/audioCall" element={<AudioCallGamePage />} />
         <Route path="/sprint" element={<SprintGamePage />} />
         <Route path="/statistics" element={<StatisticsPage />} />
+        <Route path='/profile' element={<RequireAuth><Profile /></RequireAuth>} />
         <Route path="*" element={<Error />} />
       </Routes>
     </div>

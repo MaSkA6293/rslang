@@ -1,16 +1,19 @@
-import { useAppDispatch } from '../../../../app/hooks';
-import { toggleShow } from '../../../../features/auth/authSlice';
+import { useState } from 'react';
+import Auth from '../../../Auth/Auth';
 import './index.scss';
 
+
 export default function SignInBtn() {
-  const dispatch = useAppDispatch();
-  const handleBtn = () => {
-    dispatch(toggleShow());
-  };
+  const [iSAuthOpen, setISAuthOpen] = useState(false)
+
   
   return (
-    <button onClick={handleBtn} type="button" className="signIn">
-      Войти
-    </button>
+    <>
+      <button onClick={() => setISAuthOpen(true)} type="button" className="signIn">
+        Войти
+      </button>
+          {iSAuthOpen && <Auth close={() => setISAuthOpen(false)} />}
+    </>
+
   );
 }

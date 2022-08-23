@@ -1,42 +1,40 @@
-import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
+import { Action, combineReducers, configureStore, ThunkAction } from '@reduxjs/toolkit';
 import {
-  persistReducer,
-  persistStore,
-  FLUSH,
-  REHYDRATE,
-  PAUSE,
-  PERSIST,
-  PURGE,
-  REGISTER,
+  FLUSH, PAUSE,
+  PERSIST, persistReducer,
+  persistStore, PURGE,
+  REGISTER, REHYDRATE
 } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
-import appReducer from '../features/app/app';
 import { userApi } from '../API/userApi';
 import { wordsApi } from '../API/wordsApi';
-import counterSlice from '../features/counter/counterSlice';
+import appReducer from '../features/app/app';
 import authSlice from '../features/auth/authSlice';
 
 const persistConfig = {
   key: 'root',
   storage,
+  whitelist: ['auth']
 };
-const persistedReducer = persistReducer(persistConfig, appReducer);
+
+const rootRecuder = combineReducers({
+  auth: authSlice,
+  app: appReducer,
+  [userApi.reducerPath]: userApi.reducer,
+  [wordsApi.reducerPath]: wordsApi.reducer,
+})
+
+const persistedReducer = persistReducer(persistConfig, rootRecuder);
 
 export const store = configureStore({
-  reducer: {
-    app: appReducer,
-    counter: counterSlice,
-    auth: authSlice,
-    [userApi.reducerPath]: wordsApi.reducer,
-    [wordsApi.reducerPath]: wordsApi.reducer,
-    persistedReducer,
-  },
+  reducer: persistedReducer,
   middleware: (getDefaultMiddlware) =>
     getDefaultMiddlware({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
-    }).concat(wordsApi.middleware),
+    }).concat([userApi.middleware, wordsApi.middleware]),
+  devTools: true
 });
 
 export const persistor = persistStore(store);

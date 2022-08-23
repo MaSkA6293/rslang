@@ -1,70 +1,73 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { BaseQueryFn } from '@reduxjs/toolkit/dist/query/baseQueryTypes';
+import { RootState } from '../app/store';
 import { BACKEND_URL } from '../constants';
+import { logOut, setCredential } from '../features/auth/authSlice';
 
-export interface IUser {
-  name: string;
-  email: string;
-  password: string;
-}
+const baseQuary = fetchBaseQuery({
+  baseUrl: BACKEND_URL,
+  credentials: 'omit',
+  prepareHeaders: (headers, { getState }) => {
+    const { token } = (getState() as RootState).auth.user;
 
-export interface IUserUpdate {
-  id: string;
-  email: string;
-  password: string;
-}
+    if (token) {
+      headers.set('authorization', `Bearer ${token}`);
+    }
+
+    return headers;
+  },
+});
+
+const baseQueryWithReauth: BaseQueryFn = async (args, api, extraOptions) => {
+  let result = await baseQuary(args, api, extraOptions);
+
+  if (result.error) {
+    // sending refresh token
+    const { user } = (api.getState() as RootState).auth;
+    const { userId, refreshToken } = user;
+    const refreshReq = await fetch(`${BACKEND_URL}/users/${userId}/tokens`, {
+      headers: {
+        authorization: `Bearer ${refreshToken}`,
+      },
+    });
+
+    if (refreshReq.ok && refreshReq.status === 200) {
+      const newTokens = await refreshReq.json();
+      api.dispatch(setCredential({ ...user, ...newTokens }));
+      // try the original query with new access token
+      result = await baseQuary(args, api, extraOptions);
+    } else {
+      api.dispatch(logOut());
+    }
+  }
+
+  return result;
+};
 
 export const userApi = createApi({
-  reducerPath: 'userApi',
-  tagTypes: ['User'],
-  baseQuery: fetchBaseQuery({
-    baseUrl: BACKEND_URL,
-  }),
-  endpoints: (build) => ({
-    getUser: build.query<any, any>({
-      query: ({ id }: { id: string }) => `users/${id}`,
-      providesTags: (result) =>
-        result
-          ? [
-              ...result.map(({ id }: { id: string }) => ({
-                type: 'User',
-                id,
-              })),
-              { type: 'User', id: 'LIST' },
-            ]
-          : [{ type: 'User', id: 'LIST' }],
+  baseQuery: baseQueryWithReauth,
+  endpoints: (builder) => ({
+    getUser: builder.query<{ id: string; email: string }, any>({
+      query: (id) => `users/${id}`,
     }),
-    createUser: build.mutation<any, any>({
-      query: (body: IUser) => ({
+    register: builder.mutation({
+      query: (body) => ({
         url: 'users',
-        method: 'POST',
+        method: 'post',
         body,
       }),
-      invalidatesTags: [{ type: 'User', id: 'LIST ' }],
     }),
-    deleteUser: build.mutation({
-      query: (id: string) => ({
-        url: `users/${id}`,
-        method: 'DELETE',
+    login: builder.mutation({
+      query: (body: { email: string; password: string }) => ({
+        url: '/signin',
+        method: 'post',
+        body,
       }),
-      invalidatesTags: [{ type: 'User', id: 'LIST' }],
-    }),
-    updateUser: build.mutation({
-      query: ({ id, password, email }: IUserUpdate) => ({
-        url: `users/${id}`,
-        method: 'PUT',
-        body: { email, password },
-      }),
-      invalidatesTags: [{ type: 'User', id: 'LIST' }],
-    }),
-    getNewUserToken: build.mutation({
-      query: (id: string) => ({
-        url: `users/${id}/tokens`,
-        method: 'GET',
-      }),
-      invalidatesTags: [{ type: 'User', id: 'LIST' }],
     }),
   }),
 });
 
-export const { useGetUserQuery, useCreateUserMutation, useDeleteUserMutation } =
+export const { useGetUserQuery, useRegisterMutation, useLoginMutation } =
   userApi;

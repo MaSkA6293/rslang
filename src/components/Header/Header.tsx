@@ -1,15 +1,16 @@
-import './index.scss';
 import { useState } from 'react';
+import { useAppSelector } from '../../app/hooks';
+import { selectToken } from '../../features/auth/authSlice';
 import Nav from '../Nav';
 import Burger from './components/burger';
 import MobileMenu from './components/mobileMenu';
+import ProfileBtn from './components/ProfileBtn/ProfileBtn';
 import SignInBtn from './components/signInBtn';
-import Authorization from '../Authorization/Authorization';
-import { useAppSelector } from '../../app/hooks';
+import './index.scss';
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
-  const isAuthShow = useAppSelector((state) => state.auth.isShow);
+  const token = useAppSelector(selectToken)
 
   return (
     <div className="header">
@@ -17,8 +18,11 @@ export default function Header() {
         <Nav />
         <Burger isOpen={isOpen} onClick={() => setIsOpen(!isOpen)} />
         <MobileMenu isOpen={isOpen} closeMenu={() => setIsOpen(false)} />
-        <SignInBtn />
-        {isAuthShow && <Authorization />}
+        {token
+          ? <ProfileBtn />
+          : <SignInBtn />
+        }
+         
       </div>
     </div>
   );
