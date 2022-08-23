@@ -9,6 +9,7 @@ export interface AppState {
     group: groupType;
   };
   activeView: View;
+  prevPath: string;
 }
 
 const initialState: AppState = {
@@ -18,6 +19,7 @@ const initialState: AppState = {
     group: 0,
   },
   activeView: View.main,
+  prevPath: '',
 };
 
 export const appSlice = createSlice({
@@ -27,11 +29,16 @@ export const appSlice = createSlice({
     setView: (state, action: PayloadAction<View>) => {
       state.activeView = action.payload;
     },
+    setPath: (state, action: PayloadAction<string>) => {
+      state.prevPath = action.payload;
+    },
   },
 });
 
-export const { setView } = appSlice.actions;
+export const { setView, setPath } = appSlice.actions;
 
 export const selectView = (state: RootState): View => state.app.activeView;
+
+export const selectPath = (state: RootState): string => state.app.prevPath;
 
 export default appSlice.reducer;
