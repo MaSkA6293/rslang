@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom';
 import GameButton from '../GameButton';
 
 import './index.scss';
@@ -49,10 +48,7 @@ function GameFinish({ words, onRestart, onClose }: GameFinishProps) {
                 shape="round"
                 size="small"
               />
-              <Link to={`/dictionary/${word.id}`} className="word-list__word">
-                {word.word}
-              </Link>
-              —
+              <span className="word-list__word">{word.word}</span>—
               <span className="word-list__translation">
                 {word.wordTranslate}
               </span>
