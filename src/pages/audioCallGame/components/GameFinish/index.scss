@@ -43,19 +43,3 @@ $color: #fff;
     background-color: #FC4A53;
   }
 }
-
-.word-list {
-  list-style: none;
-  text-align: left;
-}
-
-.word-list__item {
-  display: flex;
-  align-items: center;
-  gap: 0.4em;
-}
-
-.word-list__word {
-  font-weight: 500;
-  color: currentColor;
-}

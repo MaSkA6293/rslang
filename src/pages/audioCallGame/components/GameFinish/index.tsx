@@ -1,11 +1,10 @@
 import GameButton from '../GameButton';
 
 import './index.scss';
-import SpeakerIcon from '../../assets/icons/speaker.svg';
 
 import { Word } from '../../data';
 import { numWord } from '../../utils';
-import { BACKEND_URL } from '../../../../constants';
+import WordsList from '../WordsList/index';
 
 interface WordWithResult extends Word {
   result: boolean;
@@ -39,42 +38,12 @@ function GameFinish({ words, onRestart, onClose }: GameFinishProps) {
         <div className="list-title">
           Знаю: <span className="badge badge--success">{correctCount}</span>
         </div>
-        <ul className="word-list">
-          {guessedWords.map((word) => (
-            <li key={word.id} className="word-list__item">
-              <GameButton
-                onClick={() => new Audio(`${BACKEND_URL}/${word.audio}`).play()}
-                icon={SpeakerIcon}
-                shape="round"
-                size="small"
-              />
-              <span className="word-list__word">{word.word}</span>—
-              <span className="word-list__translation">
-                {word.wordTranslate}
-              </span>
-            </li>
-          ))}
-        </ul>
+        <WordsList words={guessedWords} />
 
         <div className="list-title">
           Не знаю: <span className="badge badge--fail">{mistakesCount}</span>
         </div>
-        <ul className="word-list">
-          {failedWords.map((word) => (
-            <li key={word.id} className="word-list__item">
-              <GameButton
-                onClick={() => new Audio(`${BACKEND_URL}/${word.audio}`).play()}
-                icon={SpeakerIcon}
-                shape="round"
-                size="small"
-              />
-              <span className="word-list__word">{word.word}</span>—
-              <span className="word-list__translation">
-                {word.wordTranslate}
-              </span>
-            </li>
-          ))}
-        </ul>
+        <WordsList words={failedWords} />
       </div>
 
       <div className="game-finish__buttons">
