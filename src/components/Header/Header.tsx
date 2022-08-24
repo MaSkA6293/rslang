@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
-import { useAppSelector } from '../../app/hooks';
+import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { selectToken } from '../../features/auth/authSlice';
-import { useAppDispatch } from '../../app/hooks';
 import Nav from '../Nav';
 import Burger from './components/burger';
 import MobileMenu from './components/mobileMenu';

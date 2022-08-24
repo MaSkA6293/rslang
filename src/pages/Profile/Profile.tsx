@@ -7,7 +7,7 @@ import { logOut, selectCurrentUser } from '../../features/auth/authSlice';
 export default function Profile() {
   const dispatch = useAppDispatch();
   const { userId } = useAppSelector(selectCurrentUser);
-const { data, isLoading } = useGetUserQuery({userId: userId!});
+  const { data, isLoading } = useGetUserQuery({ userId: userId! });
   const [deleteUser] = useDeleteUserMutation();
 
   return (
@@ -16,7 +16,7 @@ const { data, isLoading } = useGetUserQuery({userId: userId!});
       <button onClick={() => dispatch(logOut())}>Выйти с аккаунта</button>
       <button
         onClick={async () => {
-          await deleteUser({userId: userId!});
+          await deleteUser({ userId: userId! });
           dispatch(logOut());
         }}
       >

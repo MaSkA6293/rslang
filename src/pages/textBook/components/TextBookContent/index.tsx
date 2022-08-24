@@ -5,7 +5,8 @@ import { selectTextBook } from '../../../../features/textBook/textBook';
 import { useAppSelector } from '../../../../app/hooks';
 import { useGetWordsQuery } from '../../../../API/wordsApi';
 import Card from '../Card';
-import { ICard, colorsOfLevels } from '../../types';
+import { colorsOfLevels } from '../../types';
+import { IGetWordRes } from '../../../../API/types';
 
 import { BACKEND_URL } from '../../../../constants';
 
@@ -49,7 +50,6 @@ function TextBookContent() {
     }
   }, [paths]);
 
-  if (isLoading) return <h1>Loading</h1>;
   const color: string = colorsOfLevels[group][1];
 
   const stopAudio = () => {
@@ -64,10 +64,12 @@ function TextBookContent() {
     [],
   );
 
+  if (isLoading) return <h1>Loading</h1>;
+
   return (
     <div className="page">
       <div className={classNames('page__container')}>
-        {data.map((item: ICard) => (
+        {data.map((item: IGetWordRes) => (
           <Card
             color={color}
             card={item}

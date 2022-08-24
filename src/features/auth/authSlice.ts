@@ -17,10 +17,10 @@ const initialUser = {
   token: null,
   refreshToken: null,
   userId: null,
-}
+};
 
 const initialState: authState = {
-  user: initialUser
+  user: initialUser,
 };
 
 const authSlice = createSlice({
@@ -32,7 +32,7 @@ const authSlice = createSlice({
       state.user = user;
     },
     logOut: (state) => {
-      state.user = initialUser
+      state.user = initialUser;
     },
   },
 });

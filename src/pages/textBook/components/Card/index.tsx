@@ -2,10 +2,10 @@ import { useEffect } from 'react';
 import './index.scss';
 import classNames from 'classnames';
 import { BACKEND_URL } from '../../../../constants';
-import { ICard } from '../../types';
+import { IGetWordRes } from '../../../../API/types';
 
 function Card(props: {
-  card: ICard;
+  card: IGetWordRes;
   color: string;
   playAudio: any;
   stopAudio: any;

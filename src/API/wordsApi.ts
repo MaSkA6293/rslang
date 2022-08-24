@@ -74,5 +74,5 @@ export const {
   useUpdateUserWordMutation,
   useDeleteUserWordMutation,
   useGetAggregatedWordsQuery,
-  useGetAggregatedWordsByIdQuery
+  useGetAggregatedWordsByIdQuery,
 } = wordsApi;
