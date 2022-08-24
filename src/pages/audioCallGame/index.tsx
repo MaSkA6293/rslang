@@ -1,4 +1,4 @@
-import AudioCallGame from './components/AudioCallGame/index';
+import AudioCallGame from './components/AudioCallGame';
 
 import './index.scss';
 
