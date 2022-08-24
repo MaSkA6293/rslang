@@ -1,14 +1,18 @@
-import './index.scss';
 import { useEffect, useState } from 'react';
+import { useAppSelector } from '../../app/hooks';
+import { selectToken } from '../../features/auth/authSlice';
 import { useAppDispatch } from '../../app/hooks';
 import Nav from '../Nav';
 import Burger from './components/burger';
 import MobileMenu from './components/mobileMenu';
+import ProfileBtn from './components/ProfileBtn/ProfileBtn';
 import SignInBtn from './components/signInBtn';
+import './index.scss';
 import { setPath } from '../../features/app/app';
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
+  const token = useAppSelector(selectToken);
 
   const dispatch = useAppDispatch();
   useEffect(() => {
@@ -26,7 +30,7 @@ export default function Header() {
         <Nav />
         <Burger isOpen={isOpen} onClick={() => setIsOpen(!isOpen)} />
         <MobileMenu isOpen={isOpen} closeMenu={() => setIsOpen(false)} />
-        <SignInBtn />
+        {token ? <ProfileBtn /> : <SignInBtn />}
       </div>
     </div>
   );
