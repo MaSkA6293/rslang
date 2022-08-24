@@ -38,3 +38,8 @@ export type pageType =
   | 27
   | 28
   | 29;
+
+export enum textBookView {
+  textBook = 'textbook',
+  dictionary = 'dictionary',
+}

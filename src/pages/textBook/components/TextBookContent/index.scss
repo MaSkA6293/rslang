@@ -1,0 +1,13 @@
+.page {
+  &__container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  &__container-learned {
+    background-color: #00ff1557;
+  }
+}

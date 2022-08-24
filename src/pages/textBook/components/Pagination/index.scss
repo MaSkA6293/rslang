@@ -1,0 +1,42 @@
+#container {
+  margin: 1rem;
+}
+
+.items {
+  margin-bottom: 1rem;
+}
+
+.control-panel__pagination {
+  display: flex;
+  flex-direction: column;
+
+  .pagination-control {
+    &__title {
+      font-size: 15px;
+      margin-bottom: 6px;
+      user-select: none;
+    }
+  }
+}
+
+.pagination {
+  display: flex;
+  padding-left: 0;
+  list-style: none;
+
+  .page-item {
+    .page-link.page-link-learned {
+      background-color: #00ff1557;
+    }
+  }
+
+  @media (max-width: 470px) {
+    font-size: 15px;
+
+    .page-item {
+      .page-link {
+        padding: 4px 7px;
+      }
+    }
+  }
+}

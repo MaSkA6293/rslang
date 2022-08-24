@@ -10,27 +10,23 @@ export interface AuthModal {
   close: () => void;
 }
 
-
 export default function Auth({ close }: AuthModal) {
-  const [view, setView] = useState<'reg' | 'log'>('log')
-
+  const [view, setView] = useState<'reg' | 'log'>('log');
 
   return (
     <Modal open>
       <div className={styles.formWrapper}>
         <div className={styles.formInner}>
-        <button className={styles.closeBtn} onClick={close}>x</button>
-          {
-            view === 'reg'
-            ? <Registration />
-            : <Authorization />
-          }
+          <button className={styles.closeBtn} onClick={close}>
+            x
+          </button>
+          {view === 'reg' ? <Registration /> : <Authorization />}
           <div>
-            {
-              view === 'reg'
-              ? <button onClick={() => setView('log')}>Уже есть аккаунт</button>
-              : <button onClick={() => setView('reg')}>Зарегистрироваться</button>
-            }
+            {view === 'reg' ? (
+              <button onClick={() => setView('log')}>Уже есть аккаунт</button>
+            ) : (
+              <button onClick={() => setView('reg')}>Зарегистрироваться</button>
+            )}
           </div>
         </div>
       </div>

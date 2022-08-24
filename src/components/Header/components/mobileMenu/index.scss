@@ -7,7 +7,7 @@
     left: -320px;
     transition: 0.3s;
     background-color: #cacacae8;
-    z-index: 2;
+    z-index: 4;
 
     &-back {
       position: absolute;
@@ -17,13 +17,14 @@
       width: 100%;
       height: 100%;
       background-color: #5f9ea073;
+      z-index: 4;
     }
 
     &-open {
       left: 0px;
     }
 
-    .nav {
+    .navigation {
       display: block;
       height: 100%;
 

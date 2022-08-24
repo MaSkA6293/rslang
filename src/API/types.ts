@@ -5,7 +5,7 @@ export interface IUserWords {
 
 export interface IUpdateUserPrms {
   body: { name: string; email: string };
-  userId: string
+  userId: string;
 }
 
 export interface IUpdateUserRes {
@@ -75,5 +75,5 @@ export interface IGetAggregatedWords {
   group?: number;
   page?: number;
   wordsPerPage?: number;
-  filter?: Record<any, any>
+  filter?: Record<any, any>;
 }

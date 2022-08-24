@@ -39,7 +39,6 @@ export default function Registration() {
         resetField('email');
         resetField('name');
         resetField('password');
-  
       })
       .catch((e) => {
         if (e.originalStatus === 417) {
