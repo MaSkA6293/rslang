@@ -35,8 +35,10 @@ const initialLevel: groupType = 0;
 const initialQueryParams: IGetWords = { group: initialLevel, page: 0 };
 
 const getOptions = (current: number, words: Word[]): Word[] => {
-  const wrongAnswers = shuffle(words.filter((_w, i) => i !== current));
   const correctAnswer = words[current];
+  const wrongAnswers = shuffle(words)
+    .filter((_w, i) => i !== current)
+    .filter((w) => w.wordTranslate !== correctAnswer.wordTranslate);
   return shuffle([...wrongAnswers.slice(0, 4), correctAnswer]);
 };
 
