@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import { useState } from 'react';
+import React, { useState } from 'react';
 import Modal from '../Modal/Modal';
 import styles from './Auth.module.scss';
 import Authorization from './Authorization/Authorization';
@@ -13,12 +13,14 @@ export interface AuthModal {
 
 export default function Auth({ close }: AuthModal) {
   const [view, setView] = useState<'reg' | 'log'>('log')
-
+  const handleMouse = (e: React.MouseEvent) => {
+    if (e.button === 0) close()
+  }
 
   return (
     <Modal open>
-      <div className={styles.formWrapper}>
-        <div className={styles.formInner}>
+      <div onMouseDown={handleMouse} className={styles.formWrapper}>
+        <div onMouseDown={(e) => e.stopPropagation()} className={styles.formInner}>
         <button className={styles.closeBtn} onClick={close}>x</button>
           {
             view === 'reg'

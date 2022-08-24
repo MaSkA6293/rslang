@@ -19,7 +19,9 @@ export interface registerRequest {
 }
 
 export default function Registration() {
+  const dispatch = useAppDispatch()
   const [userRegister, { isLoading }] = useRegisterMutation();
+  const [userLogin] = useLoginMutation()
   const [error, setError] = useState('');
 
   const {
@@ -35,11 +37,26 @@ export default function Registration() {
     userRegister(request)
       .unwrap()
       .then(() => {
-        setError('Аккаунт создан');
+        setError('Аккаунт создан, заходим в аккаунт');
         resetField('email');
         resetField('name');
         resetField('password');
-  
+        setTimeout(() => {
+          userLogin(request)
+          .unwrap()
+          .then((userData) => {
+            dispatch(setCredential({...userData}));
+          })
+          .catch((e) => {
+            if (e.originalStatus === 404) {
+              setError('Пользователь не существует');
+            } else if (e.originalStatus === 403) {
+              setError('Неправильный пароль');
+            } else {
+              setError('Произошла непредвиденная ошибка');
+            }
+          });
+        }, 500);
       })
       .catch((e) => {
         if (e.originalStatus === 417) {
