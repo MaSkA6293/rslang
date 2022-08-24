@@ -1,14 +1,10 @@
 import './index.scss';
-import Header from '../../components/Header/Header';
-import Footer from '../../components/Footer/Footer';
 
 function SprintGamePage() {
   return (
-    <>
-      <Header />
+    <div>
       <h1>SPRINT</h1>
-      <Footer />
-    </>
+    </div>
   );
 }
 
