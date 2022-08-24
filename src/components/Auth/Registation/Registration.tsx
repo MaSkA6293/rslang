@@ -107,8 +107,8 @@ export default function Registration() {
           {...register('password', {
             required: 'Поле обязательно к заполнению',
             minLength: {
-              value: 6,
-              message: 'Минимум 6 символов',
+              value: 8,
+              message: 'Минимум 8 символов',
             },
           })}
         />

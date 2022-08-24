@@ -89,10 +89,6 @@ export default function Authorization() {
           type="password"
           {...register('password', {
             required: 'Поле обязательно к заполнению',
-            minLength: {
-              value: 8,
-              message: 'Минимум 8 символов',
-            },
             onChange: () => setError(''),
           })}
         />
