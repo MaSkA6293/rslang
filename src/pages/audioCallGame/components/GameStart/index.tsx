@@ -1,16 +1,14 @@
-import { groupType } from '../../../../types';
+/* eslint-disable react/require-default-props */
+import React from 'react';
 import GameButton from '../GameButton';
 import './index.scss';
 
 interface GameStartProps {
-  level: groupType;
-  setLevel: (level: groupType) => void;
   onStart: () => void;
+  children?: React.ReactNode;
 }
 
-const LEVELS: groupType[] = [0, 1, 2, 3, 4, 5];
-
-function GameStart({ onStart, level, setLevel }: GameStartProps) {
+function GameStart({ onStart, children }: GameStartProps) {
   return (
     <>
       <h1 className="audio-call-game__title game-title">Аудиовызов</h1>
@@ -33,16 +31,7 @@ function GameStart({ onStart, level, setLevel }: GameStartProps) {
         </li>
       </ul>
 
-      <div className="level-select">
-        <select
-          value={level}
-          onChange={(e) => setLevel(Number(e.target.value) as groupType)}
-        >
-          {LEVELS.map((level) => (
-            <option key={level} value={level}>{`Уровень ${level + 1}`}</option>
-          ))}
-        </select>
-      </div>
+      {children}
 
       <GameButton onClick={onStart} variant="colored">
         Начать
