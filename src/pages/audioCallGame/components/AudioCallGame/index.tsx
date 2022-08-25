@@ -18,8 +18,7 @@ import CrossIcon from '../../assets/icons/cross.svg';
 import { Word } from '../../data';
 import { shuffle } from '../../utils';
 import { selectTextBook } from '../../../../features/textBook/textBook';
-
-const initialLevel: groupType = 0;
+import LevelSelect from '../LevelSelect';
 
 const getOptions = (current: number, words: Word[]): Word[] => {
   const correctAnswer = words[current];
@@ -29,8 +28,6 @@ const getOptions = (current: number, words: Word[]): Word[] => {
   return shuffle([...wrongAnswers.slice(0, 4), correctAnswer]);
 };
 
-const LEVELS: groupType[] = [0, 1, 2, 3, 4, 5];
-
 function AudioCallGame() {
   const navigate = useNavigate();
 
@@ -39,7 +36,7 @@ function AudioCallGame() {
   const [results, setResults] = useState<boolean[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answerOptions, setAnswerOptions] = useState<Word[]>([]);
-  const [wordsLevel, setWordsLevel] = useState(initialLevel);
+  const [wordsLevel, setWordsLevel] = useState<groupType>(0);
   const [textbookPage, setTextbookPage] = useState(0);
   const [queryParams, setQueryParams] = useState<IGetWordPrms | SkipToken>(
     skipToken,
@@ -109,20 +106,7 @@ function AudioCallGame() {
         {!isStarted ? (
           <GameStart onStart={handleStart}>
             {!isFromTextbook ? (
-              <div className="level-select">
-                <select
-                  value={wordsLevel}
-                  onChange={(e) =>
-                    setWordsLevel(Number(e.target.value) as groupType)
-                  }
-                >
-                  {LEVELS.map((level) => (
-                    <option key={level} value={level}>{`Уровень ${
-                      level + 1
-                    }`}</option>
-                  ))}
-                </select>
-              </div>
+              <LevelSelect level={wordsLevel} setLevel={setWordsLevel} />
             ) : null}
           </GameStart>
         ) : null}
