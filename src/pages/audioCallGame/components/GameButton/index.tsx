@@ -2,13 +2,14 @@ import React from 'react';
 import './index.scss';
 import classNames from 'classnames';
 
-type ButtonVariant = 'outlined';
-type ButtonShape = 'round';
+type ButtonVariant = 'outlined' | 'colored';
+type ButtonShape = 'round' | 'square';
 type ButtonSize = 'small';
 
-interface StartScreenProps {
+interface GameButtonProps {
   onClick: () => void;
   children?: React.ReactNode;
+  className?: string;
   disabled?: boolean;
   icon?: string;
   variant?: ButtonVariant;
@@ -17,29 +18,33 @@ interface StartScreenProps {
 }
 
 const defaultProps = {
+  children: undefined,
+  className: undefined,
   disabled: false,
   icon: undefined,
   variant: undefined,
-  children: undefined,
   shape: undefined,
   size: undefined,
 };
 
 function GameButton({
   onClick,
+  className,
   children,
   disabled = false,
   icon,
   variant,
   shape,
   size,
-}: StartScreenProps) {
+}: GameButtonProps) {
   return (
     <button
       onClick={onClick}
-      className={classNames('game-button', {
+      className={classNames(className, 'game-button', {
         'game-button--outlined': variant === 'outlined',
+        'game-button--colored': variant === 'colored',
         'game-button--round': shape === 'round',
+        'game-button--square': shape === 'square',
         'game-button--small': size === 'small',
       })}
       disabled={disabled}

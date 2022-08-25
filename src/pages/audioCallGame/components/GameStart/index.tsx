@@ -1,11 +1,14 @@
+/* eslint-disable react/require-default-props */
+import React from 'react';
 import GameButton from '../GameButton';
 import './index.scss';
 
 interface GameStartProps {
   onStart: () => void;
+  children?: React.ReactNode;
 }
 
-function GameStart({ onStart }: GameStartProps) {
+function GameStart({ onStart, children }: GameStartProps) {
   return (
     <>
       <h1 className="audio-call-game__title game-title">Аудиовызов</h1>
@@ -27,7 +30,10 @@ function GameStart({ onStart }: GameStartProps) {
           перейти к следующему вопросу
         </li>
       </ul>
-      <GameButton onClick={onStart} variant="outlined">
+
+      {children}
+
+      <GameButton onClick={onStart} variant="colored">
         Начать
       </GameButton>
     </>

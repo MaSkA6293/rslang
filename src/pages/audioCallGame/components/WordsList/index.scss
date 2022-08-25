@@ -1,0 +1,16 @@
+.word-list {
+  list-style: none;
+  text-align: left;
+}
+
+.word-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+  white-space: nowrap;
+}
+
+.word-item__word {
+  font-weight: 500;
+  color: currentColor;
+}

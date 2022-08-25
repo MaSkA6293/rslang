@@ -1,12 +1,16 @@
-const shuffle = <T>(arr: T[]): T[] => {
-  let curIndex = arr.length;
+const shuffle = <T>(arr: readonly T[]): T[] => {
+  const arrCopy = arr.slice();
+  let curIndex = arrCopy.length;
   let randIndex;
   while (curIndex !== 0) {
     randIndex = Math.floor(Math.random() * curIndex);
     curIndex -= 1;
-    [arr[curIndex], arr[randIndex]] = [arr[randIndex], arr[curIndex]];
+    [arrCopy[curIndex], arrCopy[randIndex]] = [
+      arrCopy[randIndex],
+      arrCopy[curIndex],
+    ];
   }
-  return arr;
+  return arrCopy;
 };
 
 const numWord = (num: number, words: string[]) => {
