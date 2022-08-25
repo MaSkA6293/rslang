@@ -8,7 +8,10 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useLoginMutation } from '../../../API/userApi';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
-import { selectCurrentUser, setCredential } from '../../../features/auth/authSlice';
+import {
+  selectCurrentUser,
+  setCredential,
+} from '../../../features/auth/authSlice';
 import styles from './authorization.module.scss';
 
 export interface loginRequest {
@@ -19,7 +22,7 @@ export default function Authorization() {
   const dispatch = useAppDispatch();
   const [userLogin, { isLoading }] = useLoginMutation();
   const [error, setError] = useState('');
-  const user = useAppSelector(selectCurrentUser)
+  const user = useAppSelector(selectCurrentUser);
 
   const {
     register,
@@ -35,7 +38,7 @@ export default function Authorization() {
     userLogin(request)
       .unwrap()
       .then((userData) => {
-        dispatch(setCredential({...userData}));
+        dispatch(setCredential({ ...userData }));
       })
       .catch((e) => {
         if (e.originalStatus === 404) {

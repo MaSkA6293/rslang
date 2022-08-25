@@ -5,7 +5,13 @@ import { BaseQueryFn } from '@reduxjs/toolkit/dist/query/baseQueryTypes';
 import { RootState } from '../app/store';
 import { BACKEND_URL } from '../constants';
 import { logOut, setCredential } from '../features/auth/authSlice';
-import { IGetUserResponse, IUpdateUserPrms, IUpdateUserRes, IupsertUserStatistic, IUserStatisticsRes } from './types';
+import {
+  IGetUserResponse,
+  IUpdateUserPrms,
+  IUpdateUserRes,
+  IupsertUserStatistic,
+  IUserStatisticsRes,
+} from './types';
 
 const baseQuary = fetchBaseQuery({
   baseUrl: BACKEND_URL,
@@ -34,7 +40,7 @@ const baseQueryWithReauth: BaseQueryFn = async (args, api, extraOptions) => {
         authorization: `Bearer ${refreshToken}`,
       },
     });
- 
+
     if (refreshReq.ok && refreshReq.status === 200) {
       const newTokens = await refreshReq.json();
       api.dispatch(setCredential({ ...user, ...newTokens }));
@@ -51,14 +57,17 @@ const baseQueryWithReauth: BaseQueryFn = async (args, api, extraOptions) => {
 export const userApi = createApi({
   baseQuery: baseQueryWithReauth,
   endpoints: (builder) => ({
-    getUser: builder.query<IGetUserResponse, {userId: string}>({
-      query: ({userId}) => `users/${userId}`,
+    getUser: builder.query<IGetUserResponse, { userId: string }>({
+      query: ({ userId }) => `users/${userId}`,
     }),
-    getUserStatistic: builder.query<IUserStatisticsRes, {userId: string}>({
-      query: ({userId}) => `/users/${userId}/statistics`
+    getUserStatistic: builder.query<IUserStatisticsRes, { userId: string }>({
+      query: ({ userId }) => `/users/${userId}/statistics`,
     }),
-    upsertUserStatistic: builder.mutation<IUserStatisticsRes, IupsertUserStatistic>({
-      query: ({userId, body}) => ({
+    upsertUserStatistic: builder.mutation<
+      IUserStatisticsRes,
+      IupsertUserStatistic
+    >({
+      query: ({ userId, body }) => ({
         url: `/users/${userId}/statistics`,
         method: 'PUT',
         body,
@@ -82,16 +91,15 @@ export const userApi = createApi({
       query: ({ userId, body }) => ({
         url: `/users/${userId}`,
         method: 'PUT',
-        body
+        body,
       }),
     }),
-    deleteUser: builder.mutation<null, {userId: string}>({
+    deleteUser: builder.mutation<null, { userId: string }>({
       query: ({ userId }) => ({
         url: `/users/${userId}`,
         method: 'DELETE',
       }),
     }),
-
   }),
 });
 

@@ -10,7 +10,6 @@ export interface AuthModal {
   close: () => void;
 }
 
-
 export default function Auth({ close }: AuthModal) {
   const [view, setView] = useState<'reg' | 'log'>('log')
   const handleMouse = (e: React.MouseEvent) => {
@@ -28,11 +27,11 @@ export default function Auth({ close }: AuthModal) {
             : <Authorization />
           }
           <div>
-            {
-              view === 'reg'
-              ? <button onClick={() => setView('log')}>Уже есть аккаунт</button>
-              : <button onClick={() => setView('reg')}>Зарегистрироваться</button>
-            }
+            {view === 'reg' ? (
+              <button onClick={() => setView('log')}>Уже есть аккаунт</button>
+            ) : (
+              <button onClick={() => setView('reg')}>Зарегистрироваться</button>
+            )}
           </div>
         </div>
       </div>
