@@ -2,11 +2,11 @@ import GameButton from '../GameButton';
 
 import './index.scss';
 
-import { Word } from '../../data';
+import { IGetWordRes } from '../../../../API/types';
 import { numWord } from '../../utils';
 import WordsList from '../WordsList/index';
 
-interface WordWithResult extends Word {
+interface WordWithResult extends IGetWordRes {
   result: boolean;
 }
 

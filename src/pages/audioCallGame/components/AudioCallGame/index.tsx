@@ -15,12 +15,12 @@ import GameButton from '../GameButton';
 import './index.scss';
 import CrossIcon from '../../assets/icons/cross.svg';
 
-import { Word } from '../../data';
+import { IGetWordRes } from '../../../../API/types';
 import { shuffle } from '../../utils';
 import { selectTextBook } from '../../../../features/textBook/textBook';
 import LevelSelect from '../LevelSelect';
 
-const getOptions = (current: number, words: Word[]): Word[] => {
+const getOptions = (current: number, words: IGetWordRes[]): IGetWordRes[] => {
   const correctAnswer = words[current];
   const wrongAnswers = shuffle(words)
     .filter((_w, i) => i !== current)
@@ -31,11 +31,11 @@ const getOptions = (current: number, words: Word[]): Word[] => {
 function AudioCallGame() {
   const navigate = useNavigate();
 
-  const [words, setWords] = useState<Word[]>([]);
+  const [words, setWords] = useState<IGetWordRes[]>([]);
   const [isStarted, setIsStarted] = useState(false);
   const [results, setResults] = useState<boolean[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [answerOptions, setAnswerOptions] = useState<Word[]>([]);
+  const [answerOptions, setAnswerOptions] = useState<IGetWordRes[]>([]);
   const [wordsLevel, setWordsLevel] = useState<groupType>(0);
   const [textbookPage, setTextbookPage] = useState(0);
   const [queryParams, setQueryParams] = useState<IGetWordPrms | SkipToken>(
@@ -64,7 +64,7 @@ function AudioCallGame() {
 
   useEffect(() => {
     if (isStarted && !isUninitialized && !isFetching && data) {
-      const words = shuffle(data).slice(0, 10) as Word[];
+      const words = shuffle(data).slice(0, 10) as IGetWordRes[];
       setWords(words);
 
       const options = getOptions(0, words);
