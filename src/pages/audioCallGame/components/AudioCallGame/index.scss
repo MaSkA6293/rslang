@@ -1,7 +1,9 @@
 $textColor: #ffffff;
 
 .audio-call-game {
-  position: relative;
+  position: absolute;
+  min-height: 100%;
+  width: 100%;
   flex: 1;
   align-self: stretch;
   display: flex;
