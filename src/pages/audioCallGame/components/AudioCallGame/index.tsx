@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SkipToken, skipToken } from '@reduxjs/toolkit/dist/query';
-import { selectPath } from '../../../../features/app/app';
 import { useAppSelector } from '../../../../app/hooks';
-import { IGetWordPrms } from '../../../../API/types';
+
+import { selectPath } from '../../../../features/app/app';
+import { selectTextBook } from '../../../../features/textBook/textBook';
+import { IGetWordPrms, IGetWordRes } from '../../../../API/types';
 import { useGetWordsQuery } from '../../../../API/wordsApi';
 import { groupType, pageType } from '../../../../types';
 
@@ -11,14 +13,11 @@ import GameStart from '../GameStart';
 import GameIteraion from '../GameIteration';
 import GameFinish from '../GameFinish';
 import GameButton from '../GameButton';
+import LevelSelect from '../LevelSelect';
 
 import './index.scss';
 import CrossIcon from '../../assets/icons/cross.svg';
-
-import { IGetWordRes } from '../../../../API/types';
 import { shuffle } from '../../utils';
-import { selectTextBook } from '../../../../features/textBook/textBook';
-import LevelSelect from '../LevelSelect';
 
 const getOptions = (current: number, words: IGetWordRes[]): IGetWordRes[] => {
   const correctAnswer = words[current];
