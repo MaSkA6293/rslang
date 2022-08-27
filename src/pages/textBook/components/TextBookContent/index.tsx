@@ -36,14 +36,22 @@ function TextBookContent({ userId, handlerActions }: ITextBookContent) {
   useEffect(() => {
     const userId = user.userId ? user.userId : '';
     const token = user.token ? user.token : '';
-    Promise.all([
-      getUserWords(userId, token),
-      getWords(page, group, token),
-    ]).then((data: [IUserWords[], IGetWordRes[]]) => {
-      setUserWords(data[0]);
-      setWords(data[1]);
-      setIsLoading(false);
-    });
+
+    if (userId) {
+      Promise.all([
+        getUserWords(userId, token),
+        getWords(page, group, token),
+      ]).then((data: [IUserWords[], IGetWordRes[]]) => {
+        setUserWords(data[0]);
+        setWords(data[1]);
+        setIsLoading(false);
+      });
+    } else {
+      getWords(page, group, token).then((data: IGetWordRes[]) => {
+        setWords(data);
+        setIsLoading(false);
+      });
+    }
   }, [group, page]);
 
   const playAudioWord = (audioPath: string[]) => {
@@ -96,28 +104,32 @@ function TextBookContent({ userId, handlerActions }: ITextBookContent) {
   return (
     <div className="page">
       <div className={classNames('page__container')}>
-        {words.length !== 0
-          ? words.map((item: IGetWordRes) => {
-              const difficult = userWords.find((el) => el.wordId === item.id);
-              return (
-                <Card
-                  color={color}
-                  card={item}
-                  key={item.id.toString()}
-                  playAudio={handlerClick}
-                  stopAudio={stopAudio}
-                  userId={userId}
-                  handlerActions={handlerActions}
-                  difficult={
-                    difficult !== undefined ? difficult.difficulty : 'no'
-                  }
-                  learned={
-                    difficult !== undefined ? difficult.optional.learned : false
-                  }
-                />
-              );
-            })
-          : ''}
+        {words.length !== 0 ? (
+          words.map((item: IGetWordRes) => {
+            const difficult = userWords.find((el) => el.wordId === item.id);
+            return (
+              <Card
+                color={color}
+                card={item}
+                key={item.id.toString()}
+                playAudio={handlerClick}
+                stopAudio={stopAudio}
+                userId={userId}
+                handlerActions={handlerActions}
+                difficult={
+                  difficult !== undefined ? difficult.difficulty : 'no'
+                }
+                learned={
+                  difficult !== undefined ? difficult.optional.learned : false
+                }
+              />
+            );
+          })
+        ) : (
+          <div className="loading">
+            <h3>Не удалось загрузить список слов</h3>
+          </div>
+        )}
       </div>
     </div>
   );

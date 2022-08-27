@@ -153,8 +153,8 @@ export const getWords = async (
     if (responce.status === 200) {
       return responce.json();
     }
-    return undefined;
+    return [];
   } catch (e) {
-    return undefined;
+    return [];
   }
 };
