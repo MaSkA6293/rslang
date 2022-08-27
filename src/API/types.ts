@@ -1,6 +1,41 @@
 export interface IUserWords {
-  difficulty: string;
-  optional: {};
+  id: string;
+  wordId: string;
+  difficulty: 'yes' | 'no';
+  optional: {
+    learned: boolean;
+    addTime: string;
+    games: {
+      sprint: {
+        right: number;
+        wrong: number;
+      };
+      audioCall: {
+        right: number;
+        wrong: number;
+      };
+    };
+    allTry: number;
+  };
+}
+
+export interface IUserWordCreate {
+  difficulty: 'yes' | 'no';
+  optional: {
+    learned: boolean;
+    addTime: string;
+    games: {
+      sprint: {
+        right: number;
+        wrong: number;
+      };
+      audioCall: {
+        right: number;
+        wrong: number;
+      };
+    };
+    allTry: number;
+  };
 }
 
 export interface IUpdateUserPrms {

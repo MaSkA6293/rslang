@@ -1,23 +1,61 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import './index.scss';
 import classNames from 'classnames';
 import { BACKEND_URL } from '../../../../constants';
 import { IGetWordRes } from '../../../../API/types';
+import ButtonDifficult from '../buttonDifficult';
+import ButtonLearned from '../buttonLearned';
 
-function Card(props: {
+interface ICardInterface {
   card: IGetWordRes;
   color: string;
   playAudio: any;
   stopAudio: any;
-  user: any;
-}) {
-  const { card, color, playAudio, stopAudio, user } = props;
+  userId: string | null;
+  handlerActions: (
+    wordId: string,
+    action: 'difficult' | 'learned',
+  ) => Promise<boolean>;
+  difficult: 'yes' | 'no';
+  learned: boolean;
+}
+
+function Card({
+  card,
+  color,
+  playAudio,
+  stopAudio,
+  userId,
+  handlerActions,
+  difficult,
+  learned,
+}: ICardInterface) {
+  const [isDifficult, setIsDifficult] = useState<'yes' | 'no'>(difficult);
+  const [isLearned, setIsLearned] = useState<boolean>(learned);
+  const [loading, setLoading] = useState(false);
 
   const path = `${BACKEND_URL}/${card.image}`;
   const meaning = card.textMeaning.split(/<i>|<\/i>/gi);
   const textExample = card.textExample.split(/<b>|<\/b>/gi);
 
   useEffect(() => () => stopAudio(), []);
+
+  const handlerClick = async (
+    wordId: string,
+    action: 'difficult' | 'learned',
+  ) => {
+    setLoading(true);
+    const setDiffResult = await handlerActions(wordId, action);
+    if (setDiffResult) {
+      if (action === 'difficult') {
+        setIsDifficult(isDifficult === 'yes' ? 'no' : 'yes');
+      }
+      if (action === 'learned') {
+        setIsLearned((learned) => !learned);
+      }
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="card" style={{ backgroundColor: color }}>
@@ -63,23 +101,23 @@ function Card(props: {
             }
           />
         </div>
-        {user ? (
+        {userId ? (
           <>
             <div className={classNames('action__contaner', 'contaner')}>
-              <button
-                className="action__difficult-word"
-                aria-label="add-difficult-words"
-              >
-                Сложное
-              </button>
+              <ButtonDifficult
+                handlerClick={handlerClick}
+                difficulty={isDifficult}
+                wordId={card.id}
+                loading={loading}
+              />
             </div>
             <div className={classNames('action__contaner', 'contaner')}>
-              <button
-                className="action__learned-word"
-                aria-label="add-learned-words"
-              >
-                Изученное
-              </button>
+              <ButtonLearned
+                handlerClick={handlerClick}
+                learned={isLearned}
+                wordId={card.id}
+                loading={loading}
+              />
             </div>
           </>
         ) : (
