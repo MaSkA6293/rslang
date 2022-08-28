@@ -3,13 +3,17 @@ import Spinner from 'react-bootstrap/Spinner';
 import classNames from 'classnames';
 import './index.scss';
 import { User } from '../../../../features/auth/authSlice';
-import { useAppSelector } from '../../../../app/hooks';
+import { useAppSelector, useAppDispatch } from '../../../../app/hooks';
 import { colorsOfLevels } from '../../types';
-import { selectTextBook } from '../../../../features/textBook/textBook';
+import {
+  selectTextBook,
+  setTextBookView,
+} from '../../../../features/textBook/textBook';
 import { BACKEND_URL } from '../../../../constants';
 import { IGetWordRes, IUserWords } from '../../../../API/types';
 import { getWordById, getUserWords } from '../../../../API/wordsApiCRU';
 import Card from '../Card';
+import { textBookView } from '../../../../types';
 
 interface IDifficultWords {
   user: User;
@@ -34,8 +38,13 @@ function DifficultWords({ user, handlerActions }: IDifficultWords) {
   const audio = useRef(new Audio());
   const path = `${BACKEND_URL}/`;
   const color: string = colorsOfLevels[group][1];
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
+    if (!userId) {
+      dispatch(setTextBookView(textBookView.textBook));
+      return;
+    }
     getUserWords(userId, token).then((data) => {
       setUserWords(data);
       const wordsPromice = data

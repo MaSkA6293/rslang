@@ -2,8 +2,13 @@ import { useEffect, useState, useRef } from 'react';
 import Spinner from 'react-bootstrap/Spinner';
 import './index.scss';
 import classNames from 'classnames';
-import { selectTextBook } from '../../../../features/textBook/textBook';
-import { useAppSelector } from '../../../../app/hooks';
+import {
+  selectTextBook,
+  setLearnedPage,
+  removeLearnedPage,
+  selectLearnedPages,
+} from '../../../../features/textBook/textBook';
+import { useAppSelector, useAppDispatch } from '../../../../app/hooks';
 import { getUserWords, getWords } from '../../../../API/wordsApiCRU';
 import { colorsOfLevels } from '../../types';
 import { IGetWordRes, IUserWords } from '../../../../API/types';
@@ -26,17 +31,58 @@ function TextBookContent({ userId, handlerActions }: ITextBookContent) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [paths, setPaths] = useState<[] | string[]>([]);
   const audio = useRef(new Audio());
+  const [learned, setLearned] = useState(false);
 
   const user = useAppSelector(selectCurrentUser);
   const { group, page } = useAppSelector(selectTextBook);
-
+  const learnedPages = useAppSelector(selectLearnedPages);
   const path = `${BACKEND_URL}/`;
   const color: string = colorsOfLevels[group][1];
+  const token = user.token ? user.token : '';
+  const dispatch = useAppDispatch();
+
+  const updateLearnedPages = () => {
+    setTimeout(() => {
+      const links = document.querySelectorAll('a.page-link');
+      const candidat = learnedPages[group];
+      links.forEach((el) => {
+        const value = el.textContent;
+        if (value !== null) {
+          const val = Number(el.textContent) - 1;
+          if (candidat.includes(val)) {
+            el.classList.add('learned-page');
+          } else {
+            el.classList.remove('learned-page');
+          }
+        }
+      });
+    }, 0);
+  };
+
+  const checkIsLearnedPage = (
+    words: IGetWordRes[],
+    userWords: IUserWords[],
+  ) => {
+    if (userWords.length !== 0) {
+      const check = words.every((itemWord) => {
+        const word = userWords.find((el) => el.wordId === itemWord.id);
+        if (word !== undefined) {
+          return word.optional.learned;
+        }
+        return false;
+      });
+      if (check) {
+        dispatch(setLearnedPage({ group, value: page }));
+        setLearned(true);
+      } else {
+        dispatch(removeLearnedPage({ group, value: page }));
+        setLearned(false);
+      }
+    }
+    return false;
+  };
 
   useEffect(() => {
-    const userId = user.userId ? user.userId : '';
-    const token = user.token ? user.token : '';
-
     if (userId) {
       Promise.all([
         getUserWords(userId, token),
@@ -45,6 +91,8 @@ function TextBookContent({ userId, handlerActions }: ITextBookContent) {
         setUserWords(data[0]);
         setWords(data[1]);
         setIsLoading(false);
+        checkIsLearnedPage(data[1], data[0]);
+        updateLearnedPages();
       });
     } else {
       getWords(page, group, token).then((data: IGetWordRes[]) => {
@@ -52,7 +100,7 @@ function TextBookContent({ userId, handlerActions }: ITextBookContent) {
         setIsLoading(false);
       });
     }
-  }, [group, page]);
+  }, [group, page, userId]);
 
   const playAudioWord = (audioPath: string[]) => {
     let i = 0;
@@ -94,6 +142,17 @@ function TextBookContent({ userId, handlerActions }: ITextBookContent) {
     [],
   );
 
+  const handlerActionsClick = async (
+    wordId: string,
+    action: 'difficult' | 'learned',
+  ) => {
+    const handler = await handlerActions(wordId, action);
+    const userWords = await getUserWords(userId, token);
+    checkIsLearnedPage(words, userWords);
+
+    return handler;
+  };
+
   if (isLoading)
     return (
       <div className="loading">
@@ -103,7 +162,12 @@ function TextBookContent({ userId, handlerActions }: ITextBookContent) {
 
   return (
     <div className="page">
-      <div className={classNames('page__container')}>
+      <div
+        className={classNames(
+          'page__container',
+          learned ? 'page__container-learned' : '',
+        )}
+      >
         {words.length !== 0 ? (
           words.map((item: IGetWordRes) => {
             const difficult = userWords.find((el) => el.wordId === item.id);
@@ -115,7 +179,7 @@ function TextBookContent({ userId, handlerActions }: ITextBookContent) {
                 playAudio={handlerClick}
                 stopAudio={stopAudio}
                 userId={userId}
-                handlerActions={handlerActions}
+                handlerActions={handlerActionsClick}
                 difficult={
                   difficult !== undefined ? difficult.difficulty : 'no'
                 }

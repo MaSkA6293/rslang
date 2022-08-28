@@ -60,7 +60,10 @@ export const createUserWord = async (
   }
 };
 
-export const getUserWords = async (userId: string, token: string) => {
+export const getUserWords = async (
+  userId: string | null,
+  token: string | null,
+) => {
   try {
     const request = await fetch(`${BACKEND_URL}/users/${userId}/words`, {
       method: 'GET',

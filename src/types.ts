@@ -3,6 +3,7 @@ export enum View {
   dictionary = 'dictionary',
   sprint = 'sprint',
   audioCall = 'audioCall',
+  statistics = 'statistics',
 }
 
 export type groupType = 0 | 1 | 2 | 3 | 4 | 5;
@@ -43,3 +44,12 @@ export enum textBookView {
   textBook = 'textbook',
   dictionary = 'dictionary',
 }
+
+export type learnedPagesType = {
+  0: number[];
+  1: number[];
+  2: number[];
+  3: number[];
+  4: number[];
+  5: number[];
+};

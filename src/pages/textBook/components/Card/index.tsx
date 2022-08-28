@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react';
-import './index.scss';
 import classNames from 'classnames';
+import { useEffect, useState } from 'react';
+import { useAppSelector } from '../../../../app/hooks';
+import { selectTextBookView } from '../../../../features/textBook/textBook';
+import './index.scss';
 import { BACKEND_URL } from '../../../../constants';
 import { IGetWordRes } from '../../../../API/types';
 import ButtonDifficult from '../buttonDifficult';
@@ -37,6 +39,8 @@ function Card({
   const path = `${BACKEND_URL}/${card.image}`;
   const meaning = card.textMeaning.split(/<i>|<\/i>/gi);
   const textExample = card.textExample.split(/<b>|<\/b>/gi);
+
+  const view = useAppSelector(selectTextBookView);
 
   useEffect(() => () => stopAudio(), []);
 
@@ -111,14 +115,18 @@ function Card({
                 loading={loading}
               />
             </div>
-            <div className={classNames('action__contaner', 'contaner')}>
-              <ButtonLearned
-                handlerClick={handlerClick}
-                learned={isLearned}
-                wordId={card.id}
-                loading={loading}
-              />
-            </div>
+            {view === 'textbook' ? (
+              <div className={classNames('action__contaner', 'contaner')}>
+                <ButtonLearned
+                  handlerClick={handlerClick}
+                  learned={isLearned}
+                  wordId={card.id}
+                  loading={loading}
+                />
+              </div>
+            ) : (
+              ''
+            )}
           </>
         ) : (
           ''
