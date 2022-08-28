@@ -11,7 +11,11 @@ import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { selectCurrentUser } from '../../features/auth/authSlice';
 import { View } from '../../types';
 
-function Nav() {
+interface INav {
+  closeMobileMenu: () => void;
+}
+
+function Nav({ closeMobileMenu }: INav) {
   const { group, page } = useAppSelector(selectTextBook);
   const learnedPages = useAppSelector(selectLearnedPages);
   const { userId } = useAppSelector(selectCurrentUser);
@@ -28,10 +32,7 @@ function Nav() {
     }
   };
 
-  useEffect(() => {
-    if (userId) {
-      updateLearnedPages();
-    }
+  const setCurrentView = () => {
     const path = window.location.href;
     const split = path.split('/');
     switch (split[split.length - 1]) {
@@ -54,6 +55,44 @@ function Nav() {
       default:
         dispatch(setView(View.main));
     }
+  };
+
+  const handlerClick = (path: string) => {
+    switch (path) {
+      case '/': {
+        closeMobileMenu();
+        dispatch(setView(View.main));
+        break;
+      }
+      case '/textbook': {
+        closeMobileMenu();
+        dispatch(setView(View.dictionary));
+        break;
+      }
+      case '/audioCall': {
+        closeMobileMenu();
+        dispatch(setView(View.audioCall));
+        break;
+      }
+      case '/sprint': {
+        closeMobileMenu();
+        dispatch(setView(View.sprint));
+        break;
+      }
+      case '/statistics': {
+        closeMobileMenu();
+        dispatch(setView(View.statistics));
+        break;
+      }
+      default:
+    }
+  };
+
+  useEffect(() => {
+    if (userId) {
+      updateLearnedPages();
+    }
+    setCurrentView();
   }, [page, group, view, learnedPages, userId]);
 
   return (
@@ -63,7 +102,7 @@ function Nav() {
           <NavLink
             to="/"
             className={({ isActive }) => (isActive ? 'list__item-active' : '')}
-            onClick={() => dispatch(setView(View.main))}
+            onClick={() => handlerClick('/')}
           >
             Главная
           </NavLink>
@@ -72,7 +111,7 @@ function Nav() {
           <NavLink
             to="/textbook"
             className={({ isActive }) => (isActive ? 'list__item-active' : '')}
-            onClick={() => dispatch(setView(View.dictionary))}
+            onClick={() => handlerClick('/textbook')}
           >
             Учебник
           </NavLink>
@@ -86,7 +125,7 @@ function Nav() {
           <NavLink
             to="/audioCall"
             className={({ isActive }) => (isActive ? 'list__item-active' : '')}
-            onClick={() => dispatch(setView(View.audioCall))}
+            onClick={() => handlerClick('/audioCall')}
           >
             Аудиовызов
           </NavLink>
@@ -100,7 +139,7 @@ function Nav() {
           <NavLink
             to="/sprint"
             className={({ isActive }) => (isActive ? 'list__item-active' : '')}
-            onClick={() => dispatch(setView(View.sprint))}
+            onClick={() => handlerClick('/sprint')}
           >
             Спринт
           </NavLink>
@@ -109,7 +148,7 @@ function Nav() {
           <NavLink
             to="/statistics"
             className={({ isActive }) => (isActive ? 'list__item-active' : '')}
-            onClick={() => dispatch(setView(View.statistics))}
+            onClick={() => handlerClick('/statistics')}
           >
             Статистика
           </NavLink>

@@ -26,7 +26,7 @@ export default function Header() {
   return (
     <div className="header">
       <div className="header__container">
-        <Nav />
+        <Nav closeMobileMenu={() => undefined} />
         <Burger isOpen={isOpen} onClick={() => setIsOpen(!isOpen)} />
         <MobileMenu isOpen={isOpen} closeMenu={() => setIsOpen(false)} />
         {token ? <ProfileBtn /> : <SignInBtn />}

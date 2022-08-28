@@ -23,7 +23,7 @@ export default function MobileMenu({ isOpen, closeMenu }: IMobileMenuProps) {
       <div
         className={classNames('mobile-menu', isOpen ? 'mobile-menu-open' : '')}
       >
-        <Nav />
+        <Nav closeMobileMenu={closeMenu} />
       </div>
     </>
   );
