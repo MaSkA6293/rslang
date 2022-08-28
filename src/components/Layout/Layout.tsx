@@ -1,9 +1,13 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import Footer from '../Footer/Footer';
 import Header from '../Header/Header';
 import './index.scss';
 
 export default function Layout() {
+  const gamesPath = ['/audioCall', '/sprint'];
+  const { pathname } = useLocation();
+  const isGame = gamesPath.some((path) => path === pathname);
+
   return (
     <div className="wrapper">
       <div className="header">
@@ -12,9 +16,11 @@ export default function Layout() {
       <div className="content">
         <Outlet />
       </div>
-      <div className="footer">
-        <Footer />
-      </div>
+      {!isGame && (
+        <div className="footer">
+          <Footer />
+        </div>
+      )}
     </div>
   );
 }

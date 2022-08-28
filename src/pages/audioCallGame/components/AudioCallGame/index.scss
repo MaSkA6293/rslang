@@ -1,7 +1,11 @@
 $textColor: #ffffff;
 
 .audio-call-game {
+  position: absolute;
+  min-height: 100%;
+  width: 100%;
   flex: 1;
+  align-self: stretch;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -30,9 +34,15 @@ $textColor: #ffffff;
   );
 }
 
+.audio-call-game__close-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+}
+
 .audio-call-game__container {
   max-width: 80%;
-  margin: 1rem auto;
+  margin: calc(var(--btn-height) + 0.75rem) auto;
   padding: 3rem 4rem;
 
   border-radius: 12px;

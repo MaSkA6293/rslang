@@ -50,12 +50,20 @@ $wordImgSize: 15vmin;
   justify-content: center;
   height: $wordImgSize;
   gap: 1rem;
+
+  @media (max-width: 480px) {
+    height: auto;
+    flex-direction: column;
+  }
 }
 
 .word-card__word {
-  margin-bottom: 0.5em;
   color: #fff;
   font-size: 2.2rem;
+
+  @media (max-width: 480px) {
+    font-size: 1.4rem;
+  }
 }
 
 .word-card__img {

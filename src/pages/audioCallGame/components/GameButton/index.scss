@@ -1,5 +1,11 @@
-$btnColor: #ffffff;
 $btnHeight: 2.5em;
+$btnColor: #ffffff;
+$btnBgColor: #ffb566;
+
+:root {
+  --btn-hover-bgc: #{change-color($btnColor, $alpha: 0.2)};
+  --btn-height: #{$btnHeight};
+}
 
 .game-button {
   // style reset
@@ -17,8 +23,6 @@ $btnHeight: 2.5em;
   }
 
   // actual styles
-
-  --btn-height: #{$btnHeight};
 
   display: inline-flex;
   align-items: center;
@@ -38,30 +42,41 @@ $btnHeight: 2.5em;
   line-height: 1;
   transition: 220ms all ease-in-out;
 
-  &:hover,
-  &:focus,
-  &:active {
-    &:not(:disabled) {
-      background-color: change-color($btnColor, $alpha: 0.2);
-    }
-  }
-
-  &:disabled {
-    cursor: default;
-  }
-
   &--outlined {
     border: 1px solid $btnColor;
   }
 
-  &--round {
+  &--colored {
+    --btn-hover-bgc: #{lighten($btnBgColor, 5%)};
+
+    color: #000;
+    background-color: $btnBgColor;
+  }
+
+  &--round,
+  &--square {
     min-width: auto;
     width: var(--btn-height);
+  }
+
+  &--round {
     border-radius: 50%;
   }
 
   &--small {
     --btn-height: 1.5em;
+  }
+
+  &:hover,
+  &:focus,
+  &:active {
+    &:not(:disabled) {
+      background-color: var(--btn-hover-bgc);
+    }
+  }
+
+  &:disabled {
+    cursor: default;
   }
 }
 

@@ -1,16 +1,9 @@
-import Header from '../../components/Header/Header';
-
-import AudioCallGame from './components/AudioCallGame/index';
+import AudioCallGame from './components/AudioCallGame';
 
 import './index.scss';
 
 function AudioCallGamePage() {
-  return (
-    <>
-      <Header />
-      <AudioCallGame />
-    </>
-  );
+  return <AudioCallGame />;
 }
 
 export default AudioCallGamePage;

@@ -1,80 +1,157 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { SkipToken, skipToken } from '@reduxjs/toolkit/dist/query';
+import { selectPath } from '../../../../features/app/app';
+import { useAppSelector } from '../../../../app/hooks';
+import { IGetWordPrms } from '../../../../API/types';
+import { useGetWordsQuery } from '../../../../API/wordsApi';
+import { groupType, pageType } from '../../../../types';
 
 import GameStart from '../GameStart';
 import GameIteraion from '../GameIteration';
+import GameFinish from '../GameFinish';
+import GameButton from '../GameButton';
 
 import './index.scss';
-import words, { Word } from '../../data';
+import CrossIcon from '../../assets/icons/cross.svg';
+
+import { Word } from '../../data';
 import { shuffle } from '../../utils';
-import GameFinish from '../GameFinish/index';
+import { selectTextBook } from '../../../../features/textBook/textBook';
 
-interface IterationState {
-  currentWordIndex: number;
-  possibleAnswers: Word[];
-}
+const initialLevel: groupType = 0;
 
-const getOptions = (current: number): Word[] => {
-  const wrongAnswers = shuffle(words.filter((_w, i) => i !== current));
-  const rightAnswer = words[current];
-  return shuffle([...wrongAnswers.slice(0, 4), rightAnswer]);
+const getOptions = (current: number, words: Word[]): Word[] => {
+  const correctAnswer = words[current];
+  const wrongAnswers = shuffle(words)
+    .filter((_w, i) => i !== current)
+    .filter((w) => w.wordTranslate !== correctAnswer.wordTranslate);
+  return shuffle([...wrongAnswers.slice(0, 4), correctAnswer]);
 };
 
-// possibleAnswers зависит от currentWordIndex, поэтому они объединены в один state.
-// useReducer не использован из-за того, что action будет иметь лишь один тип.
-const initialState: IterationState = {
-  currentWordIndex: 0,
-  possibleAnswers: [],
-};
+const LEVELS: groupType[] = [0, 1, 2, 3, 4, 5];
 
 function AudioCallGame() {
+  const navigate = useNavigate();
+
+  const [words, setWords] = useState<Word[]>([]);
   const [isStarted, setIsStarted] = useState(false);
   const [results, setResults] = useState<boolean[]>([]);
-  const [iterationState, setIterationState] = useState(initialState);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [answerOptions, setAnswerOptions] = useState<Word[]>([]);
+  const [wordsLevel, setWordsLevel] = useState(initialLevel);
+  const [textbookPage, setTextbookPage] = useState(0);
+  const [queryParams, setQueryParams] = useState<IGetWordPrms | SkipToken>(
+    skipToken,
+  );
+
+  const [isFromTextbook, setIsFromTextbook] = useState(false);
+
+  const path: string = useAppSelector(selectPath);
+
+  const { group, page } = useAppSelector(selectTextBook);
+
+  useEffect(() => {
+    if (path === '/textbook') {
+      setIsFromTextbook(true);
+      setWordsLevel(group);
+      setTextbookPage(page);
+    } else {
+      setIsFromTextbook(false);
+    }
+  }, []);
+
+  const { data, isFetching, isUninitialized } = useGetWordsQuery(queryParams);
+
+  const isFetched = !isUninitialized && !isFetching && Boolean(words.length);
+
+  useEffect(() => {
+    if (isStarted && !isUninitialized && !isFetching && data) {
+      const words = shuffle(data).slice(0, 10) as Word[];
+      setWords(words);
+
+      const options = getOptions(0, words);
+      setCurrentIndex(0);
+      setAnswerOptions(options);
+    }
+  }, [data]);
 
   const handleStart = () => {
-    setIterationState({
-      currentWordIndex: 0,
-      possibleAnswers: getOptions(0),
-    });
+    if (!isFromTextbook) {
+      const page = (Math.floor(Math.random() * 30) + 1) as pageType;
+      setTextbookPage(() => page);
+    }
+    setQueryParams({ page: textbookPage, group: wordsLevel });
     setIsStarted(true);
   };
 
   const handleNextWord = (isLearned: boolean) => {
     setResults((prevResults) => [...prevResults, isLearned]);
-    setIterationState((prevState) => {
-      const newIndex = prevState.currentWordIndex + 1;
-      return {
-        currentWordIndex: newIndex,
-        possibleAnswers: getOptions(newIndex),
-      };
-    });
+    setCurrentIndex((i) => i + 1);
+    if (currentIndex < words.length) {
+      setAnswerOptions(getOptions(currentIndex, words));
+    }
   };
 
   const handleRestart = () => {
-    setIterationState(initialState);
-    handleStart();
+    setCurrentIndex(0);
+    setAnswerOptions([]);
+    setIsStarted(false);
+  };
+
+  const handleClose = () => {
+    navigate('/');
   };
 
   return (
     <div className="audio-call-game">
       <div className="audio-call-game__container">
-        {!isStarted ? <GameStart onStart={handleStart} /> : null}
+        {!isStarted ? (
+          <GameStart onStart={handleStart}>
+            {!isFromTextbook ? (
+              <div className="level-select">
+                <select
+                  value={wordsLevel}
+                  onChange={(e) =>
+                    setWordsLevel(Number(e.target.value) as groupType)
+                  }
+                >
+                  {LEVELS.map((level) => (
+                    <option key={level} value={level}>{`Уровень ${
+                      level + 1
+                    }`}</option>
+                  ))}
+                </select>
+              </div>
+            ) : null}
+          </GameStart>
+        ) : null}
 
-        {isStarted && iterationState.currentWordIndex < words.length ? (
+        {isStarted && !isFetched ? 'Loading...' : null}
+
+        {isFetched && isStarted && currentIndex < words.length ? (
           <GameIteraion
-            word={words[iterationState.currentWordIndex]}
+            word={words[currentIndex]}
             onNextWord={handleNextWord}
-            options={iterationState.possibleAnswers}
+            options={answerOptions}
           />
         ) : null}
 
-        {isStarted && iterationState.currentWordIndex >= words.length ? (
+        {isFetched && isStarted && currentIndex >= words.length ? (
           <GameFinish
             words={words.map((word, i) => ({ ...word, result: results[i] }))}
             onRestart={handleRestart}
+            onClose={handleClose}
           />
         ) : null}
       </div>
+
+      <GameButton
+        className="audio-call-game__close-btn"
+        onClick={handleClose}
+        icon={CrossIcon}
+        shape="square"
+      />
     </div>
   );
 }

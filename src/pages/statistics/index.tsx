@@ -1,16 +1,8 @@
-import './index.scss';
-import Header from '../../components/Header/Header';
-import Footer from '../../components/Footer/Footer';
 import Statistics from './components/statistics';
+import './index.scss';
 
 function StatisticsPage() {
-  return (
-    <>
-      <Header />
-      <Statistics />
-      <Footer />
-    </>
-  );
+  return <Statistics />;
 }
 
 export default StatisticsPage;
