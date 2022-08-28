@@ -121,8 +121,16 @@ function DifficultWords({ user, handlerActions }: IDifficultWords) {
         {words.length !== 0 ? (
           words.map((item: IGetWordRes) => {
             const difficulty = 'yes';
-            const learned = userWords.find((el) => el.wordId === item.id)
-              ?.optional.learned;
+            const learned = userWords.find((el) => el.wordId === item.id);
+            const statistics = { right: 0, wrong: 0 };
+            if (learned) {
+              statistics.right =
+                learned.optional.games.audioCall.right +
+                learned.optional.games.sprint.right;
+              statistics.wrong =
+                learned.optional.games.audioCall.wrong +
+                learned.optional.games.sprint.wrong;
+            }
             return (
               <Card
                 color={color}
@@ -133,7 +141,12 @@ function DifficultWords({ user, handlerActions }: IDifficultWords) {
                 userId={userId}
                 handlerActions={handlerClick}
                 difficult={difficulty}
-                learned={learned !== undefined ? learned : false}
+                learned={
+                  learned?.optional.learned !== undefined
+                    ? learned.optional.learned
+                    : false
+                }
+                statistics={statistics}
               />
             );
           })

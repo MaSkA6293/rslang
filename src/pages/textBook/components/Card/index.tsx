@@ -7,6 +7,7 @@ import { BACKEND_URL } from '../../../../constants';
 import { IGetWordRes } from '../../../../API/types';
 import ButtonDifficult from '../buttonDifficult';
 import ButtonLearned from '../buttonLearned';
+import Progress from '../Progress';
 
 interface ICardInterface {
   card: IGetWordRes;
@@ -20,6 +21,7 @@ interface ICardInterface {
   ) => Promise<boolean>;
   difficult: 'yes' | 'no';
   learned: boolean;
+  statistics: { right: number; wrong: number };
 }
 
 function Card({
@@ -31,6 +33,7 @@ function Card({
   handlerActions,
   difficult,
   learned,
+  statistics,
 }: ICardInterface) {
   const [isDifficult, setIsDifficult] = useState<'yes' | 'no'>(difficult);
   const [isLearned, setIsLearned] = useState<boolean>(learned);
@@ -62,7 +65,10 @@ function Card({
   };
 
   return (
-    <div className="card" style={{ backgroundColor: color }}>
+    <div
+      className={classNames('card', !userId ? 'card-short' : '')}
+      style={{ backgroundColor: color }}
+    >
       <div
         className="card__image"
         style={{
@@ -93,7 +99,7 @@ function Card({
         </ul>
       </div>
       <div className={classNames('card__action', 'action')}>
-        <div className="action__contaner">
+        <div className="action__play">
           <button
             className="action__play-btn"
             aria-label="play"
@@ -107,23 +113,30 @@ function Card({
         </div>
         {userId ? (
           <>
-            <div className={classNames('action__contaner', 'contaner')}>
-              <ButtonDifficult
-                handlerClick={handlerClick}
-                difficulty={isDifficult}
-                wordId={card.id}
-                loading={loading}
-              />
-            </div>
-            {view === 'textbook' ? (
+            <div className="action__wrapper-buttons">
               <div className={classNames('action__contaner', 'contaner')}>
-                <ButtonLearned
+                <ButtonDifficult
                   handlerClick={handlerClick}
-                  learned={isLearned}
+                  difficulty={isDifficult}
                   wordId={card.id}
                   loading={loading}
                 />
               </div>
+              {view === 'textbook' ? (
+                <div className={classNames('action__contaner', 'contaner')}>
+                  <ButtonLearned
+                    handlerClick={handlerClick}
+                    learned={isLearned}
+                    wordId={card.id}
+                    loading={loading}
+                  />
+                </div>
+              ) : (
+                ''
+              )}
+            </div>
+            {statistics.right !== 0 || statistics.wrong !== 0 ? (
+              <Progress right={statistics.right} wrong={statistics.wrong} />
             ) : (
               ''
             )}

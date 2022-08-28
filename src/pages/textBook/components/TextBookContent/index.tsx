@@ -171,6 +171,16 @@ function TextBookContent({ userId, handlerActions }: ITextBookContent) {
         {words.length !== 0 ? (
           words.map((item: IGetWordRes) => {
             const difficult = userWords.find((el) => el.wordId === item.id);
+            const statistics = { right: 0, wrong: 0 };
+            if (difficult) {
+              statistics.right =
+                difficult.optional.games.audioCall.right +
+                difficult.optional.games.sprint.right;
+              statistics.wrong =
+                difficult.optional.games.audioCall.wrong +
+                difficult.optional.games.sprint.wrong;
+            }
+
             return (
               <Card
                 color={color}
@@ -186,6 +196,7 @@ function TextBookContent({ userId, handlerActions }: ITextBookContent) {
                 learned={
                   difficult !== undefined ? difficult.optional.learned : false
                 }
+                statistics={statistics}
               />
             );
           })
