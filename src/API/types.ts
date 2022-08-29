@@ -4,18 +4,9 @@ export interface IUserWords {
   difficulty: 'yes' | 'no';
   optional: {
     learned: boolean;
-    addTime: string;
-    games: {
-      sprint: {
-        right: number;
-        wrong: number;
-      };
-      audioCall: {
-        right: number;
-        wrong: number;
-      };
-    };
-    allTry: number;
+    success: number;
+    fail: number;
+    series: 0 | 1 | 2 | 3;
   };
 }
 
@@ -23,18 +14,25 @@ export interface IUserWordCreate {
   difficulty: 'yes' | 'no';
   optional: {
     learned: boolean;
-    addTime: string;
-    games: {
-      sprint: {
-        right: number;
-        wrong: number;
-      };
-      audioCall: {
-        right: number;
-        wrong: number;
-      };
-    };
-    allTry: number;
+    success: number;
+    fail: number;
+    series: 0 | 1 | 2 | 3;
+  };
+}
+
+export interface IResultGame {
+  rightAnswers: number;
+  wrongAnswers: number;
+  wordCounter: number;
+  bestSeries: number;
+  createdOn: Date;
+}
+
+export interface IStatistics {
+  learnedWords: number;
+  optional: {
+    audioСall?: IResultGame[];
+    sprint?: IResultGame[];
   };
 }
 

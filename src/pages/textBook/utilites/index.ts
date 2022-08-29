@@ -5,18 +5,9 @@ export function getNewWordDifficult(): IUserWordCreate {
     difficulty: 'yes',
     optional: {
       learned: false,
-      addTime: new Date().toString(),
-      games: {
-        sprint: {
-          right: 0,
-          wrong: 0,
-        },
-        audioCall: {
-          right: 0,
-          wrong: 0,
-        },
-      },
-      allTry: 0,
+      success: 0,
+      fail: 0,
+      series: 0,
     },
   };
 }
@@ -26,18 +17,9 @@ export function getNewWordLearned(): IUserWordCreate {
     difficulty: 'no',
     optional: {
       learned: true,
-      addTime: new Date().toString(),
-      games: {
-        sprint: {
-          right: 0,
-          wrong: 0,
-        },
-        audioCall: {
-          right: 0,
-          wrong: 0,
-        },
-      },
-      allTry: 0,
+      success: 0,
+      fail: 0,
+      series: 0,
     },
   };
 }

@@ -6,7 +6,7 @@ import {
   selectTextBook,
   selectLearnedPages,
 } from '../../features/textBook/textBook';
-import { selectView, setView } from '../../features/app/app';
+import { selectView, setView, setPath } from '../../features/app/app';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { selectCurrentUser } from '../../features/auth/authSlice';
 import { View } from '../../types';
@@ -58,6 +58,9 @@ function Nav({ closeMobileMenu }: INav) {
   };
 
   const handlerClick = (path: string) => {
+    const currentPath = window.location.pathname;
+    dispatch(setPath(currentPath));
+
     switch (path) {
       case '/': {
         closeMobileMenu();

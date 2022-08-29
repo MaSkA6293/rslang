@@ -170,15 +170,11 @@ function TextBookContent({ userId, handlerActions }: ITextBookContent) {
       >
         {words.length !== 0 ? (
           words.map((item: IGetWordRes) => {
-            const difficult = userWords.find((el) => el.wordId === item.id);
+            const userWord = userWords.find((el) => el.wordId === item.id);
             const statistics = { right: 0, wrong: 0 };
-            if (difficult) {
-              statistics.right =
-                difficult.optional.games.audioCall.right +
-                difficult.optional.games.sprint.right;
-              statistics.wrong =
-                difficult.optional.games.audioCall.wrong +
-                difficult.optional.games.sprint.wrong;
+            if (userWord) {
+              statistics.right = userWord.optional.success;
+              statistics.wrong = userWord.optional.fail;
             }
 
             return (
@@ -190,11 +186,9 @@ function TextBookContent({ userId, handlerActions }: ITextBookContent) {
                 stopAudio={stopAudio}
                 userId={userId}
                 handlerActions={handlerActionsClick}
-                difficult={
-                  difficult !== undefined ? difficult.difficulty : 'no'
-                }
+                difficult={userWord !== undefined ? userWord.difficulty : 'no'}
                 learned={
-                  difficult !== undefined ? difficult.optional.learned : false
+                  userWord !== undefined ? userWord.optional.learned : false
                 }
                 statistics={statistics}
               />
