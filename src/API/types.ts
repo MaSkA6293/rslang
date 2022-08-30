@@ -90,7 +90,7 @@ export interface IGetUserResponse {
 export interface ICreateUserWordPrms {
   userId: string;
   wordId: string;
-  body: IUserWords;
+  body: IUserWordCreate;
 }
 
 export interface IUserStatisticsRes {

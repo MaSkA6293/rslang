@@ -1,3 +1,5 @@
+import { IUserWordCreate } from '../../API/types';
+
 const shuffle = <T>(arr: readonly T[]): T[] => {
   const arrCopy = arr.slice();
   let curIndex = arrCopy.length;
@@ -28,4 +30,17 @@ const numWord = (num: number, words: string[]) => {
   return words[2];
 };
 
-export { shuffle, numWord };
+const getNewUserWord = (isSuccess: boolean) => {
+  const userWord: IUserWordCreate = {
+    difficulty: 'no',
+    optional: {
+      learned: false,
+      success: isSuccess ? 1 : 0,
+      fail: isSuccess ? 0 : 1,
+      series: isSuccess ? 1 : 0,
+    },
+  };
+  return userWord;
+};
+
+export { shuffle, numWord, getNewUserWord };
