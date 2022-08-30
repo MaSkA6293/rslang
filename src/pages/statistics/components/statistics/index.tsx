@@ -2,6 +2,7 @@ import { Row, Col, Container } from 'react-bootstrap';
 import { IWordsStatistics } from '../../../../API/types';
 import { useGetUserStatisticQuery } from '../../../../API/userApi';
 import GameStatsCard from '../GameStatsCard';
+import LTStatsChart from '../LTStatsChart';
 import StatsCard from '../StatsCard';
 
 interface StatisticsProps {
@@ -36,6 +37,16 @@ function Statistics({ userId }: StatisticsProps) {
   const correctAnwersPcnt =
     Math.round((wordsStats.correctAnswers / wordsStats.totalAnswers) * 100) ||
     0;
+
+  // const ltStatsStart = Object.keys(data?.optional.wordsStatsByDate || {}).sort(
+  //   (a, b) => new Date(a) - new Date(b),
+  // )[0];
+  const ltStats = Object.entries(data?.optional.wordsStatsByDate || {}).map(
+    ([date, statsObj]) => {
+      const { newWords, learnedWords } = statsObj;
+      return { date, newWords: newWords.length, learnedWords };
+    },
+  );
 
   return (
     <Container>
@@ -74,7 +85,7 @@ function Statistics({ userId }: StatisticsProps) {
           <Row
             xs={1}
             md={2}
-            className="mx-auto g-4"
+            className="mx-auto mb-5 g-4"
             style={{ maxWidth: '40rem' }}
           >
             {gamesData.map((game) => {
@@ -89,6 +100,10 @@ function Statistics({ userId }: StatisticsProps) {
                 </Col>
               );
             })}
+          </Row>
+
+          <Row className="justify-content-center">
+            <LTStatsChart data={ltStats} />
           </Row>
         </>
       )}

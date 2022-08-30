@@ -8,7 +8,7 @@ interface StatsCardProps {
 
 function StatsCard({ title, children }: StatsCardProps) {
   return (
-    <Card className="h-100" style={{ width: '18rem' }}>
+    <Card className="h-100 my-0" style={{ width: '18rem' }}>
       <Card.Body className="d-flex flex-column">
         <Card.Title className="fw-bold fs-3">{title}</Card.Title>
         <div className="fs-1 fw-bold my-auto">{children}</div>

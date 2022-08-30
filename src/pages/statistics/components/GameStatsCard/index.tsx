@@ -38,7 +38,7 @@ function GameStatsCard({ gameTitle, statistics }: GameStatsCardProps) {
   ];
 
   return (
-    <Card className="h-100" style={{ width: '18rem' }}>
+    <Card className="h-100 my-0" style={{ width: '18rem' }}>
       <Card.Body>
         <Card.Title className="fw-bold">{gameTitle}</Card.Title>
         <ListGroup variant="flush">
