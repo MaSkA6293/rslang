@@ -1,6 +1,39 @@
 export interface IUserWords {
-  difficulty: string;
-  optional: {};
+  id: string;
+  wordId: string;
+  difficulty: 'yes' | 'no';
+  optional: {
+    learned: boolean;
+    success: number;
+    fail: number;
+    series: 0 | 1 | 2 | 3;
+  };
+}
+
+export interface IUserWordCreate {
+  difficulty: 'yes' | 'no';
+  optional: {
+    learned: boolean;
+    success: number;
+    fail: number;
+    series: 0 | 1 | 2 | 3;
+  };
+}
+
+export interface IResultGame {
+  rightAnswers: number;
+  wrongAnswers: number;
+  wordCounter: number;
+  bestSeries: number;
+  createdOn: Date;
+}
+
+export interface IStatistics {
+  learnedWords: number;
+  optional: {
+    audioСall?: IResultGame[];
+    sprint?: IResultGame[];
+  };
 }
 
 export interface IUpdateUserPrms {
