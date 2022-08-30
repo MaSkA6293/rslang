@@ -6,7 +6,10 @@ import { useAppSelector } from '../../../../app/hooks';
 import { selectPath } from '../../../../features/app/app';
 import { selectTextBook } from '../../../../features/textBook/textBook';
 import { IGetWordRes } from '../../../../API/types';
-import { useGetWordsQuery } from '../../../../API/wordsApi';
+import {
+  useGetUserWordsQuery,
+  useGetWordsQuery,
+} from '../../../../API/wordsApi';
 import { groupType, pageType } from '../../../../types';
 
 import GameStart from '../GameStart';
@@ -41,6 +44,13 @@ function AudioCallGame() {
   const [level, setLevel] = useState<groupType>(0);
   const [page, setPage] = useState(0);
 
+  const initGame = (words: IGetWordRes[]) => {
+    setWords(words);
+    setCurrentIndex(0);
+    const options = getOptions(0, words);
+    setAnswerOptions(options);
+  };
+
   // check if run from texbook
 
   const [isFromTextbook, setIsFromTextbook] = useState(false);
@@ -64,25 +74,42 @@ function AudioCallGame() {
   const { userId } = useAppSelector(selectCurrentUser);
 
   const wordsQParams = { page, group: level };
-  const wordsResp = useGetWordsQuery(userId ? skipToken : wordsQParams);
+  const wordsResp = useGetWordsQuery(wordsQParams);
+
+  const userWordsResp = useGetUserWordsQuery(userId ? { userId } : skipToken);
+
   const isLoading =
     wordsResp.isUninitialized || wordsResp.isLoading || words.length === 0;
 
   useEffect(() => {
-    if (
-      isStarted &&
-      !wordsResp.isUninitialized &&
-      !wordsResp.isLoading &&
-      wordsResp.data
-    ) {
-      const words = shuffle(wordsResp.data).slice(0, 10) as IGetWordRes[];
-      setWords(words);
+    if (!isStarted) return;
 
-      const options = getOptions(0, words);
-      setCurrentIndex(0);
-      setAnswerOptions(options);
+    const { isUninitialized, isFetching, data: wordsData } = wordsResp;
+    if (isUninitialized || isFetching || !wordsData) return;
+
+    const allWords: IGetWordRes[] = wordsData;
+
+    if (userId !== null && isFromTextbook) {
+      const {
+        isUninitialized,
+        isFetching,
+        data: userWords = [],
+      } = userWordsResp;
+      if (isUninitialized || isFetching) return;
+
+      // filter learned words
+      const filteredWords = allWords.filter((w) => {
+        const uWord = userWords.find((uw) => w.id === uw.wordId);
+        return !uWord || uWord?.optional.learned === false;
+      });
+
+      const words = shuffle(filteredWords).slice(0, 10);
+      initGame(words);
+    } else {
+      const words = shuffle(allWords).slice(0, 10);
+      initGame(words);
     }
-  }, [wordsResp.data]);
+  }, [wordsResp.data, userWordsResp.data, userId]);
 
   // start game
 
