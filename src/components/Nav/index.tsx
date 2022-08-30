@@ -1,6 +1,4 @@
 import './index.scss';
-import classNames from 'classnames';
-import { NavLink } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import {
   selectTextBook,
@@ -10,6 +8,8 @@ import { selectView, setView, setPath } from '../../features/app/app';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { selectCurrentUser } from '../../features/auth/authSlice';
 import { View } from '../../types';
+import MasterMenu from './components/masterMenu';
+import TextBookMenu from './components/textBookMenu';
 
 interface INav {
   closeMobileMenu: () => void;
@@ -94,69 +94,19 @@ function Nav({ closeMobileMenu }: INav) {
   useEffect(() => {
     if (userId) {
       updateLearnedPages();
+    } else {
+      setDisabled(false);
     }
     setCurrentView();
   }, [page, group, view, learnedPages, userId]);
 
   return (
     <div className="navigation">
-      <ul className={classNames('navigation__list', 'list')}>
-        <li className="list__item">
-          <NavLink
-            to="/"
-            className={({ isActive }) => (isActive ? 'list__item-active' : '')}
-            onClick={() => handlerClick('/')}
-          >
-            Главная
-          </NavLink>
-        </li>
-        <li className="list__item">
-          <NavLink
-            to="/textbook"
-            className={({ isActive }) => (isActive ? 'list__item-active' : '')}
-            onClick={() => handlerClick('/textbook')}
-          >
-            Учебник
-          </NavLink>
-        </li>
-        <li
-          className={classNames(
-            'list__item',
-            disabled && view === View.dictionary ? 'list__item-disabled' : '',
-          )}
-        >
-          <NavLink
-            to="/audioCall"
-            className={({ isActive }) => (isActive ? 'list__item-active' : '')}
-            onClick={() => handlerClick('/audioCall')}
-          >
-            Аудиовызов
-          </NavLink>
-        </li>
-        <li
-          className={classNames(
-            'list__item',
-            disabled && view === View.dictionary ? 'list__item-disabled' : '',
-          )}
-        >
-          <NavLink
-            to="/sprint"
-            className={({ isActive }) => (isActive ? 'list__item-active' : '')}
-            onClick={() => handlerClick('/sprint')}
-          >
-            Спринт
-          </NavLink>
-        </li>
-        <li className="list__item">
-          <NavLink
-            to="/statistics"
-            className={({ isActive }) => (isActive ? 'list__item-active' : '')}
-            onClick={() => handlerClick('/statistics')}
-          >
-            Статистика
-          </NavLink>
-        </li>
-      </ul>
+      {view !== View.dictionary ? (
+        <MasterMenu handlerClick={handlerClick} userId={userId} />
+      ) : (
+        <TextBookMenu handlerClick={handlerClick} disabled={disabled} />
+      )}
     </div>
   );
 }

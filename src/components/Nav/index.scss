@@ -47,9 +47,7 @@
 
       &__item-disabled {
         pointer-events: none;
-        a {
-          color: rgba(20, 0, 255, 0.25);
-        }
+        color: rgba(20, 0, 255, 0.25);
       }
     }
   }
