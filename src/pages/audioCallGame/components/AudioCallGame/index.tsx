@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { SkipToken, skipToken } from '@reduxjs/toolkit/dist/query';
+import { skipToken } from '@reduxjs/toolkit/dist/query';
 import { useAppSelector } from '../../../../app/hooks';
 
 import { selectPath } from '../../../../features/app/app';
 import { selectTextBook } from '../../../../features/textBook/textBook';
-import { IGetWordPrms, IGetWordRes } from '../../../../API/types';
+import { IGetWordRes } from '../../../../API/types';
 import { useGetWordsQuery } from '../../../../API/wordsApi';
 import { groupType, pageType } from '../../../../types';
 
@@ -18,6 +18,7 @@ import LevelSelect from '../LevelSelect';
 import './index.scss';
 import CrossIcon from '../../assets/icons/cross.svg';
 import { shuffle } from '../../utils';
+import { selectCurrentUser } from '../../../../features/auth/authSlice';
 
 const getOptions = (current: number, words: IGetWordRes[]): IGetWordRes[] => {
   const correctAnswer = words[current];
@@ -32,60 +33,73 @@ function AudioCallGame() {
 
   const [words, setWords] = useState<IGetWordRes[]>([]);
   const [isStarted, setIsStarted] = useState(false);
+
   const [results, setResults] = useState<boolean[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answerOptions, setAnswerOptions] = useState<IGetWordRes[]>([]);
-  const [wordsLevel, setWordsLevel] = useState<groupType>(0);
-  const [textbookPage, setTextbookPage] = useState(0);
-  const [queryParams, setQueryParams] = useState<IGetWordPrms | SkipToken>(
-    skipToken,
-  );
+
+  const [level, setLevel] = useState<groupType>(0);
+  const [page, setPage] = useState(0);
+
+  // check if run from texbook
 
   const [isFromTextbook, setIsFromTextbook] = useState(false);
 
   const path: string = useAppSelector(selectPath);
 
-  const { group, page } = useAppSelector(selectTextBook);
+  const textbookState = useAppSelector(selectTextBook);
 
   useEffect(() => {
     if (path === '/textbook') {
       setIsFromTextbook(true);
-      setWordsLevel(group);
-      setTextbookPage(page);
+      setLevel(textbookState.group);
+      setPage(textbookState.page);
     } else {
       setIsFromTextbook(false);
     }
   }, []);
 
-  const { data, isFetching, isUninitialized } = useGetWordsQuery(queryParams);
+  // get words
 
-  const isFetched = !isUninitialized && !isFetching && Boolean(words.length);
+  const { userId } = useAppSelector(selectCurrentUser);
+
+  const wordsQParams = { page, group: level };
+  const wordsResp = useGetWordsQuery(userId ? skipToken : wordsQParams);
+  const isLoading =
+    wordsResp.isUninitialized || wordsResp.isLoading || words.length === 0;
 
   useEffect(() => {
-    if (isStarted && !isUninitialized && !isFetching && data) {
-      const words = shuffle(data).slice(0, 10) as IGetWordRes[];
+    if (
+      isStarted &&
+      !wordsResp.isUninitialized &&
+      !wordsResp.isLoading &&
+      wordsResp.data
+    ) {
+      const words = shuffle(wordsResp.data).slice(0, 10) as IGetWordRes[];
       setWords(words);
 
       const options = getOptions(0, words);
       setCurrentIndex(0);
       setAnswerOptions(options);
     }
-  }, [data]);
+  }, [wordsResp.data]);
+
+  // start game
 
   const handleStart = () => {
     if (!isFromTextbook) {
       const page = (Math.floor(Math.random() * 30) + 1) as pageType;
-      setTextbookPage(() => page);
+      setPage(() => page);
     }
-    setQueryParams({ page: textbookPage, group: wordsLevel });
     setIsStarted(true);
   };
 
-  const handleNextWord = (isLearned: boolean) => {
-    setResults((prevResults) => [...prevResults, isLearned]);
-    setCurrentIndex((i) => i + 1);
-    if (currentIndex < words.length) {
-      setAnswerOptions(getOptions(currentIndex, words));
+  const handleNextWord = (isCorrect: boolean) => {
+    setResults((prevResults) => [...prevResults, isCorrect]);
+    const nextIndex = currentIndex + 1;
+    setCurrentIndex(nextIndex);
+    if (nextIndex < words.length) {
+      setAnswerOptions(() => getOptions(nextIndex, words));
     }
   };
 
@@ -105,14 +119,14 @@ function AudioCallGame() {
         {!isStarted ? (
           <GameStart onStart={handleStart}>
             {!isFromTextbook ? (
-              <LevelSelect level={wordsLevel} setLevel={setWordsLevel} />
+              <LevelSelect level={level} setLevel={setLevel} />
             ) : null}
           </GameStart>
         ) : null}
 
-        {isStarted && !isFetched ? 'Loading...' : null}
+        {isStarted && isLoading ? 'Loading...' : null}
 
-        {isFetched && isStarted && currentIndex < words.length ? (
+        {!isLoading && isStarted && currentIndex < words.length ? (
           <GameIteraion
             word={words[currentIndex]}
             onNextWord={handleNextWord}
@@ -120,7 +134,7 @@ function AudioCallGame() {
           />
         ) : null}
 
-        {isFetched && isStarted && currentIndex >= words.length ? (
+        {!isLoading && isStarted && currentIndex >= words.length ? (
           <GameFinish
             words={words.map((word, i) => ({ ...word, result: results[i] }))}
             onRestart={handleRestart}
