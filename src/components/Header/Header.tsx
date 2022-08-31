@@ -17,7 +17,7 @@ export default function Header() {
   useEffect(() => {
     const currentPath = window.location.pathname;
     dispatch(setPath(currentPath));
-  }, []);
+  });
 
   useEffect(() => {
     document.body.style.overflow = isOpen ? 'hidden' : 'auto';

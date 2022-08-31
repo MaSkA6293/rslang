@@ -7,11 +7,15 @@ import { BACKEND_URL } from '../constants';
 import { logOut, setCredential } from '../features/auth/authSlice';
 import {
   IGetUserResponse,
+  IGetWordPrms,
+  IGetWordRes,
   IUpdateUserPrms,
   IUpdateUserRes,
   IupsertUserStatistic,
   IUserStatisticsRes,
 } from './types';
+import { getRandomIntInclusive } from '../pages/sprintGame/Utils/getRandomIntInclusive';
+import { QueryArgs } from '@testing-library/react';
 
 const baseQuary = fetchBaseQuery({
   baseUrl: BACKEND_URL,
