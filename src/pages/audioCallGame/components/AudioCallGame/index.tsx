@@ -7,6 +7,8 @@ import { selectPath } from '../../../../features/app/app';
 import { selectTextBook } from '../../../../features/textBook/textBook';
 import {
   IGetWordRes,
+  IResultGame,
+  IUserStatisticsRes,
   IUserWordCreate,
   IUserWords,
 } from '../../../../API/types';
@@ -25,11 +27,14 @@ import LevelSelect from '../LevelSelect';
 
 import './index.scss';
 import CrossIcon from '../../assets/icons/cross.svg';
-import { getNewUserWord, shuffle } from '../../utils';
+import { getBestSeriesCount, getNewUserWord, shuffle } from '../../utils';
 import { selectCurrentUser } from '../../../../features/auth/authSlice';
 import { GameActions, GameState, GameStates, Word } from '../../types';
 import { gameReducer } from './reducer';
-import { useGetUserStatisticQuery } from '../../../../API/userApi';
+import {
+  useGetUserStatisticQuery,
+  useUpsertUserStatisticMutation,
+} from '../../../../API/userApi';
 
 const initialGameState: GameState = {
   level: 0,
@@ -102,7 +107,7 @@ function AudioCallGame() {
   );
   const { data: allWords } = wordsResp;
   const { data: userWords } = userWordsResp;
-  // const { data: userStats } = userStatsResp;
+  const { data: userStats } = userStatsResp;
 
   const isFetching =
     wordsResp.isUninitialized ||
@@ -136,7 +141,7 @@ function AudioCallGame() {
       const words = shuffle(allWords).slice(0, 10);
       initGame(words);
     }
-  }, [wordsResp.data, userWordsResp.data, gameState.state]);
+  }, [allWords, userWords, userStats, gameState.state]);
 
   // save results
 
@@ -161,17 +166,18 @@ function AudioCallGame() {
       const {
         success: prevSuccess,
         fail: prevFail,
-        series: PrevSeries,
+        series: prevSeries,
+        learned: prevLearned,
       } = userWord.optional;
 
-      const newSeries = (isSuccess ? Math.min(PrevSeries + 1, 3) : 0) as
+      const newSeries = (isSuccess ? Math.min(prevSeries + 1, 3) : 0) as
         | 0
         | 1
         | 2
         | 3;
       const success = isSuccess ? prevSuccess + 1 : prevSuccess;
       const fail = isSuccess ? prevFail + 1 : prevFail;
-      const learned = newSeries === 3;
+      const learned = prevLearned ? isSuccess : newSeries === 3;
       const series = newSeries === 3 ? 0 : newSeries;
       const difficulty = learned ? 'no' : userWord.difficulty;
 
@@ -189,9 +195,43 @@ function AudioCallGame() {
     });
   };
 
+  // save statistics
+
+  const [useUpsertUserStats, { isLoading: isUStatsUpdating }] =
+    useUpsertUserStatisticMutation();
+
+  const saveStats = () => {
+    if (userId === null) return;
+    const rightAnswers = gameState.wordsResults.filter((r) => r).length;
+    const wrongAnswers = gameState.wordsResults.length - rightAnswers;
+    const wordCounter = gameState.words.filter((w) =>
+      userWords?.some(({ wordId }) => wordId === w.id),
+    ).length;
+    const bestSeries = getBestSeriesCount(gameState.wordsResults, true);
+    const createdOn = new Date();
+    const currentResult: IResultGame = {
+      rightAnswers,
+      wrongAnswers,
+      wordCounter,
+      bestSeries,
+      createdOn,
+    };
+    const prevResults = userStats?.optional || {};
+    const updatedStats: IUserStatisticsRes = {
+      ...userStats,
+      learnedWords: userStats?.learnedWords || 0,
+      optional: {
+        ...prevResults,
+        audioСall: [...(prevResults.audioСall || []), currentResult],
+      },
+    };
+    useUpsertUserStats({ userId, body: updatedStats });
+  };
+
   useEffect(() => {
     if (gameState.state === GameStates.Finished) {
       saveResults();
+      saveStats();
     }
   }, [gameState.state]);
 
@@ -236,7 +276,7 @@ function AudioCallGame() {
             }))}
             onRestart={handleRestart}
             onClose={handleClose}
-            isSaving={isUWordCreating || isUWordUpdating}
+            isSaving={isUWordCreating || isUWordUpdating || isUStatsUpdating}
           />
         ) : null}
       </div>

@@ -43,4 +43,19 @@ const getNewUserWord = (isSuccess: boolean) => {
   return userWord;
 };
 
-export { shuffle, numWord, getNewUserWord };
+const getBestSeriesCount = <T>(arr: T[], target: T): number => {
+  let bestStrike = 0;
+  let curStrike = 0;
+  arr.forEach((item, i) => {
+    if (item !== arr[i - 1]) {
+      curStrike = 0;
+    }
+    if (item === target) {
+      curStrike += 1;
+      bestStrike = Math.max(curStrike, bestStrike);
+    }
+  });
+  return bestStrike;
+};
+
+export { shuffle, numWord, getNewUserWord, getBestSeriesCount };
