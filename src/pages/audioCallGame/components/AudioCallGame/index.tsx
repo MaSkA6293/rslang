@@ -5,7 +5,11 @@ import { useAppSelector } from '../../../../app/hooks';
 
 import { selectPath } from '../../../../features/app/app';
 import { selectTextBook } from '../../../../features/textBook/textBook';
-import { IGetWordRes, IUserWordCreate } from '../../../../API/types';
+import {
+  IGetWordRes,
+  IUserWordCreate,
+  IUserWords,
+} from '../../../../API/types';
 import {
   useCreateUserWordMutation,
   useGetUserWordsQuery,
@@ -25,6 +29,7 @@ import { getNewUserWord, shuffle } from '../../utils';
 import { selectCurrentUser } from '../../../../features/auth/authSlice';
 import { GameActions, GameState, GameStates, Word } from '../../types';
 import { gameReducer } from './reducer';
+import { useGetUserStatisticQuery } from '../../../../API/userApi';
 
 const initialGameState: GameState = {
   level: 0,
@@ -91,94 +96,97 @@ function AudioCallGame() {
 
   const wordsQParams = { page: gameState.page, group: gameState.level };
   const wordsResp = useGetWordsQuery(wordsQParams);
-
   const userWordsResp = useGetUserWordsQuery(userId ? { userId } : skipToken);
+  const userStatsResp = useGetUserStatisticQuery(
+    userId ? { userId } : skipToken,
+  );
+  const { data: allWords } = wordsResp;
+  const { data: userWords } = userWordsResp;
+  // const { data: userStats } = userStatsResp;
 
-  const isLoading =
+  const isFetching =
     wordsResp.isUninitialized ||
-    wordsResp.isLoading ||
-    gameState.words.length === 0;
+    wordsResp.isFetching ||
+    userWordsResp.isFetching ||
+    userStatsResp.isFetching;
 
-  console.log(wordsResp, userWordsResp, gameState.words);
+  const pickGameWords = (
+    allWordsOnPage: IGetWordRes[],
+    userWords: IUserWords[],
+  ) => {
+    // filter learned words
+    const filteredWords = allWordsOnPage.filter((w) => {
+      const uWord = userWords.find((uw) => w.id === uw.wordId);
+      return !uWord || uWord?.optional.learned === false;
+    });
+
+    const words = shuffle(filteredWords).slice(0, 10);
+    return words;
+  };
 
   useEffect(() => {
     if (gameState.state !== GameStates.InProgress) return;
-
-    const { isUninitialized, isFetching, data: wordsData } = wordsResp;
-    if (isUninitialized || isFetching || !wordsData) return;
-
-    const allWords: IGetWordRes[] = wordsData;
+    if (isFetching) return;
+    if (!allWords) return;
 
     if (userId !== null && gameState.isFromTextbook) {
-      const {
-        isUninitialized,
-        isFetching,
-        data: userWords = [],
-      } = userWordsResp;
-      if (isUninitialized || isFetching) return;
-
-      // filter learned words
-      const filteredWords = allWords.filter((w) => {
-        const uWord = userWords.find((uw) => w.id === uw.wordId);
-        return !uWord || uWord?.optional.learned === false;
-      });
-
-      const words = shuffle(filteredWords).slice(0, 10);
-      initGame(words);
+      const pickedWords = pickGameWords(allWords, userWords || []);
+      initGame(pickedWords);
     } else {
       const words = shuffle(allWords).slice(0, 10);
       initGame(words);
     }
-    console.log(gameState.words);
   }, [wordsResp.data, userWordsResp.data, gameState.state]);
 
   // save results
 
-  const [createUserWord, { isLoading: isUWCreating }] =
+  const [createUserWord, { isLoading: isUWordCreating }] =
     useCreateUserWordMutation();
-  const [updateUserWord, { isLoading: isUWUpdating }] =
+  const [updateUserWord, { isLoading: isUWordUpdating }] =
     useUpdateUserWordMutation();
 
   const saveResults = () => {
-    if (userId && userWordsResp.data) {
-      gameState.words.forEach((w, i) => {
-        const isSuccess = gameState.wordsResults[i];
-        const userWord = userWordsResp.data?.find((uw) => uw.wordId === w.id);
-        if (!userWord) {
-          const newUserWord = getNewUserWord(isSuccess);
-          createUserWord({ userId, wordId: w.id, body: newUserWord });
-          return;
-        }
+    if (userId === null) return;
 
-        const success = isSuccess
-          ? userWord.optional.success + 1
-          : userWord.optional.success;
-        const fail = isSuccess
-          ? userWord.optional.fail + 1
-          : userWord.optional.fail;
-        /* eslint-disable no-nested-ternary */
-        const series = (
-          isSuccess
-            ? userWord.optional.series + 1 <= 3
-              ? userWord.optional.series + 1
-              : 3
-            : userWord.optional.series - 1 > 0
-            ? userWord.optional.series - 1
-            : 0
-        ) as 0 | 1 | 2 | 3;
-        /* eslint-enable no-nested-ternary */
-        const updatedUserWord: IUserWordCreate = {
-          difficulty: userWord.difficulty,
-          optional: {
-            ...userWord.optional,
-            success,
-            fail,
-            series,
-          },
-        };
-        updateUserWord({ userId, wordId: w.id, body: updatedUserWord });
-      });
-    }
+    gameState.words.forEach((w, i) => {
+      const isSuccess = gameState.wordsResults[i];
+      const userWord = userWordsResp.data?.find((uw) => uw.wordId === w.id);
+
+      if (!userWord) {
+        const newUserWord = getNewUserWord(isSuccess);
+        createUserWord({ userId, wordId: w.id, body: newUserWord });
+        return;
+      }
+
+      const {
+        success: prevSuccess,
+        fail: prevFail,
+        series: PrevSeries,
+      } = userWord.optional;
+
+      const newSeries = (isSuccess ? Math.min(PrevSeries + 1, 3) : 0) as
+        | 0
+        | 1
+        | 2
+        | 3;
+      const success = isSuccess ? prevSuccess + 1 : prevSuccess;
+      const fail = isSuccess ? prevFail + 1 : prevFail;
+      const learned = newSeries === 3;
+      const series = newSeries === 3 ? 0 : newSeries;
+      const difficulty = learned ? 'no' : userWord.difficulty;
+
+      const updatedUserWord: IUserWordCreate = {
+        difficulty,
+        optional: {
+          ...userWord.optional,
+          success,
+          fail,
+          series,
+          learned,
+        },
+      };
+      updateUserWord({ userId, wordId: w.id, body: updatedUserWord });
+    });
   };
 
   useEffect(() => {
@@ -186,6 +194,8 @@ function AudioCallGame() {
       saveResults();
     }
   }, [gameState.state]);
+
+  const isLoading = isFetching || gameState.words.length === 0;
 
   return (
     <div className="audio-call-game">
@@ -226,7 +236,7 @@ function AudioCallGame() {
             }))}
             onRestart={handleRestart}
             onClose={handleClose}
-            isSaving={isUWCreating || isUWUpdating}
+            isSaving={isUWordCreating || isUWordUpdating}
           />
         ) : null}
       </div>
