@@ -21,6 +21,7 @@
         justify-content: center;
         align-items: center;
         margin: 0 5px;
+        user-select: none;
 
         &:hover {
           cursor: pointer;
@@ -42,6 +43,11 @@
         .list__item-active {
           color: #6c6cfc;
         }
+      }
+
+      &__item-disabled {
+        pointer-events: none;
+        color: rgba(20, 0, 255, 0.25);
       }
     }
   }

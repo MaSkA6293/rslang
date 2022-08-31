@@ -24,7 +24,7 @@ import textBookReducer from '../features/textBook/textBook';
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['auth'],
+  whitelist: ['auth', 'textBook'],
 };
 
 const rootRecuder = combineReducers({

@@ -10,14 +10,22 @@
 
   @media (max-width: 940px) {
     width: 400px;
-    height: 500px;
+    height: 550px;
     flex-direction: column;
+
+    &-short {
+      height: 450px;
+    }
   }
 
   @media (max-width: 430px) {
     width: 300px;
-    height: 500px;
+    height: 550px;
     flex-direction: column;
+
+    &-short {
+      height: 450px;
+    }
   }
 
   &__image {
@@ -34,7 +42,7 @@
 
   &__content {
     width: 500px;
-    padding: 10px 0 10px 15px;
+    padding: 10px 5px 10px 15px;
     text-align: initial;
     flex: 1;
 
@@ -106,15 +114,15 @@
     }
 
     .action {
-      &__contaner {
+      &__play {
         display: flex;
         justify-content: center;
         align-items: center;
-        height: 20%;
+        height: 85px;
         flex-direction: column;
 
         @media (max-width: 940px) {
-          height: 100%;
+          height: 50px;
         }
 
         .contaner {
@@ -125,21 +133,21 @@
       }
 
       &__play-btn {
-        width: 50px;
-        height: 50px;
+        width: 60px;
+        height: 60px;
         background: no-repeat center url('../../assets/svg/audio-play.svg');
         background-size: cover;
         border: none;
+
+        @media (max-width: 940px) {
+          height: 50px;
+          width: 50px;
+        }
       }
 
       &__difficult-word {
         width: 90%;
         border-radius: 5px;
-
-        &-active {
-          background-color: #2cff00;
-          border-radius: 50%;
-        }
       }
 
       &__learned-word {
@@ -149,6 +157,26 @@
         &-active {
           background-color: #2cff00;
           border-radius: 50%;
+        }
+      }
+
+      &__wrapper-buttons {
+        width: 100%;
+        height: 85px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        overflow: hidden;
+        margin-top: 10px;
+
+        .contaner {
+          width: 100%;
+        }
+
+        @media (max-width: 940px) {
+          flex-direction: row;
+          justify-content: center;
+          height: 100%;
         }
       }
     }
