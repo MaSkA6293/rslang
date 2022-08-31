@@ -93,7 +93,13 @@ export interface ICreateUserWordPrms {
   body: IUserWordCreate;
 }
 
-export interface IUserStatisticsRes extends IStatistics {}
+export interface IUserStatisticsRes {
+  learnedWords: number;
+  optional: {
+    audioCall?: string;
+    sprint?: string;
+  };
+}
 
 export interface IupsertUserStatistic {
   userId: string;

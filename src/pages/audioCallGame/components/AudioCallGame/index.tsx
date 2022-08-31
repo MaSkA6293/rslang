@@ -1,14 +1,14 @@
 import { useEffect, useReducer } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { skipToken } from '@reduxjs/toolkit/dist/query';
-import { useAppSelector } from '../../../../app/hooks';
 
+import { useAppSelector } from '../../../../app/hooks';
 import { selectPath } from '../../../../features/app/app';
 import { selectTextBook } from '../../../../features/textBook/textBook';
+import { selectCurrentUser } from '../../../../features/auth/authSlice';
 import {
   IGetWordRes,
   IResultGame,
-  IUserStatisticsRes,
   IUserWordCreate,
   IUserWords,
 } from '../../../../API/types';
@@ -18,7 +18,14 @@ import {
   useGetWordsQuery,
   useUpdateUserWordMutation,
 } from '../../../../API/wordsApi';
+import {
+  useGetUserStatisticQuery,
+  useUpsertUserStatisticMutation,
+} from '../../../../API/userApi';
+import { GameActions, GameState, GameStates, Word } from '../../types';
 
+import { getBestSeriesCount, getNewUserWord, shuffle } from '../../utils';
+import { gameReducer } from './reducer';
 import GameStart from '../GameStart';
 import GameIteraion from '../GameIteration';
 import GameFinish from '../GameFinish';
@@ -27,14 +34,6 @@ import LevelSelect from '../LevelSelect';
 
 import './index.scss';
 import CrossIcon from '../../assets/icons/cross.svg';
-import { getBestSeriesCount, getNewUserWord, shuffle } from '../../utils';
-import { selectCurrentUser } from '../../../../features/auth/authSlice';
-import { GameActions, GameState, GameStates, Word } from '../../types';
-import { gameReducer } from './reducer';
-import {
-  useGetUserStatisticQuery,
-  useUpsertUserStatisticMutation,
-} from '../../../../API/userApi';
 
 const initialGameState: GameState = {
   level: 0,
@@ -216,13 +215,13 @@ function AudioCallGame() {
       bestSeries,
       createdOn,
     };
-    const prevResults = userStats?.optional || {};
-    const updatedStats: IUserStatisticsRes = {
-      ...userStats,
+    const prevResults = userStats?.optional;
+    const prevGameResults = JSON.parse(prevResults?.audioCall || '[]');
+    const updatedStats = {
       learnedWords: userStats?.learnedWords || 0,
       optional: {
         ...prevResults,
-        audioСall: [...(prevResults.audioСall || []), currentResult],
+        audioСall: JSON.stringify([...prevGameResults, currentResult]),
       },
     };
     useUpsertUserStats({ userId, body: updatedStats });
