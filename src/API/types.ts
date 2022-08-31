@@ -1,6 +1,13 @@
 export interface IUserWords {
+  id: string;
+  wordId: string;
   difficulty: string;
-  optional: {};
+  optional: {
+    learned: boolean; // если серия угаданных = 3 => learned:true; series:0
+    success: number; //  угадано =>  success: success + 1; ++ логика
+    fail: number; // если ошибка fail: fail+1; learned: false; series: 0;
+    series: 0 | 1 | 2 | 3;
+  };
 }
 
 export interface IUpdateUserPrms {

@@ -3,7 +3,7 @@ import { IGetWordRes } from "../../../../API/types"
 
 type props = {
   rightAnswers: IGetWordRes[],
-  wrongAnswers: IGetWordRes[]
+  wrongAnswers: IGetWordRes[],
 }
 
 export default function GameResults({rightAnswers, wrongAnswers}: props) {

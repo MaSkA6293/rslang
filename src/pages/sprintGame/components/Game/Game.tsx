@@ -8,25 +8,24 @@ interface props {
   handleWrongAnswer: (answer: IGetWordRes) => void;
   endGame: () => void;
   words: IGetWordRes[];
-  isWordsLoading: boolean;
+  isLoading: boolean;
 }
 
 export default memo(function Game({
   endGame,
   words,
-  isWordsLoading,
+  isLoading,
   handleRightAnswer,
   handleWrongAnswer,
 }: props) {
   const [curItem, setCurItem] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(5);
+  const [timeLeft, setTimeLeft] = useState(61);
   const timerRef = useRef<ReturnType<typeof setInterval>>();
   const shuffleWords = useMemo(() => shuffleArray(words), [words]);
 
+
   const handleNextItem = () => {
-    if (curItem >= words.length - 1) {
-      endGame();
-    }
+    if (curItem >= words.length - 1) endGame();
     setCurItem((prev) => prev + 1);
   };
 
@@ -45,16 +44,18 @@ export default memo(function Game({
   };
 
   useEffect(() => {
-    timerRef.current = setInterval(() => {
+    if (!isLoading) {
+      timerRef.current = setInterval(() => {
       setTimeLeft((prev) => prev - 1);
     }, 1000);
-  }, []);
+    }
+  }, [isLoading]);
 
   useEffect(() => {
     if (timeLeft <= 0) endGame();
   }, [timeLeft]);
 
-  if (isWordsLoading) return <p>'Loading...'</p>;
+  if (isLoading) return <p>'Loading...'</p>;
 
   return (
     <div
