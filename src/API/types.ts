@@ -1,12 +1,38 @@
 export interface IUserWords {
   id: string;
   wordId: string;
-  difficulty: string;
+  difficulty: 'yes' | 'no';
   optional: {
-    learned: boolean; // если серия угаданных = 3 => learned:true; series:0
-    success: number; //  угадано =>  success: success + 1; ++ логика
-    fail: number; // если ошибка fail: fail+1; learned: false; series: 0;
+    learned: boolean;
+    success: number;
+    fail: number;
     series: 0 | 1 | 2 | 3;
+  };
+}
+
+export interface IUserWordCreate {
+  difficulty: 'yes' | 'no';
+  optional: {
+    learned: boolean;
+    success: number;
+    fail: number;
+    series: 0 | 1 | 2 | 3;
+  };
+}
+
+export interface IResultGame {
+  rightAnswers: number;
+  wrongAnswers: number;
+  wordCounter: number;
+  bestSeries: number;
+  createdOn: Date;
+}
+
+export interface IStatistics {
+  learnedWords: number;
+  optional: {
+    audioСall?: IResultGame[];
+    sprint?: IResultGame[];
   };
 }
 

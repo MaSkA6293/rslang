@@ -1,7 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
+import Dropdown from 'react-bootstrap/Dropdown';
+import DropdownButton from 'react-bootstrap/DropdownButton';
+
 import './index.scss';
 import classNames from 'classnames';
-import OptionComplexity from '../OptionComplexity';
 import { options, colorsOfLevels } from '../../types';
 import { useAppSelector, useAppDispatch } from '../../../../app/hooks';
 import {
@@ -21,29 +24,38 @@ function Complexity() {
     setColor(color);
   }, [group]);
 
-  const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    dispatch(setGroup(Number(event.target.value)));
+  const handleChange = (value: string) => {
+    dispatch(setGroup(Number(value)));
   };
 
   return (
     <div className={classNames('control-panel__level level')}>
       <h3 className="level__title">Сложность:</h3>
-      <select
-        defaultValue={group}
-        onChange={handleChange}
-        id="chapter"
+      <DropdownButton
+        as={ButtonGroup}
+        key={options[group].title}
+        id={`dropdown-variants-${group}`}
+        variant={options[group].title}
+        title={options[group].title}
         className={classNames('level__chapter', 'chapter')}
         style={{ backgroundColor: color }}
       >
         {options.map((el) => (
-          <OptionComplexity
+          <Dropdown.Item
             key={el.value}
-            value={el.value}
-            modifyColor={el.modifyColor}
-            title={el.title}
-          />
+            eventKey={el.title}
+            onClick={() => handleChange(el.value)}
+            defaultValue={group}
+            active={el.value === group.toString()}
+            style={{
+              backgroundColor: colorsOfLevels[Number(el.value)][0],
+            }}
+            className={classNames('level__chapter-item')}
+          >
+            {el.title}
+          </Dropdown.Item>
         ))}
-      </select>
+      </DropdownButton>
     </div>
   );
 }

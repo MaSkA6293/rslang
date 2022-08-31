@@ -1,8 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-unused-vars */
 import { useEffect, useState } from 'react';
 import './index.scss';
 import classNames from 'classnames';
 import ReactPaginate from 'react-paginate';
 import { useAppSelector, useAppDispatch } from '../../../../app/hooks';
+
 import {
   selectTextBook,
   setPage,
@@ -13,9 +16,9 @@ export function Pagination() {
   const [initial, setInitial] = useState(-1);
   const { page } = useAppSelector(selectTextBook);
 
-  useEffect(() => setInitial(page), []);
-
-  useEffect(() => setInitial(page), [page]);
+  useEffect(() => {
+    setInitial(page);
+  }, [page]);
 
   const dispatch = useAppDispatch();
 
@@ -46,7 +49,7 @@ export function Pagination() {
         marginPagesDisplayed={2}
         pageCount={30}
         previousLabel="<"
-        pageClassName="page-item"
+        pageClassName={classNames('page-item')}
         pageLinkClassName="page-link"
         previousClassName="page-item"
         previousLinkClassName="page-link"
