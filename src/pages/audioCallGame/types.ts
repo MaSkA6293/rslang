@@ -1,5 +1,5 @@
 import { IGetWordRes, IUserWords } from '../../API/types';
-import { groupType, pageType } from '../../types';
+import { groupType } from '../../types';
 
 export type Word = IGetWordRes;
 export type UserWord = IUserWords;
@@ -12,7 +12,6 @@ export enum GameStates {
 
 export interface GameState {
   level: groupType;
-  page: pageType;
   isFromTextbook: boolean;
   words: Word[];
   userWords: UserWord[];
@@ -31,12 +30,18 @@ export enum GameActions {
   GoToNextWord = 'GO_TO_NEXT_WORD',
   Reset = 'RESET',
   ChangeLevel = 'CHANGE_LEVEL',
+  ChangePage = 'CHANGE_PAGE',
+  SetWords = 'SET_WORDS',
 }
 
 export type GameAction =
   | {
       type: GameActions.SetFromTextbook;
-      payload: Pick<GameState, 'level' | 'page'>;
+      payload: Pick<GameState, 'level'>;
+    }
+  | {
+      type: GameActions.SetWords;
+      payload: Pick<GameState, 'words'>;
     }
   | {
       type: GameActions.Initialize;

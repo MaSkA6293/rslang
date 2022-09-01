@@ -1,4 +1,4 @@
-import { useEffect, useReducer } from 'react';
+import { useState, useEffect, useReducer } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { skipToken } from '@reduxjs/toolkit/dist/query';
 
@@ -10,7 +10,6 @@ import {
   IGetWordRes,
   IResultGame,
   IUserWordCreate,
-  IUserWords,
 } from '../../../../API/types';
 import {
   useCreateUserWordMutation,
@@ -22,7 +21,7 @@ import {
   useGetUserStatisticQuery,
   useUpsertUserStatisticMutation,
 } from '../../../../API/userApi';
-import { GameActions, GameState, GameStates, Word } from '../../types';
+import { GameActions, GameState, GameStates } from '../../types';
 
 import { getBestSeriesCount, getNewUserWord, shuffle } from '../../utils';
 import { gameReducer } from './reducer';
@@ -34,10 +33,12 @@ import LevelSelect from '../LevelSelect';
 
 import './index.scss';
 import CrossIcon from '../../assets/icons/cross.svg';
+import { groupType, pageType } from '../../../../types';
+
+const WORDS_PER_GAME_COUNT = 10;
 
 const initialGameState: GameState = {
   level: 0,
-  page: 0,
   isFromTextbook: false,
   words: [],
   userWords: [],
@@ -55,10 +56,7 @@ function AudioCallGame() {
   const { userId } = useAppSelector(selectCurrentUser);
 
   const [gameState, dispatch] = useReducer(gameReducer, initialGameState);
-
-  const initGame = (words: Word[]) => {
-    dispatch({ type: GameActions.Initialize, payload: { words } });
-  };
+  const [textbookPage, setTextbookPage] = useState<pageType>(0);
 
   const handleStart = () => {
     dispatch({ type: GameActions.Start });
@@ -81,6 +79,13 @@ function AudioCallGame() {
     navigate('/');
   };
 
+  const handleLevelSelect = (level: groupType) => {
+    dispatch({
+      type: GameActions.ChangeLevel,
+      payload: { level },
+    });
+  };
+
   // check if run from texbook
 
   const path = useAppSelector(selectPath);
@@ -89,16 +94,21 @@ function AudioCallGame() {
   useEffect(() => {
     if (path === '/textbook') {
       const { group, page } = textbookState;
+
+      setTextbookPage(page);
       dispatch({
         type: GameActions.SetFromTextbook,
-        payload: { level: group, page },
+        payload: { level: group },
       });
+    } else {
+      const randomPage = (Math.floor(Math.random() * 29) + 1) as pageType;
+      setTextbookPage(randomPage);
     }
   }, []);
 
   // get words
 
-  const wordsQParams = { page: gameState.page, group: gameState.level };
+  const wordsQParams = { page: textbookPage, group: gameState.level };
   const wordsResp = useGetWordsQuery(wordsQParams);
   const userWordsResp = useGetUserWordsQuery(userId ? { userId } : skipToken);
   const userStatsResp = useGetUserStatisticQuery(
@@ -108,38 +118,46 @@ function AudioCallGame() {
   const { data: userWords } = userWordsResp;
   const { data: userStats } = userStatsResp;
 
+  const learnedWords =
+    userWords?.filter((word) => !word.optional.learned) || [];
+
   const isFetching =
     wordsResp.isUninitialized ||
     wordsResp.isFetching ||
     userWordsResp.isFetching ||
     userStatsResp.isFetching;
 
-  const pickGameWords = (
+  const filterWords = (
     allWordsOnPage: IGetWordRes[],
-    userWords: IUserWords[],
-  ) => {
-    // filter learned words
-    const filteredWords = allWordsOnPage.filter((w) => {
-      const uWord = userWords.find((uw) => w.id === uw.wordId);
-      return !uWord || uWord?.optional.learned === false;
-    });
-
-    const words = shuffle(filteredWords).slice(0, 10);
-    return words;
-  };
+    excludeLearned: boolean,
+  ) =>
+    excludeLearned
+      ? allWordsOnPage.filter(
+          (word) =>
+            !learnedWords?.some((userWord) => userWord.wordId === word.id),
+        )
+      : allWordsOnPage;
 
   useEffect(() => {
     if (gameState.state !== GameStates.InProgress) return;
     if (isFetching) return;
     if (!allWords) return;
 
-    if (userId !== null && gameState.isFromTextbook) {
-      const pickedWords = pickGameWords(allWords, userWords || []);
-      initGame(pickedWords);
-    } else {
-      const words = shuffle(allWords).slice(0, 10);
-      initGame(words);
+    const excludeLearned = userId !== null && gameState.isFromTextbook;
+    const currentWords = filterWords(allWords, excludeLearned);
+    const accWords = [...gameState.words, ...currentWords];
+    if (accWords.length < WORDS_PER_GAME_COUNT && textbookPage > 0) {
+      dispatch({
+        type: GameActions.SetWords,
+        payload: { words: accWords },
+      });
+      setTextbookPage((page) => (page - 1) as pageType);
+      return;
     }
+    dispatch({
+      type: GameActions.Initialize,
+      payload: { words: shuffle(accWords).slice(0, WORDS_PER_GAME_COUNT) },
+    });
   }, [allWords, userWords, userStats, gameState.state]);
 
   // save results
@@ -244,12 +262,7 @@ function AudioCallGame() {
             {!gameState.isFromTextbook ? (
               <LevelSelect
                 level={gameState.level}
-                setLevel={(level) => {
-                  dispatch({
-                    type: GameActions.ChangeLevel,
-                    payload: { level },
-                  });
-                }}
+                setLevel={handleLevelSelect}
               />
             ) : null}
           </GameStart>

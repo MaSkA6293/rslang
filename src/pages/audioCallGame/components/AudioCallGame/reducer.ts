@@ -1,4 +1,3 @@
-import { pageType } from '../../../../types';
 import {
   GameAction,
   GameActions,
@@ -28,7 +27,12 @@ export const gameReducer = (
         ...state,
         isFromTextbook: true,
         level: action.payload.level,
-        page: action.payload.page,
+      };
+
+    case GameActions.SetWords:
+      return {
+        ...state,
+        words: action.payload.words,
       };
 
     case GameActions.Initialize:
@@ -42,12 +46,9 @@ export const gameReducer = (
       };
 
     case GameActions.Start: {
-      const randomPage = (Math.floor(Math.random() * 30) + 1) as pageType;
-      const page = state.isFromTextbook ? state.page : randomPage;
       return {
         ...state,
         state: GameStates.InProgress,
-        page,
       };
     }
 
