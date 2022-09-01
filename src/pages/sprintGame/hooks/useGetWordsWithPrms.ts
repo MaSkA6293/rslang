@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { IGetWordRes, IUserWords } from '../../../API/types';
 import { useGetWordsQuery } from '../../../API/wordsApi';
 import { useAppSelector } from '../../../app/hooks';
-import { getArrayWithRandom } from '../Utils/getArrayWithRandom';
 
 type prms = {
   amount: number;
@@ -19,7 +18,8 @@ export function useGetWordsWithPrms({
   isFromTextBook,
   userWords,
 }: prms) {
-  const pagesRandom = useMemo(() => getArrayWithRandom(30), []);
+  const pagesRandom = useMemo(() => [0], []);
+  // const pagesRandom = useMemo(() => getArrayWithRandom(30), []);
   const { page: dictionaryPage } = useAppSelector((state) => state.textBook);
   const [pageIndex, setPageIndex] = useState(0);
   const [words, setWords] = useState<IGetWordRes[]>([]);
@@ -34,14 +34,17 @@ export function useGetWordsWithPrms({
 
   const filterData = useMemo(() => {
     if (!data || !data.length) return [];
+    if (!isFromTextBook) return data;
+    console.log('learnedWords', learnedWords)
     return data.filter((word) =>
       learnedWords.length === 0
         ? true
-        : learnedWords.some((userWord) => userWord.id !== word.id),
+        : !learnedWords.some((userWord) => userWord.wordId === word.id),
     );
   }, [data]);
 
   useEffect(() => {
+    console.log('filterData', filterData)
     const total = [...words, ...filterData];
     const isPagesEnd =
       pageIndex >= pagesRandom.length - 1 || (isFromTextBook && page <= 0);

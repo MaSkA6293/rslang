@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { BaseQueryFn } from '@reduxjs/toolkit/dist/query/baseQueryTypes';
 import { RootState } from '../app/store';
@@ -7,15 +5,11 @@ import { BACKEND_URL } from '../constants';
 import { logOut, setCredential } from '../features/auth/authSlice';
 import {
   IGetUserResponse,
-  IGetWordPrms,
-  IGetWordRes,
   IUpdateUserPrms,
   IUpdateUserRes,
   IupsertUserStatistic,
   IUserStatisticsRes,
 } from './types';
-import { getRandomIntInclusive } from '../pages/sprintGame/Utils/getRandomIntInclusive';
-import { QueryArgs } from '@testing-library/react';
 
 const baseQuary = fetchBaseQuery({
   baseUrl: BACKEND_URL,

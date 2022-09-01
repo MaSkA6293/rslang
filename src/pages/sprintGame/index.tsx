@@ -19,8 +19,8 @@ function SprintGamePage() {
   const [isGameEnded, setIsGameEnded] = useState(false);
   const [rightAnswers, setRightAnswers] = useState<IGetWordRes[]>([]);
   const [wrongAnswers, setWrongAnswers] = useState<IGetWordRes[]>([]);
-  const {data: userWords = [], isLoading: isUserWordsLoading} = useGetUserWordsQuery({userId}, {skip: !userId})
-  const {words, isLoading: isWordsLoading} = useGetWordsWithPrms({amount: 140, group, skip: !isGameStarted || isUserWordsLoading, isFromTextBook, userWords})
+  const {data: userWords = [], isLoading: isUserWordsLoading} = useGetUserWordsQuery({userId}, {skip: !userId, refetchOnMountOrArgChange: true})
+  const {words, isLoading: isWordsLoading} = useGetWordsWithPrms({amount: 40, group, skip: !isGameStarted || isUserWordsLoading, isFromTextBook, userWords})
 
   const startGame = () => {
     setIsGameStarted(true);
