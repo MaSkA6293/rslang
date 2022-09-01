@@ -90,12 +90,15 @@ export interface IGetUserResponse {
 export interface ICreateUserWordPrms {
   userId: string;
   wordId: string;
-  body: IUserWords;
+  body: IUserWordCreate;
 }
 
 export interface IUserStatisticsRes {
   learnedWords: number;
-  optional: {};
+  optional: {
+    audioCall?: string;
+    sprint?: string;
+  };
 }
 
 export interface IupsertUserStatistic {
