@@ -234,7 +234,7 @@ function AudioCallGame() {
       createdOn,
     };
     const prevResults = userStats?.optional;
-    const prevGameResults = JSON.parse(prevResults?.audioCall || '[]');
+    const prevGameResults = JSON.parse(userStats?.optional?.audioСall ?? '[]');
     const updatedStats = {
       learnedWords: userStats?.learnedWords || 0,
       optional: {
