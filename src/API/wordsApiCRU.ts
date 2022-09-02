@@ -1,6 +1,7 @@
 import { BACKEND_URL } from '../constants';
 import { IUserWordCreate } from './types';
 import { pageType, groupType } from '../types';
+import { User } from '../features/auth/authSlice';
 
 export const getUserWord = async (
   wordId: string,
@@ -60,11 +61,9 @@ export const createUserWord = async (
   }
 };
 
-export const getUserWords = async (
-  userId: string | null,
-  token: string | null,
-) => {
+export const getUserWords = async (user: User) => {
   try {
+    const { userId, token } = user;
     const request = await fetch(`${BACKEND_URL}/users/${userId}/words`, {
       method: 'GET',
       credentials: 'include',
@@ -77,6 +76,10 @@ export const getUserWords = async (
 
     if (request.status === 200) {
       return request.json();
+    }
+
+    if (request.status === 401 || request.status === 400) {
+      return undefined;
     }
     return [];
   } catch (e) {
@@ -159,5 +162,22 @@ export const getWords = async (
     return [];
   } catch (e) {
     return [];
+  }
+};
+
+export const getRefreshToken = async (user: User) => {
+  try {
+    const { userId, refreshToken } = user;
+    const refreshReq = await fetch(`${BACKEND_URL}/users/${userId}/tokens`, {
+      headers: {
+        authorization: `Bearer ${refreshToken}`,
+      },
+    });
+    if (refreshReq.ok && refreshReq.status === 200) {
+      return refreshReq.json();
+    }
+    return undefined;
+  } catch (e) {
+    return undefined;
   }
 };

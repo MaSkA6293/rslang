@@ -46,8 +46,13 @@ function TextBook() {
   ) => {
     const userId = user.userId ? user.userId : '';
     const token = user.token ? user.token : '';
-    const userWords: IUserWords[] | [] = await getUserWords(userId, token);
-    const checkWord = userWords.find((el) => el.wordId === wordId);
+    const userWords: IUserWords[] | [] | undefined = await getUserWords(user);
+    let checkWord;
+    if (userWords === undefined) {
+      checkWord = undefined;
+    } else {
+      checkWord = userWords.find((el) => el.wordId === wordId);
+    }
 
     if (checkWord === undefined) {
       const newWord =

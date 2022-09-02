@@ -34,7 +34,7 @@ function DifficultWords({ user, handlerActions }: IDifficultWords) {
   const { group } = useAppSelector(selectTextBook);
 
   const userId = user.userId ? user.userId : '';
-  const token = user.token ? user.token : '';
+
   const audio = useRef(new Audio());
   const path = `${BACKEND_URL}/`;
   const color: string = colorsOfLevels[group][1];
@@ -45,7 +45,7 @@ function DifficultWords({ user, handlerActions }: IDifficultWords) {
       dispatch(setTextBookView(textBookView.textBook));
       return;
     }
-    getUserWords(userId, token).then((data) => {
+    getUserWords(user).then((data) => {
       setUserWords(data);
       const wordsPromice = data
         .filter((el: any) => el.difficulty !== 'no')

@@ -9,11 +9,19 @@ import {
   selectLearnedPages,
 } from '../../../../features/textBook/textBook';
 import { useAppSelector, useAppDispatch } from '../../../../app/hooks';
-import { getUserWords, getWords } from '../../../../API/wordsApiCRU';
+import {
+  getUserWords,
+  getWords,
+  getRefreshToken,
+} from '../../../../API/wordsApiCRU';
 import { colorsOfLevels } from '../../types';
 import { IGetWordRes, IUserWords } from '../../../../API/types';
 import { BACKEND_URL } from '../../../../constants';
-import { selectCurrentUser } from '../../../../features/auth/authSlice';
+import {
+  selectCurrentUser,
+  setCredential,
+  logOut,
+} from '../../../../features/auth/authSlice';
 import Card from '../Card';
 
 interface ITextBookContent {
@@ -84,23 +92,29 @@ function TextBookContent({ userId, handlerActions }: ITextBookContent) {
 
   useEffect(() => {
     if (userId) {
-      Promise.all([
-        getUserWords(userId, token),
-        getWords(page, group, token),
-      ]).then((data: [IUserWords[], IGetWordRes[]]) => {
-        setUserWords(data[0]);
-        setWords(data[1]);
-        setIsLoading(false);
-        checkIsLearnedPage(data[1], data[0]);
-        updateLearnedPages();
-      });
+      Promise.all([getUserWords(user), getWords(page, group, token)])
+        .then((data: [IUserWords[], IGetWordRes[]]) => {
+          setUserWords(data[0]);
+          setWords(data[1]);
+          setIsLoading(false);
+          checkIsLearnedPage(data[1], data[0]);
+          updateLearnedPages();
+        })
+        .catch(async () => {
+          const refreshReq = await getRefreshToken(user);
+          if (refreshReq !== undefined) {
+            dispatch(setCredential({ ...user, ...refreshReq }));
+          } else {
+            dispatch(logOut());
+          }
+        });
     } else {
       getWords(page, group, token).then((data: IGetWordRes[]) => {
         setWords(data);
         setIsLoading(false);
       });
     }
-  }, [group, page, userId]);
+  }, [group, page, userId, token]);
 
   const playAudioWord = (audioPath: string[]) => {
     let i = 0;
@@ -147,9 +161,26 @@ function TextBookContent({ userId, handlerActions }: ITextBookContent) {
     action: 'difficult' | 'learned',
   ) => {
     const handler = await handlerActions(wordId, action);
-    const userWords = await getUserWords(userId, token);
-    checkIsLearnedPage(words, userWords);
+    const userWordsRequest: IUserWords[] | [] | undefined = await getUserWords(
+      user,
+    );
+    if (userWordsRequest === undefined) {
+      const refreshReq = await getRefreshToken(user);
+      if (refreshReq !== undefined) {
+        dispatch(setCredential({ ...user, ...refreshReq }));
+      } else {
+        dispatch(logOut());
+      }
+      return handler;
+    }
+    const userWordsRequestSecond: IUserWords[] | [] | undefined =
+      await getUserWords(user);
 
+    if (userWordsRequestSecond !== undefined) {
+      checkIsLearnedPage(words, userWordsRequestSecond);
+    } else {
+      dispatch(logOut());
+    }
     return handler;
   };
 
