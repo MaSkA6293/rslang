@@ -1,54 +1,46 @@
 import { Card, ListGroup } from 'react-bootstrap';
-import { IGameStatistics } from '../../../../API/types';
+import { GamesIds, IGameStats } from '../../types';
+import { getPrcntStr } from '../../utils';
 
-interface GameStatsCardProps {
-  gameTitle: string;
-  statistics: IGameStatistics | undefined;
-}
-
-const today = new Date().toISOString().slice(0, 10);
-
-const defaultStats: IGameStatistics = {
-  date: today,
-  newWords: 0,
-  correctAnswers: 0,
-  totalAnswers: 0,
-  bestSeries: 0,
+type GameStatsCardProps = {
+  id: GamesIds;
+  title: string;
+  stats: IGameStats;
 };
 
-function GameStatsCard({ gameTitle, statistics }: GameStatsCardProps) {
-  const stats =
-    statistics && statistics.date === today ? statistics : defaultStats;
+const METRIC_KEYS = ['newWords', 'rightAnswers', 'bestSeries'] as const;
 
-  const correctAnswers =
-    Math.round((stats.correctAnswers / stats.totalAnswers) * 100) || 0;
+const METRIC_TITLES = {
+  newWords: 'Новых слов',
+  rightAnswers: 'Правильных ответов',
+  bestSeries: 'Самая длинная серия правильных ответов',
+};
 
-  const statsData = [
-    { id: 'newWords', text: 'Новых слов', value: stats.newWords },
-    {
-      id: 'correctAnswers',
-      text: 'Правильных ответов',
-      value: `${correctAnswers}%`,
-    },
-    {
-      is: 'bestSeries',
-      text: 'Самая длинная серия правильных ответов',
-      value: stats.bestSeries,
-    },
-  ];
+function GameStatsCard({
+  id,
+  title,
+  stats: { newWords, rightAnswers, totalAnswers, bestSeries },
+}: GameStatsCardProps) {
+  const statsValues = {
+    newWords,
+    bestSeries,
+    rightAnswers: getPrcntStr(rightAnswers, totalAnswers),
+  };
 
   return (
     <Card className="h-100 my-0" style={{ width: '18rem' }}>
       <Card.Body>
-        <Card.Title className="fw-bold">{gameTitle}</Card.Title>
+        <Card.Title className="fw-bold">{title}</Card.Title>
         <ListGroup variant="flush">
-          {statsData.map((data) => (
+          {METRIC_KEYS.map((metric) => (
             <ListGroup.Item
-              key={`${gameTitle}${data.id}`}
+              key={`${id}_stats_${metric}`}
               className="d-flex justify-content-between align-items-center"
             >
-              <div className="text-muted text-start">{data.text}:</div>
-              <span className="fw-bold text-muted">{data.value}</span>
+              <div className="text-muted text-start">
+                {METRIC_TITLES[metric]}:
+              </div>
+              <span className="fw-bold text-muted">{statsValues[metric]}</span>
             </ListGroup.Item>
           ))}
         </ListGroup>
