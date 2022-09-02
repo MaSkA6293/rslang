@@ -4,9 +4,10 @@ import { IGetWordRes } from "../../../../API/types"
 type props = {
   rightAnswers: IGetWordRes[],
   wrongAnswers: IGetWordRes[],
+  startGameAgain: () => void
 }
 
-export default function GameResults({rightAnswers, wrongAnswers}: props) {
+export default function GameResults({rightAnswers, wrongAnswers, startGameAgain}: props) {
   return (
     <div>
       <div>
@@ -21,6 +22,7 @@ export default function GameResults({rightAnswers, wrongAnswers}: props) {
           <p key={word.word}>{word.wordTranslate}</p>
         )}
       </div>
+      <button onClick={startGameAgain}>Начать заново</button>
     </div>
   )
 }

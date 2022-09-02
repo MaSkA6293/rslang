@@ -6,7 +6,7 @@ export interface IUserWords {
     learned: boolean;
     success: number;
     fail: number;
-    series: 0 | 1 | 2 | 3;
+    series: number;
   };
 }
 
@@ -16,7 +16,7 @@ export interface IUserWordCreate {
     learned: boolean;
     success: number;
     fail: number;
-    series: 0 | 1 | 2 | 3;
+    series: number;
   };
 }
 
@@ -31,8 +31,8 @@ export interface IResultGame {
 export interface IStatistics {
   learnedWords: number;
   optional: {
-    audioСall?: IResultGame[];
-    sprint?: IResultGame[];
+    audioСall: IResultGame[];
+    sprint: IResultGame[];
   };
 }
 
@@ -90,12 +90,15 @@ export interface IGetUserResponse {
 export interface ICreateUserWordPrms {
   userId: string;
   wordId: string;
-  body: IUserWords;
+  body: IUserWordCreate;
 }
 
 export interface IUserStatisticsRes {
   learnedWords: number;
-  optional: {};
+  optional: {
+    audioCall?: string;
+    sprint?: string;
+  };
 }
 
 export interface IupsertUserStatistic {
