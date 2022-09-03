@@ -61,6 +61,7 @@ const baseQueryWithReauth: BaseQueryFn = async (args, api, extraOptions) => {
 
 export const userApi = createApi({
   baseQuery: baseQueryWithReauth,
+  tagTypes: ['userWords', 'userWordsAgregate'],
   endpoints: (builder) => ({
     getUser: builder.query<IGetUserResponse, { userId: string }>({
       query: ({ userId }) => `users/${userId}`,

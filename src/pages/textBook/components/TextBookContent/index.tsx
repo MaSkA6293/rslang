@@ -10,43 +10,40 @@ import {
 } from '../../../../features/textBook/textBook';
 import { useAppSelector, useAppDispatch } from '../../../../app/hooks';
 import {
-  getUserWords,
-  getWords,
-  getRefreshToken,
-} from '../../../../API/wordsApiCRU';
+  useGetUserWordsQuery,
+  useGetWordsQuery,
+} from '../../../../API/wordsApi';
 import { colorsOfLevels } from '../../types';
 import { IGetWordRes, IUserWords } from '../../../../API/types';
 import { BACKEND_URL } from '../../../../constants';
-import {
-  selectCurrentUser,
-  setCredential,
-  logOut,
-} from '../../../../features/auth/authSlice';
+import { selectCurrentUser } from '../../../../features/auth/authSlice';
 import Card from '../Card';
 
 interface ITextBookContent {
   userId: string | null;
-  handlerActions: (
-    wordId: string,
-    action: 'difficult' | 'learned',
-  ) => Promise<boolean>;
 }
 
-function TextBookContent({ userId, handlerActions }: ITextBookContent) {
-  const [userWords, setUserWords] = useState<[] | IUserWords[]>([]);
-  const [words, setWords] = useState<[] | IGetWordRes[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+function TextBookContent({ userId }: ITextBookContent) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [paths, setPaths] = useState<[] | string[]>([]);
   const audio = useRef(new Audio());
   const [learned, setLearned] = useState(false);
 
   const user = useAppSelector(selectCurrentUser);
-  const { group, page } = useAppSelector(selectTextBook);
+
   const learnedPages = useAppSelector(selectLearnedPages);
   const path = `${BACKEND_URL}/`;
+
+  const { group, page } = useAppSelector(selectTextBook);
+  const { data: userWords = [], isLoading: userWordsLoading } =
+    useGetUserWordsQuery(user);
+  const { data: words = [], isLoading: wordsLoading } = useGetWordsQuery({
+    page,
+    group,
+  });
+
   const color: string = colorsOfLevels[group][1];
-  const token = user.token ? user.token : '';
+
   const dispatch = useAppDispatch();
 
   const updateLearnedPages = () => {
@@ -67,13 +64,12 @@ function TextBookContent({ userId, handlerActions }: ITextBookContent) {
     }, 0);
   };
 
-  const checkIsLearnedPage = (
-    words: IGetWordRes[],
-    userWords: IUserWords[],
-  ) => {
+  const checkIsLearnedPage = () => {
     if (userWords.length !== 0) {
-      const check = words.every((itemWord) => {
-        const word = userWords.find((el) => el.wordId === itemWord.id);
+      const check = words.every((itemWord: IGetWordRes) => {
+        const word = userWords.find(
+          (el: IUserWords) => el.wordId === itemWord.id,
+        );
         if (word !== undefined) {
           return word.optional.learned;
         }
@@ -92,29 +88,10 @@ function TextBookContent({ userId, handlerActions }: ITextBookContent) {
 
   useEffect(() => {
     if (userId) {
-      Promise.all([getUserWords(user), getWords(page, group, token)])
-        .then((data: [IUserWords[], IGetWordRes[]]) => {
-          setUserWords(data[0]);
-          setWords(data[1]);
-          setIsLoading(false);
-          checkIsLearnedPage(data[1], data[0]);
-          updateLearnedPages();
-        })
-        .catch(async () => {
-          const refreshReq = await getRefreshToken(user);
-          if (refreshReq !== undefined) {
-            dispatch(setCredential({ ...user, ...refreshReq }));
-          } else {
-            dispatch(logOut());
-          }
-        });
-    } else {
-      getWords(page, group, token).then((data: IGetWordRes[]) => {
-        setWords(data);
-        setIsLoading(false);
-      });
+      checkIsLearnedPage();
+      updateLearnedPages();
     }
-  }, [group, page, userId, token]);
+  }, [words, userWords]);
 
   const playAudioWord = (audioPath: string[]) => {
     let i = 0;
@@ -156,35 +133,7 @@ function TextBookContent({ userId, handlerActions }: ITextBookContent) {
     [],
   );
 
-  const handlerActionsClick = async (
-    wordId: string,
-    action: 'difficult' | 'learned',
-  ) => {
-    const handler = await handlerActions(wordId, action);
-    const userWordsRequest: IUserWords[] | [] | undefined = await getUserWords(
-      user,
-    );
-    if (userWordsRequest === undefined) {
-      const refreshReq = await getRefreshToken(user);
-      if (refreshReq !== undefined) {
-        dispatch(setCredential({ ...user, ...refreshReq }));
-      } else {
-        dispatch(logOut());
-      }
-      return handler;
-    }
-    const userWordsRequestSecond: IUserWords[] | [] | undefined =
-      await getUserWords(user);
-
-    if (userWordsRequestSecond !== undefined) {
-      checkIsLearnedPage(words, userWordsRequestSecond);
-    } else {
-      dispatch(logOut());
-    }
-    return handler;
-  };
-
-  if (isLoading)
+  if (userWordsLoading || wordsLoading)
     return (
       <div className="loading">
         <Spinner animation="border" variant="primary" />
@@ -201,7 +150,9 @@ function TextBookContent({ userId, handlerActions }: ITextBookContent) {
       >
         {words.length !== 0 ? (
           words.map((item: IGetWordRes) => {
-            const userWord = userWords.find((el) => el.wordId === item.id);
+            const userWord = userWords.find(
+              (el: IUserWords) => el.wordId === item.id,
+            );
             const statistics = { right: 0, wrong: 0 };
             if (userWord) {
               statistics.right = userWord.optional.success;
@@ -216,7 +167,7 @@ function TextBookContent({ userId, handlerActions }: ITextBookContent) {
                 playAudio={handlerClick}
                 stopAudio={stopAudio}
                 userId={userId}
-                handlerActions={handlerActionsClick}
+                userWords={userWords}
                 difficult={userWord !== undefined ? userWord.difficulty : 'no'}
                 learned={
                   userWord !== undefined ? userWord.optional.learned : false

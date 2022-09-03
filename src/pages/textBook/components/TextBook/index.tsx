@@ -12,23 +12,10 @@ import {
   setTextBookView,
 } from '../../../../features/textBook/textBook';
 import { textBookView } from '../../../../types';
-import {
-  updateUserWord,
-  createUserWord,
-  getUserWords,
-} from '../../../../API/wordsApiCRU';
-import { IUserWords } from '../../../../API/types';
-import {
-  getNewWordDifficult,
-  getNewWordLearned,
-  modifyDifficulty,
-  modifyLearned,
-} from '../../utilites';
 
 function TextBook() {
   const view = useAppSelector(selectTextBookView);
   const user = useAppSelector(selectCurrentUser);
-
   const dispatch = useAppDispatch();
 
   const handleChange = (e: React.MouseEvent<HTMLElement>) => {
@@ -40,48 +27,9 @@ function TextBook() {
     }
   };
 
-  const handlerActions = async (
-    wordId: string,
-    action: 'difficult' | 'learned',
-  ) => {
-    const userId = user.userId ? user.userId : '';
-    const token = user.token ? user.token : '';
-    const userWords: IUserWords[] | [] | undefined = await getUserWords(user);
-    let checkWord;
-    if (userWords === undefined) {
-      checkWord = undefined;
-    } else {
-      checkWord = userWords.find((el) => el.wordId === wordId);
-    }
-
-    if (checkWord === undefined) {
-      const newWord =
-        action === 'difficult' ? getNewWordDifficult() : getNewWordLearned();
-
-      const answer = await createUserWord(wordId, userId, token, newWord);
-      if (answer !== undefined) {
-        return true;
-      }
-      return false;
-    }
-
-    const modifyWordExample =
-      action === 'difficult'
-        ? modifyDifficulty(checkWord)
-        : modifyLearned(checkWord);
-
-    const modifyWordResponce = await updateUserWord(
-      wordId,
-      userId,
-      token,
-      modifyWordExample,
-    );
-
-    if (modifyWordResponce !== undefined) {
-      return true;
-    }
-    return false;
-  };
+  if (user.userId === null) {
+    dispatch(setTextBookView(textBookView.textBook));
+  }
 
   return (
     <div className="text-book">
@@ -117,13 +65,10 @@ function TextBook() {
         {view === textBookView.textBook ? (
           <>
             <ControlPanel />
-            <TextBookContent
-              userId={user.userId}
-              handlerActions={handlerActions}
-            />
+            <TextBookContent userId={user.userId} />
           </>
         ) : (
-          <DifficultWords user={user} handlerActions={handlerActions} />
+          <DifficultWords user={user} />
         )}
       </div>
     </div>

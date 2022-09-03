@@ -3,59 +3,46 @@ import Spinner from 'react-bootstrap/Spinner';
 import classNames from 'classnames';
 import './index.scss';
 import { User } from '../../../../features/auth/authSlice';
-import { useAppSelector, useAppDispatch } from '../../../../app/hooks';
+import { useAppSelector } from '../../../../app/hooks';
 import { colorsOfLevels } from '../../types';
-import {
-  selectTextBook,
-  setTextBookView,
-} from '../../../../features/textBook/textBook';
+import { selectTextBook } from '../../../../features/textBook/textBook';
 import { BACKEND_URL } from '../../../../constants';
-import { IGetWordRes, IUserWords } from '../../../../API/types';
-import { getWordById, getUserWords } from '../../../../API/wordsApiCRU';
 import Card from '../Card';
-import { textBookView } from '../../../../types';
+import { getDefaultWord } from '../../utilites';
+import {
+  useGetUserWordsQuery,
+  useGetAggregatedWordsQuery,
+} from '../../../../API/wordsApi';
+import {
+  IGetWordResAgregate,
+  IUserWords,
+  IGetWordRes,
+} from '../../../../API/types';
 
 interface IDifficultWords {
   user: User;
-  handlerActions: (
-    wordId: string,
-    action: 'difficult' | 'learned',
-  ) => Promise<boolean>;
 }
 
-function DifficultWords({ user, handlerActions }: IDifficultWords) {
-  const [words, setWords] = useState<IGetWordRes[]>([]);
-  const [userWords, setUserWords] = useState<[] | IUserWords[]>([]);
-  const [needToUpdate, setNeedToUpdate] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+function DifficultWords({ user }: IDifficultWords) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [paths, setPaths] = useState<[] | string[]>([]);
-
-  const { group } = useAppSelector(selectTextBook);
 
   const userId = user.userId ? user.userId : '';
 
   const audio = useRef(new Audio());
   const path = `${BACKEND_URL}/`;
-  const color: string = colorsOfLevels[group][1];
-  const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    if (!userId) {
-      dispatch(setTextBookView(textBookView.textBook));
-      return;
-    }
-    getUserWords(user).then((data) => {
-      setUserWords(data);
-      const wordsPromice = data
-        .filter((el: any) => el.difficulty !== 'no')
-        .map((el: any) => new Promise((res) => res(getWordById(el.wordId))));
-      Promise.all<any>(wordsPromice).then((dataProm) => {
-        setWords(dataProm);
-        setIsLoading(false);
-      });
+  const { group } = useAppSelector(selectTextBook);
+  const { data: userWords = [], isLoading: userWordsLoading } =
+    useGetUserWordsQuery(user);
+
+  const { data: dataWordsRender = [], isLoading: dataWordsRenderLoading } =
+    useGetAggregatedWordsQuery({
+      userId,
+      filter: JSON.stringify({ $and: [{ 'userWord.difficulty': 'yes' }] }),
     });
-  }, [needToUpdate]);
+
+  const color: string = colorsOfLevels[group][1];
 
   const playAudioWord = (audioPath: string[]) => {
     let i = 0;
@@ -97,18 +84,7 @@ function DifficultWords({ user, handlerActions }: IDifficultWords) {
     [],
   );
 
-  const handlerClick = async (
-    word: string,
-    action: 'difficult' | 'learned',
-  ): Promise<boolean> => {
-    const result = await handlerActions(word, action);
-    if (result) {
-      setNeedToUpdate((needToUpdate) => !needToUpdate);
-    }
-    return result;
-  };
-
-  if (isLoading)
+  if (userWordsLoading || dataWordsRenderLoading)
     return (
       <div className="loading">
         <Spinner animation="border" variant="primary" />
@@ -118,34 +94,63 @@ function DifficultWords({ user, handlerActions }: IDifficultWords) {
   return (
     <div className="page">
       <div className={classNames('page__container', 'difficult-words')}>
-        {words.length !== 0 ? (
-          words.map((item: IGetWordRes) => {
-            const difficulty = 'yes';
-            const userWord = userWords.find((el) => el.wordId === item.id);
-            const statistics = { right: 0, wrong: 0 };
-            if (userWord) {
-              statistics.right = userWord.optional.success;
-              statistics.wrong = userWord.optional.fail;
-            }
-            return (
-              <Card
-                color={color}
-                card={item}
-                key={item.id.toString()}
-                playAudio={handlerAudio}
-                stopAudio={stopAudio}
-                userId={userId}
-                handlerActions={handlerClick}
-                difficult={difficulty}
-                learned={
-                  userWord?.optional.learned !== undefined
-                    ? userWord.optional.learned
-                    : false
-                }
-                statistics={statistics}
-              />
-            );
-          })
+        {dataWordsRender[0].paginatedResults.length !== 0 ? (
+          dataWordsRender[0].paginatedResults.map(
+            (word: IGetWordResAgregate, i: number) => {
+              const userWord = userWords.find(
+                // eslint-disable-next-line no-underscore-dangle
+                (el: IUserWords) => el.wordId === word._id,
+              );
+
+              const statistics = { right: 0, wrong: 0 };
+              if (userWord) {
+                statistics.right = userWord.optional.success;
+                statistics.wrong = userWord.optional.fail;
+              }
+
+              const key = i;
+              const wordRender: IGetWordRes = {
+                // eslint-disable-next-line no-underscore-dangle
+                id: word._id,
+                group: word.group,
+                page: word.page,
+                word: word.word,
+                image: word.image,
+                audio: word.audio,
+                audioMeaning: word.audioMeaning,
+                audioExample: word.audioExample,
+                textMeaning: word.textMeaning,
+                textExample: word.textExample,
+                transcription: word.transcription,
+                wordTranslate: word.wordTranslate,
+                textMeaningTranslate: word.textMeaningTranslate,
+                textExampleTranslate: word.textExampleTranslate,
+              };
+
+              return (
+                <Card
+                  color={color}
+                  card={
+                    wordRender !== undefined ? wordRender : getDefaultWord()
+                  }
+                  key={
+                    wordRender !== undefined ? wordRender.id.toString() : key
+                  }
+                  playAudio={handlerAudio}
+                  stopAudio={stopAudio}
+                  userId={userId}
+                  userWords={userWords}
+                  difficult={userWord ? userWord.difficulty : 'no'}
+                  learned={
+                    userWord?.optional.learned !== undefined
+                      ? userWord.optional.learned
+                      : false
+                  }
+                  statistics={statistics}
+                />
+              );
+            },
+          )
         ) : (
           <div className="difficult-words__no-words">
             <h3 className="difficult-words__title">

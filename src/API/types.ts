@@ -107,9 +107,31 @@ export interface IupsertUserStatistic {
 }
 
 export interface IGetAggregatedWords {
-  userId: string;
+  userId: string | null;
   group?: number;
   page?: number;
   wordsPerPage?: number;
-  filter?: Record<any, any>;
+  filter?: string;
 }
+
+export interface IGetWordResAgregate {
+  _id: string;
+  group: number;
+  page: number;
+  word: string;
+  image: string;
+  audio: string;
+  audioMeaning: string;
+  audioExample: string;
+  textMeaning: string;
+  textExample: string;
+  transcription: string;
+  wordTranslate: string;
+  textMeaningTranslate: string;
+  textExampleTranslate: string;
+}
+
+export interface IGetAggregatedWordsResponce {
+  paginatedResults: IGetWordResAgregate[];
+}
+export type myTypp = IGetAggregatedWordsResponce[];
