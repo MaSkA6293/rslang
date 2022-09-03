@@ -33,6 +33,12 @@ const defaultGameStats: Omit<IGameStats, 'id'> = {
   bestSeries: 0,
 };
 
+const initialDayStats = {
+  date: getDayString(new Date()),
+  learnedWords: 0,
+  ...aggregateGameResults([]),
+};
+
 const initialStats: IStats = {
   today: {
     newWords: 0,
@@ -43,16 +49,16 @@ const initialStats: IStats = {
     { id: GamesIds.audioCall, ...defaultGameStats },
     { id: GamesIds.sprint, ...defaultGameStats },
   ],
-  wordsStatsByDay: [],
+  wordsStatsByDay: [initialDayStats],
 };
 
 function Statistics({ userId }: StatisticsProps) {
-  const { data, isFetching, error } = useGetUserStatisticQuery({ userId });
+  const { data, isFetching, isError } = useGetUserStatisticQuery({ userId });
 
   const [stats, setStats] = useState(initialStats);
 
   useEffect(() => {
-    if (isFetching || error) return;
+    if (isFetching || isError) return;
 
     const results: GameResult[] = GAME_IDS.flatMap((id) => {
       const allResults = data?.optional[id]
@@ -111,7 +117,7 @@ function Statistics({ userId }: StatisticsProps) {
     <Container>
       <h2 className="fw-bold my-5">Статистика за сегодня</h2>
 
-      {isFetching || !data ? (
+      {isFetching ? (
         'Loading...'
       ) : (
         <>

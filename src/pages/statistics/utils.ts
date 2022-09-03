@@ -30,9 +30,8 @@ const DAY_IN_MS = 24 * 60 * 60 * 1000;
 
 export const getDateRange = (startDate: Date, endDate: Date) => {
   const startDateInMs = startDate.valueOf();
-  const numberOfDays = Math.ceil(
-    (endDate.valueOf() - startDate.valueOf()) / DAY_IN_MS,
-  );
+  const numberOfDays =
+    Math.ceil((endDate.valueOf() - startDate.valueOf()) / DAY_IN_MS) + 1;
   return [...Array(numberOfDays).fill(null)].map((_, i) =>
     getDayString(new Date(startDateInMs + i * DAY_IN_MS)),
   );
