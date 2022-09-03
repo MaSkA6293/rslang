@@ -20,16 +20,17 @@ function TextBook() {
 
   const handleChange = (e: React.MouseEvent<HTMLElement>) => {
     const target = e.target as HTMLElement;
+
+    if (user.userId === null) {
+      dispatch(setTextBookView(textBookView.textBook));
+    }
+
     if (target.classList.contains('text-book__dictionary-title')) {
       dispatch(setTextBookView(textBookView.dictionary));
     } else {
       dispatch(setTextBookView(textBookView.textBook));
     }
   };
-
-  if (user.userId === null) {
-    dispatch(setTextBookView(textBookView.textBook));
-  }
 
   return (
     <div className="text-book">

@@ -82,7 +82,6 @@ function Card({
 
     if (check === undefined) {
       if (action === 'learned') {
-        console.log('here new word learned');
         const word = getNewWordLearned();
         word.optional.learned = true;
         await wordCreate({
