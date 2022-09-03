@@ -34,14 +34,17 @@ export function useGetWordsWithPrms({
 
   const filterData = useMemo(() => {
     if (!data || !data.length) return [];
+    if (!isFromTextBook) return data;
+    // console.log('learnedWords', learnedWords)
     return data.filter((word) =>
       learnedWords.length === 0
         ? true
-        : learnedWords.some((userWord) => userWord.id !== word.id),
+        : !learnedWords.some((userWord) => userWord.wordId === word.id),
     );
   }, [data]);
 
   useEffect(() => {
+    // console.log('filterData', filterData)
     const total = [...words, ...filterData];
     const isPagesEnd =
       pageIndex >= pagesRandom.length - 1 || (isFromTextBook && page <= 0);

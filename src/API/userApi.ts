@@ -5,18 +5,15 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { BaseQueryFn } from '@reduxjs/toolkit/dist/query/baseQueryTypes';
 import { RootState } from '../app/store';
 import { BACKEND_URL } from '../constants';
-import { logOut, setCredential } from '../features/auth/authSlice';
+import { logOut, setCredential, User } from '../features/auth/authSlice';
 import {
   IGetUserResponse,
-  IGetWordPrms,
-  IGetWordRes,
   IUpdateUserPrms,
   IUpdateUserRes,
   IupsertUserStatistic,
-  IUserStatisticsRes,
+  IStatistics,
+  IUserStatisticsRes
 } from './types';
-import { getRandomIntInclusive } from '../pages/sprintGame/Utils/getRandomIntInclusive';
-import { QueryArgs } from '@testing-library/react';
 
 const baseQuary = fetchBaseQuery({
   baseUrl: BACKEND_URL,
@@ -33,10 +30,10 @@ const baseQuary = fetchBaseQuery({
 });
 
 const baseQueryWithReauth: BaseQueryFn = async (args, api, extraOptions) => {
-  let result = await baseQuary(args, api, extraOptions);
-  // eslint-disable-next-line no-console
+  let result = await baseQuary(args, api, extraOptions)
+  const {error, originalStatus} = result as Record<any, any>
   console.log(result);
-  if (result.error) {
+  if (error && originalStatus === 401) {
     // sending refresh token
     const { user } = (api.getState() as RootState).auth;
     const { userId, refreshToken } = user;
@@ -61,13 +58,15 @@ const baseQueryWithReauth: BaseQueryFn = async (args, api, extraOptions) => {
 
 export const userApi = createApi({
   baseQuery: baseQueryWithReauth,
-  tagTypes: ['userWords', 'userWordsAgregate'],
+  tagTypes: ['userWords', 'userWordsAgregate', 'Statistic', 'Profile'],
   endpoints: (builder) => ({
     getUser: builder.query<IGetUserResponse, { userId: string }>({
       query: ({ userId }) => `users/${userId}`,
+      providesTags: ['Profile']
     }),
-    getUserStatistic: builder.query<IUserStatisticsRes, { userId: string }>({
+    getUserStatistic: builder.query<IUserStatisticsRes, Pick<User, 'userId'>>({
       query: ({ userId }) => `/users/${userId}/statistics`,
+      providesTags: ['Statistic']
     }),
     upsertUserStatistic: builder.mutation<
       IUserStatisticsRes,
@@ -78,6 +77,7 @@ export const userApi = createApi({
         method: 'PUT',
         body,
       }),
+      invalidatesTags: ['Statistic']
     }),
     register: builder.mutation<IUpdateUserRes, IUpdateUserRes>({
       query: (body) => ({
@@ -99,6 +99,7 @@ export const userApi = createApi({
         method: 'PUT',
         body,
       }),
+      invalidatesTags: ['Profile']
     }),
     deleteUser: builder.mutation<null, { userId: string }>({
       query: ({ userId }) => ({
