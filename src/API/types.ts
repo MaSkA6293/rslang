@@ -96,7 +96,7 @@ export interface ICreateUserWordPrms {
 export interface IUserStatisticsRes {
   learnedWords: number;
   optional: {
-    audioCall?: string;
+    audioСall?: string;
     sprint?: string;
   };
 }
