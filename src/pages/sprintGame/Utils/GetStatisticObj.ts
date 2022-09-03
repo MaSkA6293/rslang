@@ -21,7 +21,7 @@ export default function GetStatisticObj({
   let { optional } = stat;
   const game = optional[gameName as keyof typeof optional]
   const results: IResultGame[] = JSON.parse(game)
-  const newResult = {wrongAnswers, rightAnswers, bestSeries, newWords, createdOn: +(new Date())}
+  const newResult = {wordCounter: 0, wrongAnswers, rightAnswers, bestSeries, newWords, createdOn: new Date()}
   results.push(newResult)
   optional = {...optional, sprint: JSON.stringify(results)}
 

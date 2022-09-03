@@ -69,7 +69,7 @@ export const userApi = createApi({
       providesTags: ['Statistic']
     }),
     upsertUserStatistic: builder.mutation<
-      IStatistics,
+      IUserStatisticsRes,
       IupsertUserStatistic
     >({
       query: ({ userId, body }) => ({

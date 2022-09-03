@@ -1,5 +1,5 @@
 export interface IUserWords {
-  id: string | null;
+  id: string;
   wordId: string | null;
   difficulty: 'yes' | 'no';
   learnedDate?: Number;
@@ -25,9 +25,10 @@ export interface IUserWordCreate {
 export interface IResultGame {
   newWords: string[];
   rightAnswers: number;
+  wordCounter: number;
   wrongAnswers: number;
   bestSeries: number;
-  createdOn: number;
+  createdOn: Date;
 }
 
 export interface IStatistics {
