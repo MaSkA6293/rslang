@@ -8,7 +8,13 @@ type GameStatsCardProps = {
   stats: IGameStats;
 };
 
-const METRIC_KEYS = ['newWords', 'rightAnswers', 'bestSeries'] as const;
+enum Metrics {
+  newWords = 'newWords',
+  rightAnswers = 'rightAnswers',
+  bestSeries = 'bestSeries',
+}
+
+const METRIC_KEYS = Object.values(Metrics);
 
 const METRIC_TITLES = {
   newWords: 'Новых слов',

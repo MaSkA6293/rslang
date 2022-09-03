@@ -1,12 +1,19 @@
-/* eslint-disable */
+import { useEffect, useState } from 'react';
 import { Row, Col, Container } from 'react-bootstrap';
+
 import { useGetUserStatisticQuery } from '../../../../API/userApi';
 import GameStatsCard from '../GameStatsCard';
 import LTStatsChart from '../LTStatsChart';
 import StatsCard from '../StatsCard';
-import { useEffect, useState } from 'react';
-import { getPrcntStr, isDateWithinToday, parseGameResult } from '../../utils';
-import { GamesIds, IGameStats, IStats } from '../../types';
+
+import { GameResult, GamesIds, IGameStats, IStats } from '../../types';
+import {
+  aggregateGameResults,
+  getDateRange,
+  getDayString,
+  getPrcntStr,
+  parseGameResult,
+} from '../../utils';
 
 interface StatisticsProps {
   userId: string;
@@ -19,7 +26,7 @@ const GAME_TITLES = {
   [GamesIds.sprint]: 'Спринт',
 };
 
-const initialGameStats: Omit<IGameStats, 'id'> = {
+const defaultGameStats: Omit<IGameStats, 'id'> = {
   newWords: 0,
   rightAnswers: 0,
   totalAnswers: 0,
@@ -33,66 +40,70 @@ const initialStats: IStats = {
     totalAnswers: 0,
   },
   games: [
-    { id: GamesIds.audioCall, ...initialGameStats },
-    { id: GamesIds.sprint, ...initialGameStats },
+    { id: GamesIds.audioCall, ...defaultGameStats },
+    { id: GamesIds.sprint, ...defaultGameStats },
   ],
+  wordsStatsByDay: [],
 };
 
 function Statistics({ userId }: StatisticsProps) {
-  const { data, isLoading } = useGetUserStatisticQuery({ userId });
+  const { data, isFetching, error } = useGetUserStatisticQuery({ userId });
 
   const [stats, setStats] = useState(initialStats);
 
   useEffect(() => {
-    const gamesStats = GAME_IDS.map((id) => {
+    if (isFetching || error) return;
+
+    const results: GameResult[] = GAME_IDS.flatMap((id) => {
       const allResults = data?.optional[id]
         ? parseGameResult(data.optional[id] as string)
         : [];
-      console.log(allResults);
-      const todayResults = allResults.filter((result) =>
-        isDateWithinToday(result.createdOn),
-      );
-      const todayNewWords = todayResults
-        .map((result) => result.wordCounter)
-        .reduce((sum, count) => sum + count, 0);
-      const todayTotalAnswers = todayResults
-        .map((result) => result.rightAnswers + result.wrongAnswers)
-        .reduce((sum, answers) => sum + answers, 0);
-      const todayRightAnswers = todayResults
-        .map((result) => result.rightAnswers)
-        .reduce((sum, right) => sum + right, 0);
-      const todayBestSeries = Math.max(
-        ...todayResults.map((result) => result.bestSeries),
-      );
-      console.log(todayResults.map((result) => result.bestSeries));
-      const todayStats = {
-        newWords: todayNewWords,
-        rightAnswers: todayRightAnswers,
-        totalAnswers: todayTotalAnswers,
-        bestSeries: isFinite(todayBestSeries) ? todayBestSeries : 0,
-      };
-      return { id, ...todayStats };
+      return allResults.map((result) => ({ gameId: id, ...result }));
     });
 
-    const accTodayNewWords = gamesStats
-      .map((data) => data.newWords)
-      .reduce((sum, newWords) => sum + newWords, 0);
+    const startDate = new Date(
+      Math.min(...results.map(({ createdOn }) => createdOn.valueOf())),
+    );
 
-    const accTodayRightAnswers = gamesStats
-      .map((data) => data.rightAnswers)
-      .reduce((sum, right) => sum + right, 0);
+    const today = new Date();
 
-    const accTodayTotalAnswers = gamesStats
-      .map((data) => data.totalAnswers)
-      .reduce((sum, answers) => sum + answers, 0);
+    const dateRange = getDateRange(startDate, today);
+
+    const resultsByDate = dateRange.reduce((storage, date) => {
+      storage[date] = storage[date] || [];
+      const resultsForDate = results.filter(
+        ({ createdOn }) => getDayString(createdOn) === date,
+      );
+      storage[date].push(...resultsForDate);
+      return storage;
+    }, {} as Record<string, GameResult[]>);
+
+    const todayStr = getDayString(today);
+    const todayResults = resultsByDate[todayStr] ?? [];
+
+    const todayGamesStats = GAME_IDS.map((id) => {
+      const gameResults = todayResults.filter((result) => result.gameId === id);
+      return { id, ...aggregateGameResults(gameResults) };
+    });
+
+    const todayWordsStats = aggregateGameResults(todayResults);
+
+    const wordsStatsByDay = Object.entries(resultsByDate).map(
+      ([date, results]) => {
+        const learnedWords = 0;
+        return { date, learnedWords, ...aggregateGameResults(results) };
+      },
+    );
+    console.log(wordsStatsByDay);
 
     setStats({
-      games: gamesStats,
+      games: todayGamesStats,
       today: {
-        newWords: accTodayNewWords,
-        rightAnswers: accTodayRightAnswers,
-        totalAnswers: accTodayTotalAnswers,
+        newWords: todayWordsStats.newWords,
+        rightAnswers: todayWordsStats.rightAnswers,
+        totalAnswers: todayWordsStats.totalAnswers,
       },
+      wordsStatsByDay,
     });
   }, [data, userId]);
 
@@ -100,7 +111,7 @@ function Statistics({ userId }: StatisticsProps) {
     <Container>
       <h2 className="fw-bold my-5">Статистика за сегодня</h2>
 
-      {isLoading || !data ? (
+      {isFetching || !data ? (
         'Loading...'
       ) : (
         <>
@@ -135,22 +146,27 @@ function Statistics({ userId }: StatisticsProps) {
             className="mx-auto mb-5 g-4"
             style={{ maxWidth: '40rem' }}
           >
-            {stats.games.map((game) => {
-              return (
-                <Col key={`${game.id}_stats-col`}>
-                  <GameStatsCard
-                    key={`${game.id}_stats-card`}
-                    id={game.id}
-                    title={GAME_TITLES[game.id]}
-                    stats={game}
-                  />
-                </Col>
-              );
-            })}
+            {stats.games.map((game) => (
+              <Col key={`${game.id}_stats-col`}>
+                <GameStatsCard
+                  key={`${game.id}_stats-card`}
+                  id={game.id}
+                  title={GAME_TITLES[game.id]}
+                  stats={game}
+                />
+              </Col>
+            ))}
           </Row>
 
-          <Row className="justify-content-center">
-            {/* <LTStatsChart data={ltStats} /> */}
+          <Row
+            className="justify-content-center px-3 mx-auto"
+            style={{ maxWidth: '40rem' }}
+          >
+            <LTStatsChart
+              metric="newWords"
+              title="Новых слов"
+              data={stats.wordsStatsByDay}
+            />
           </Row>
         </>
       )}
