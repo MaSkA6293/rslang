@@ -5,6 +5,7 @@ import {
   IGetWordPrms,
   IGetWordRes,
   IUserWords,
+  IGetAggregatedWordsResponce,
 } from './types';
 import { userApi } from './userApi';
 
@@ -18,6 +19,13 @@ export const wordsApi = userApi.injectEndpoints({
     }),
     getUserWords: build.query<IUserWords[], Pick<User, 'userId'>>({
       query: ({ userId }) => `users/${userId}/words`,
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(({ id }) => ({ type: 'userWords' as const, id })),
+              { type: 'userWords', id: 'LIST' },
+            ]
+          : [{ type: 'userWords', id: 'LIST' }],
     }),
     getUserWordById: build.query<IUserWords, Omit<ICreateUserWordPrms, 'body'>>(
       {
@@ -30,6 +38,10 @@ export const wordsApi = userApi.injectEndpoints({
         method: 'POST',
         body,
       }),
+      invalidatesTags: [
+        { type: 'userWords', id: 'LIST' },
+        { type: 'userWordsAgregate', id: 'LIST' },
+      ],
     }),
     updateUserWord: build.mutation<IUserWords, ICreateUserWordPrms>({
       query: ({ userId, wordId, body }) => ({
@@ -37,6 +49,10 @@ export const wordsApi = userApi.injectEndpoints({
         method: 'PUT',
         body,
       }),
+      invalidatesTags: [
+        { type: 'userWords', id: 'LIST' },
+        { type: 'userWordsAgregate', id: 'LIST' },
+      ],
     }),
     deleteUserWord: build.mutation<
       IUserWords,
@@ -47,14 +63,34 @@ export const wordsApi = userApi.injectEndpoints({
         method: 'DELETE',
       }),
     }),
-    getAggregatedWords: build.query<IGetWordRes[], IGetAggregatedWords>({
-      query: ({ userId, page = '', group = '', wordsPerPage = '', filter = '' }) =>
+    getAggregatedWords: build.query<
+      IGetAggregatedWordsResponce[],
+      IGetAggregatedWords
+    >({
+      query: ({
+        userId,
+        page = '',
+        group = '',
+        wordsPerPage = '',
+        filter = '',
+      }) =>
         `/users/${userId}/aggregatedWords?${page && `page=${page}&`}${
           group && `group=${group}&`
         }${wordsPerPage && `wordsPerPage=${wordsPerPage}&`}${
           filter && `filter=${filter}`
         }`,
+      providesTags: (result) =>
+        result
+          ? [
+              ...result[0].paginatedResults.map(({ _id }) => ({
+                type: 'userWordsAgregate' as const,
+                _id,
+              })),
+              { type: 'userWordsAgregate', id: 'LIST' },
+            ]
+          : [{ type: 'userWordsAgregate', id: 'LIST' }],
     }),
+
     getAggregatedWordsById: build.query<
       IUserWords,
       Omit<ICreateUserWordPrms, 'body'>

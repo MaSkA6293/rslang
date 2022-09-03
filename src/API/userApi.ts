@@ -1,3 +1,6 @@
+/* eslint-disable import/order */
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { BaseQueryFn } from '@reduxjs/toolkit/dist/query/baseQueryTypes';
 import { RootState } from '../app/store';
@@ -55,7 +58,7 @@ const baseQueryWithReauth: BaseQueryFn = async (args, api, extraOptions) => {
 
 export const userApi = createApi({
   baseQuery: baseQueryWithReauth,
-  tagTypes: ['Statistic', 'Profile'],
+  tagTypes: ['userWords', 'userWordsAgregate', 'Statistic', 'Profile'],
   endpoints: (builder) => ({
     getUser: builder.query<IGetUserResponse, { userId: string }>({
       query: ({ userId }) => `users/${userId}`,

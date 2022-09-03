@@ -4,10 +4,19 @@ import { useAppSelector } from '../../../../app/hooks';
 import { selectTextBookView } from '../../../../features/textBook/textBook';
 import './index.scss';
 import { BACKEND_URL } from '../../../../constants';
-import { IGetWordRes } from '../../../../API/types';
+import { IGetWordRes, IUserWords } from '../../../../API/types';
 import ButtonDifficult from '../buttonDifficult';
 import ButtonLearned from '../buttonLearned';
 import Progress from '../Progress';
+import {
+  useUpdateUserWordMutation,
+  useCreateUserWordMutation,
+} from '../../../../API/wordsApi';
+import {
+  modifyLearned,
+  modifyDifficulty,
+  getNewWordLearned,
+} from '../../utilites';
 
 interface ICardInterface {
   card: IGetWordRes;
@@ -15,10 +24,7 @@ interface ICardInterface {
   playAudio: any;
   stopAudio: any;
   userId: string | null;
-  handlerActions: (
-    wordId: string,
-    action: 'difficult' | 'learned',
-  ) => Promise<boolean>;
+  userWords: IUserWords[];
   difficult: 'yes' | 'no';
   learned: boolean;
   statistics: { right: number; wrong: number };
@@ -30,20 +36,20 @@ function Card({
   playAudio,
   stopAudio,
   userId,
-  handlerActions,
   difficult,
   learned,
   statistics,
+  userWords,
 }: ICardInterface) {
-  const [isDifficult, setIsDifficult] = useState<'yes' | 'no'>(difficult);
-  const [isLearned, setIsLearned] = useState<boolean>(learned);
   const [loading, setLoading] = useState(false);
-
   const path = `${BACKEND_URL}/${card.image}`;
   const meaning = card.textMeaning.split(/<i>|<\/i>/gi);
   const textExample = card.textExample.split(/<b>|<\/b>/gi);
 
   const view = useAppSelector(selectTextBookView);
+
+  const [wordUpdate] = useUpdateUserWordMutation();
+  const [wordCreate] = useCreateUserWordMutation();
 
   useEffect(() => () => stopAudio(), []);
 
@@ -52,16 +58,53 @@ function Card({
     action: 'difficult' | 'learned',
   ) => {
     setLoading(true);
-    const setDiffResult = await handlerActions(wordId, action);
-    if (setDiffResult) {
-      if (action === 'difficult') {
-        setIsDifficult(isDifficult === 'yes' ? 'no' : 'yes');
-      }
+    const check = userWords.find((el) => el.wordId === wordId);
+    if (check !== undefined) {
       if (action === 'learned') {
-        setIsLearned((learned) => !learned);
+        await wordUpdate({
+          userId: userId !== null ? userId : '',
+          wordId,
+          body: modifyLearned(check),
+        });
+        setLoading(false);
+        return;
       }
-      setLoading(false);
+      if (action === 'difficult') {
+        await wordUpdate({
+          userId: userId !== null ? userId : '',
+          wordId,
+          body: modifyDifficulty(check),
+        });
+        setLoading(false);
+        return;
+      }
     }
+
+    if (check === undefined) {
+      if (action === 'learned') {
+        const word = getNewWordLearned();
+        word.optional.learned = true;
+        await wordCreate({
+          userId: userId !== null ? userId : '',
+          wordId,
+          body: word,
+        });
+        setLoading(false);
+        return;
+      }
+      if (action === 'difficult') {
+        const word = getNewWordLearned();
+        word.difficulty = 'yes';
+        await wordCreate({
+          userId: userId !== null ? userId : '',
+          wordId,
+          body: word,
+        });
+        setLoading(false);
+        return;
+      }
+    }
+    setLoading(false);
   };
 
   return (
@@ -117,7 +160,7 @@ function Card({
               <div className={classNames('action__contaner', 'contaner')}>
                 <ButtonDifficult
                   handlerClick={handlerClick}
-                  difficulty={isDifficult}
+                  difficulty={difficult}
                   wordId={card.id}
                   loading={loading}
                 />
@@ -126,7 +169,7 @@ function Card({
                 <div className={classNames('action__contaner', 'contaner')}>
                   <ButtonLearned
                     handlerClick={handlerClick}
-                    learned={isLearned}
+                    learned={learned}
                     wordId={card.id}
                     loading={loading}
                   />
