@@ -1,6 +1,6 @@
 import { IUserWordCreate } from '../../../API/types';
 
-export function createUserWord(answer: boolean): IUserWordCreate {
+export function getObjToCreateUserWord(answer: boolean): IUserWordCreate {
   return answer
     ? {
         difficulty: 'no',

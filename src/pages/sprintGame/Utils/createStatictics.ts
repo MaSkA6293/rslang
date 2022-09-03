@@ -6,6 +6,8 @@ export interface IResultGame {
   createdOn: Date;
 }
 
-export function createStatictics(){
+
+
+export function createStatictics() {
   
 }

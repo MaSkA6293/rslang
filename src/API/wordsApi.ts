@@ -48,7 +48,7 @@ export const wordsApi = userApi.injectEndpoints({
       }),
     }),
     getAggregatedWords: build.query<IGetWordRes[], IGetAggregatedWords>({
-      query: ({ userId, page, group, wordsPerPage, filter }) =>
+      query: ({ userId, page = '', group = '', wordsPerPage = '', filter = '' }) =>
         `/users/${userId}/aggregatedWords?${page && `page=${page}&`}${
           group && `group=${group}&`
         }${wordsPerPage && `wordsPerPage=${wordsPerPage}&`}${

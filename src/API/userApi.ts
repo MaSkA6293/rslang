@@ -8,7 +8,8 @@ import {
   IUpdateUserPrms,
   IUpdateUserRes,
   IupsertUserStatistic,
-  IUserStatisticsRes,
+  IStatistics,
+  IUserStatisticsRes
 } from './types';
 
 const baseQuary = fetchBaseQuery({
@@ -26,10 +27,10 @@ const baseQuary = fetchBaseQuery({
 });
 
 const baseQueryWithReauth: BaseQueryFn = async (args, api, extraOptions) => {
-  let result = await baseQuary(args, api, extraOptions);
-  // eslint-disable-next-line no-console
+  let result = await baseQuary(args, api, extraOptions)
+  const {error, originalStatus} = result as Record<any, any>
   console.log(result);
-  if (result.error) {
+  if (error && originalStatus === 401) {
     // sending refresh token
     const { user } = (api.getState() as RootState).auth;
     const { userId, refreshToken } = user;
@@ -54,15 +55,18 @@ const baseQueryWithReauth: BaseQueryFn = async (args, api, extraOptions) => {
 
 export const userApi = createApi({
   baseQuery: baseQueryWithReauth,
+  tagTypes: ['Statistic', 'Profile'],
   endpoints: (builder) => ({
     getUser: builder.query<IGetUserResponse, { userId: string }>({
       query: ({ userId }) => `users/${userId}`,
+      providesTags: ['Profile']
     }),
     getUserStatistic: builder.query<IUserStatisticsRes, Pick<User, 'userId'>>({
       query: ({ userId }) => `/users/${userId}/statistics`,
+      providesTags: ['Statistic']
     }),
     upsertUserStatistic: builder.mutation<
-      IUserStatisticsRes,
+      IStatistics,
       IupsertUserStatistic
     >({
       query: ({ userId, body }) => ({
@@ -70,6 +74,7 @@ export const userApi = createApi({
         method: 'PUT',
         body,
       }),
+      invalidatesTags: ['Statistic']
     }),
     register: builder.mutation<IUpdateUserRes, IUpdateUserRes>({
       query: (body) => ({
@@ -91,6 +96,7 @@ export const userApi = createApi({
         method: 'PUT',
         body,
       }),
+      invalidatesTags: ['Profile']
     }),
     deleteUser: builder.mutation<null, { userId: string }>({
       query: ({ userId }) => ({
