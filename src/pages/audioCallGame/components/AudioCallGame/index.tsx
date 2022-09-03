@@ -9,6 +9,7 @@ import { selectCurrentUser } from '../../../../features/auth/authSlice';
 import {
   IGetWordRes,
   IResultGame,
+  IUserStatisticsRes,
   IUserWordCreate,
 } from '../../../../API/types';
 import {
@@ -232,6 +233,7 @@ function AudioCallGame() {
       wordCounter,
       bestSeries,
       createdOn,
+      newWords: []
     };
     const prevResults = userStats?.optional;
     const prevGameResults = JSON.parse(userStats?.optional?.audioСall ?? '[]');
@@ -241,7 +243,7 @@ function AudioCallGame() {
         ...prevResults,
         audioСall: JSON.stringify([...prevGameResults, currentResult]),
       },
-    };
+    } as IUserStatisticsRes
     useUpsertUserStats({ userId, body: updatedStats });
   };
 

@@ -63,7 +63,6 @@ export const wordsApi = userApi.injectEndpoints({
         method: 'DELETE',
       }),
     }),
-
     getAggregatedWords: build.query<
       IGetAggregatedWordsResponce[],
       IGetAggregatedWords

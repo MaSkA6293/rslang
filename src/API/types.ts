@@ -1,29 +1,32 @@
 export interface IUserWords {
   id: string;
-  wordId: string;
+  wordId: string | null;
   difficulty: 'yes' | 'no';
+  learnedDate?: Number;
   optional: {
     learned: boolean;
     success: number;
     fail: number;
-    series: 0 | 1 | 2 | 3;
+    series: number;
   };
 }
 
 export interface IUserWordCreate {
   difficulty: 'yes' | 'no';
   optional: {
+    learnedDate?: Number;
     learned: boolean;
     success: number;
     fail: number;
-    series: 0 | 1 | 2 | 3;
+    series: number;
   };
 }
 
 export interface IResultGame {
+  newWords: string[];
   rightAnswers: number;
-  wrongAnswers: number;
   wordCounter: number;
+  wrongAnswers: number;
   bestSeries: number;
   createdOn: Date;
 }
@@ -31,14 +34,14 @@ export interface IResultGame {
 export interface IStatistics {
   learnedWords: number;
   optional: {
-    audioСall?: IResultGame[];
-    sprint?: IResultGame[];
+    audioСall: IResultGame[];
+    sprint: IResultGame[];
   };
 }
 
 export interface IUpdateUserPrms {
-  body: { name: string; email: string };
-  userId: string;
+  body: { name: string; email: string, password: string };
+  userId: string | null;
 }
 
 export interface IUpdateUserRes {
@@ -56,7 +59,7 @@ export interface IUserRes {
   message: string;
   token: string;
   refreshToken: string;
-  userId: string;
+  userId: string | null;
 }
 
 export interface IGetWordRes {
@@ -88,7 +91,7 @@ export interface IGetUserResponse {
 }
 
 export interface ICreateUserWordPrms {
-  userId: string;
+  userId: string | null;
   wordId: string;
   body: IUserWordCreate;
 }
@@ -96,13 +99,13 @@ export interface ICreateUserWordPrms {
 export interface IUserStatisticsRes {
   learnedWords: number;
   optional: {
-    audioСall?: string;
-    sprint?: string;
+    audioСall: string;
+    sprint: string;
   };
 }
 
 export interface IupsertUserStatistic {
-  userId: string;
+  userId: string | null;
   body: IUserStatisticsRes;
 }
 
