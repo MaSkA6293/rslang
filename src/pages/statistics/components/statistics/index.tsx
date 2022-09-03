@@ -118,65 +118,69 @@ function Statistics({ userId }: StatisticsProps) {
 
   return (
     <Container>
-      <h2 className="fw-bold my-5">Статистика за сегодня</h2>
-
       {isFetching ? (
         'Loading...'
       ) : (
         <>
-          <Row
-            xs={1}
-            md={2}
-            lg={3}
-            className="mx-auto g-4 mb-5 justify-content-center"
-            style={{ maxWidth: '62rem' }}
-          >
-            <Col>
-              <StatsCard title="Новых слов">{stats.today.newWords}</StatsCard>
-            </Col>
-
-            <Col>
-              <StatsCard title="Изучено слов">{0}</StatsCard>
-            </Col>
-
-            <Col>
-              <StatsCard title="Правильных ответов">
-                {getPrcntStr(
-                  stats.today.rightAnswers,
-                  stats.today.totalAnswers,
-                )}
-              </StatsCard>
-            </Col>
-          </Row>
-
-          <Row
-            xs={1}
-            md={2}
-            className="mx-auto mb-5 g-4"
-            style={{ maxWidth: '40rem' }}
-          >
-            {stats.games.map((game) => (
-              <Col key={`${game.id}_stats-col`}>
-                <GameStatsCard
-                  key={`${game.id}_stats-card`}
-                  id={game.id}
-                  title={GAME_TITLES[game.id]}
-                  stats={game}
-                />
+          <section>
+            <h2 className="fw-bold my-5">Статистика за сегодня</h2>
+            <Row
+              xs={1}
+              md={2}
+              lg={3}
+              className="mx-auto g-4 mb-5 justify-content-center"
+              style={{ maxWidth: '62rem' }}
+            >
+              <Col>
+                <StatsCard title="Новых слов">{stats.today.newWords}</StatsCard>
               </Col>
-            ))}
-          </Row>
 
-          <Row
-            className="justify-content-center px-3 mx-auto"
-            style={{ maxWidth: '40rem' }}
-          >
-            <LTStatsChart
-              metric="newWords"
-              title="Новых слов"
-              data={stats.wordsStatsByDay}
-            />
-          </Row>
+              <Col>
+                <StatsCard title="Изучено слов">{0}</StatsCard>
+              </Col>
+
+              <Col>
+                <StatsCard title="Правильных ответов">
+                  {getPrcntStr(
+                    stats.today.rightAnswers,
+                    stats.today.totalAnswers,
+                  )}
+                </StatsCard>
+              </Col>
+            </Row>
+
+            <Row
+              xs={1}
+              md={2}
+              className="mx-auto mb-5 g-4"
+              style={{ maxWidth: '40rem' }}
+            >
+              {stats.games.map((game) => (
+                <Col key={`${game.id}_stats-col`}>
+                  <GameStatsCard
+                    key={`${game.id}_stats-card`}
+                    id={game.id}
+                    title={GAME_TITLES[game.id]}
+                    stats={game}
+                  />
+                </Col>
+              ))}
+            </Row>
+          </section>
+
+          <section>
+            <h2 className="fw-bold my-5">Статистика за все время</h2>
+            <Row
+              className="justify-content-center px-3 mx-auto"
+              style={{ maxWidth: '40rem' }}
+            >
+              <LTStatsChart
+                metric="newWords"
+                title="Новых слов"
+                data={stats.wordsStatsByDay}
+              />
+            </Row>
+          </section>
         </>
       )}
     </Container>
