@@ -1,14 +1,10 @@
+import { useEffect, useState } from 'react';
 import {
-  // AreaChart,
-  // Area,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
-  LineChart,
   Legend,
-  Line,
-  BarChart,
   Bar,
   ComposedChart,
   ResponsiveContainer,
@@ -22,28 +18,36 @@ interface LTStatsChartProps {
   title: string;
 }
 
-const accumulateData = (statsArr: IWordsStats[]) => {
-  let learnedWordsTotal = 0;
-  let newWordsTotal = 0;
+const accumulateData = (
+  statsArr: IWordsStats[],
+  metric: keyof IWordsStats,
+  totalKey: string,
+) => {
+  let metricTotal = 0;
   return statsArr.map((stats) => {
-    learnedWordsTotal += stats.learnedWords;
-    newWordsTotal += stats.newWords;
+    if (typeof stats[metric] === 'number') {
+      metricTotal += stats[metric] as number;
+    }
     return {
       ...stats,
-      learnedWords: stats.learnedWords,
-      newWords: stats.newWords,
-      learnedWordsTotal,
-      newWordsTotal,
+      [metric]: stats[metric],
+      [totalKey]: metricTotal,
     };
   });
 };
 
-function LTStatsChart({ data }: LTStatsChartProps) {
-  const accData = accumulateData(data);
-  console.log(accData);
+function LTStatsChart({ data, metric, title }: LTStatsChartProps) {
+  const metricTotal = `${metric}Total`;
+
+  const [accData, setAccData] = useState<IWordsStats[]>([]);
+
+  useEffect(() => {
+    setAccData(accumulateData(data, metric, metricTotal));
+  }, [data]);
+
   return (
     <ResponsiveContainer width="100%" height={300}>
-      <LineChart
+      <ComposedChart
         width={500}
         height={300}
         data={accData}
@@ -53,55 +57,49 @@ function LTStatsChart({ data }: LTStatsChartProps) {
           left: 0,
           bottom: 0,
         }}
+        barCategoryGap="10%"
       >
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="date" scale="band" />
+        <XAxis dataKey="date" scale="auto" />
         <YAxis />
         <Tooltip
           formatter={(val: number, name: string) => {
             switch (name) {
-              case 'newWordsTotal':
-                return [val, 'Новых слов всего'];
-              case 'newWords':
-                return [val, 'Новых слов за день'];
+              case metricTotal:
+                return [val, `${title} всего`];
+              case metric:
+                return [val, `${title} за день`];
               default:
                 return val;
             }
           }}
           itemSorter={(payload) => -Number(payload.value) ?? 0}
+          offset={0}
         />
 
         <Legend
           align="center"
           formatter={(val: string) => {
             switch (val) {
-              case 'newWordsTotal':
-                return 'Новых слов всего';
-              case 'newWords':
-                return 'Новых слов за день';
+              case metricTotal:
+                return `${title} всего`;
+              case metric:
+                return `${title} за день`;
               default:
                 return val;
             }
           }}
         />
-        {/* <Bar dataKey="newWords" fill="#8884d8" stackId={0} />
-        <Bar dataKey="newWordsTotal" fill="#82ca9d" stackId={0} /> */}
-        {/* <Area
-        type="monotone"
-        dataKey='newWordsTotal'
-        stroke="#8884d8"
-        fill="#8884d8"
-      /> */}
-        {/* <Area
-        type="monotone"
-        dataKey='newWords'
-        stroke="#82ca9d"
-        fill="#82ca9d"
-      /> */}
-        {/* <Bar dataKey="uv" fill="#82ca9d" /> */}
-        <Line type="monotoneX" dataKey="newWordsTotal" stroke="#8884d8" />
-        <Line type="monotoneX" dataKey="newWords" stroke="#82ca9d" />
-      </LineChart>
+
+        <Area
+          type="monotone"
+          dataKey={metricTotal}
+          stroke="#82ca9d"
+          fill="#82ca9d"
+          strokeWidth={2}
+        />
+        <Bar dataKey={metric} fill="#8884d8" stackId={0} />
+      </ComposedChart>
     </ResponsiveContainer>
   );
 }
