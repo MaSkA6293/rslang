@@ -7,15 +7,15 @@ import SpeakerIcon from '../../assets/icons/speaker.svg';
 import CorrectIcon from '../../assets/icons/correct.svg';
 import WrongIcon from '../../assets/icons/wrong.svg';
 
-import { Word } from '../../data';
+import { IGetWordRes } from '../../../../API/types';
 import { BACKEND_URL } from '../../../../constants';
 
 const CorrectSound = require(`../../assets/audio/correct-choice.mp3`);
 const WrongSound = require(`../../assets/audio/wrong-choice.mp3`);
 
 interface GameIteraionProps {
-  word: Word;
-  options: Word[];
+  word: IGetWordRes;
+  options: IGetWordRes[];
   onNextWord: (isCorrect: boolean) => void;
 }
 

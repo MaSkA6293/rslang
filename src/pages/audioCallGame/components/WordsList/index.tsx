@@ -1,12 +1,12 @@
 import classNames from 'classnames';
-import { Word } from '../../data';
+import { IGetWordRes } from '../../../../API/types';
 import GameButton from '../GameButton';
 import './index.scss';
 import SpeakerIcon from '../../assets/icons/speaker.svg';
 import { BACKEND_URL } from '../../../../constants';
 
 interface WordsListProps {
-  words: Word[];
+  words: IGetWordRes[];
 }
 
 function WordsList({ words }: WordsListProps) {

@@ -2,21 +2,22 @@ import GameButton from '../GameButton';
 
 import './index.scss';
 
-import { Word } from '../../data';
+import { IGetWordRes } from '../../../../API/types';
 import { numWord } from '../../utils';
 import WordsList from '../WordsList/index';
 
-interface WordWithResult extends Word {
+interface WordWithResult extends IGetWordRes {
   result: boolean;
 }
 
 interface GameFinishProps {
+  isSaving: boolean;
   words: WordWithResult[];
   onRestart: () => void;
   onClose: () => void;
 }
 
-function GameFinish({ words, onRestart, onClose }: GameFinishProps) {
+function GameFinish({ words, onRestart, onClose, isSaving }: GameFinishProps) {
   const guessedWords = words.filter((word) => word.result);
   const failedWords = words.filter((word) => !word.result);
   const correctCount = guessedWords.length;
@@ -47,10 +48,10 @@ function GameFinish({ words, onRestart, onClose }: GameFinishProps) {
       </div>
 
       <div className="game-finish__buttons">
-        <GameButton onClick={onRestart} variant="colored">
+        <GameButton onClick={onRestart} variant="colored" disabled={isSaving}>
           Повторить
         </GameButton>
-        <GameButton onClick={onClose} variant="outlined">
+        <GameButton onClick={onClose} variant="outlined" disabled={isSaving}>
           Выйти
         </GameButton>
       </div>

@@ -1,4 +1,4 @@
-import { IUserWordCreate, IUserWords } from '../../../API/types';
+import { IUserWordCreate, IUserWords, IGetWordRes } from '../../../API/types';
 
 export function getNewWordDifficult(): IUserWordCreate {
   return {
@@ -35,5 +35,24 @@ export function modifyLearned(checkWord: IUserWords): IUserWordCreate {
   return {
     difficulty: checkWord.difficulty,
     optional: { ...checkWord.optional, learned: !checkWord.optional.learned },
+  };
+}
+
+export function getDefaultWord(): IGetWordRes {
+  return {
+    id: '11',
+    group: 1,
+    page: 1,
+    word: 'string',
+    image: 'string',
+    audio: 'string',
+    audioMeaning: 'string',
+    audioExample: 'string',
+    textMeaning: 'string',
+    textExample: 'string',
+    transcription: 'string',
+    wordTranslate: 'string',
+    textMeaningTranslate: 'string',
+    textExampleTranslate: 'string',
   };
 }
