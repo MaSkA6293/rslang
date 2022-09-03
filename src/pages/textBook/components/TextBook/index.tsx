@@ -63,13 +63,13 @@ function TextBook() {
           )}
         </div>
 
-        {view === textBookView.textBook ? (
+        {view === textBookView.dictionary && user.userId ? (
+          <DifficultWords user={user} />
+        ) : (
           <>
             <ControlPanel />
             <TextBookContent userId={user.userId} />
           </>
-        ) : (
-          <DifficultWords user={user} />
         )}
       </div>
     </div>
