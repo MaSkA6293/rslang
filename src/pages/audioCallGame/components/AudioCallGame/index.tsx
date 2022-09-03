@@ -221,8 +221,8 @@ function AudioCallGame() {
     if (userId === null) return;
     const rightAnswers = gameState.wordsResults.filter((r) => r).length;
     const wrongAnswers = gameState.wordsResults.length - rightAnswers;
-    const wordCounter = gameState.words.filter((w) =>
-      userWords?.some(({ wordId }) => wordId === w.id),
+    const wordCounter = gameState.words.filter(
+      (w) => !userWords?.some(({ wordId }) => wordId === w.id),
     ).length;
     const bestSeries = getBestSeriesCount(gameState.wordsResults, true);
     const createdOn = new Date();
