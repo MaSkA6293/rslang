@@ -53,7 +53,10 @@ const initialStats: IStats = {
 };
 
 function Statistics({ userId }: StatisticsProps) {
-  const { data, isFetching, isError } = useGetUserStatisticQuery({ userId });
+  const { data, isFetching, isError } = useGetUserStatisticQuery(
+    { userId },
+    { refetchOnMountOrArgChange: true },
+  );
 
   const [stats, setStats] = useState(initialStats);
 
