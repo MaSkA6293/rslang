@@ -34,7 +34,7 @@ function TextBook() {
     group,
   });
 
-  const { data: userWords = [], isLoading: isUserWordsLoading, isFetching: isWFetch } =
+  const { data: userWords = [], isLoading: isUserWordsLoading } =
     useGetUserWordsQuery(user, { skip: !user.userId });
 
   const {
@@ -46,7 +46,7 @@ function TextBook() {
       userId,
       filter: JSON.stringify({ $and: [{ 'userWord.difficulty': 'yes' }] }),
     },
-    { skip: !userId || isWFetch},
+    { skip: !userId },
   );
 
   const isLoading = isAggWordsLoading || isUserWordsLoading || isWordsLoading;
