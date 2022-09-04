@@ -31,9 +31,9 @@ const baseQuary = fetchBaseQuery({
 
 const baseQueryWithReauth: BaseQueryFn = async (args, api, extraOptions) => {
   let result = await baseQuary(args, api, extraOptions)
-  const {error, originalStatus} = result as Record<any, any>
+  const {error} = result as Record<any, any>
   console.log(result);
-  if (error && originalStatus === 401) {
+  if (error && error.originalStatus === 401) {
     // sending refresh token
     const { user } = (api.getState() as RootState).auth;
     const { userId, refreshToken } = user;

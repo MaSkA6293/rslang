@@ -1,28 +1,36 @@
 /* eslint-disable prefer-arrow-callback */
+import { Button } from 'react-bootstrap';
 import { useEffect, useRef, useState, memo, useMemo } from 'react';
 import { IGetWordRes } from '../../../../API/types';
 import { shuffleArray } from '../../Utils/suffleArray';
+import SpeakerIcon from '../../../games/assets/icons/speaker.svg';
+import { BACKEND_URL } from '../../../../constants';
+import GameButton from '../../../audioCallGame/components/GameButton';
+import styles from './Game.module.scss';
 
 interface props {
   handleRightAnswer: (answer: IGetWordRes) => void;
   handleWrongAnswer: (answer: IGetWordRes) => void;
   endGame: () => void;
   words: IGetWordRes[];
-  isLoading: boolean;
 }
 
-export default memo(function Game({
+export default memo(function SprintGame({
   endGame,
   words,
-  isLoading,
   handleRightAnswer,
   handleWrongAnswer,
 }: props) {
   const [curItem, setCurItem] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(61);
+  const [timeLeft, setTimeLeft] = useState(6220);
   const timerRef = useRef<ReturnType<typeof setInterval>>();
+  const wordAudioUrl = new URL(words[curItem].audio, BACKEND_URL).toString();
+  const audio = new Audio(wordAudioUrl);
   const shuffleWords = useMemo(() => shuffleArray(words), [words]);
 
+  const playAudio = () => {
+    audio.play();
+  };
 
   const handleNextItem = () => {
     if (curItem >= words.length - 1) endGame();
@@ -44,35 +52,28 @@ export default memo(function Game({
   };
 
   useEffect(() => {
-    if (!isLoading) {
-      timerRef.current = setInterval(() => {
+    timerRef.current = setInterval(() => {
       setTimeLeft((prev) => prev - 1);
     }, 1000);
-    }
-  }, [isLoading]);
+  }, []);
 
   useEffect(() => {
     if (timeLeft <= 0) endGame();
   }, [timeLeft]);
 
-  if (isLoading) return <p>'Loading...'</p>;
-
   return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexDirection: 'column',
-      }}
-    >
-      {timeLeft}
-      <div>{words[curItem].word}</div>
-      <div>{shuffleWords[curItem].wordTranslate}</div>
-      <div style={{ display: 'flex' }}>
-        <button onClick={() => handleAnswer(true)}>Верно</button>
-        <div style={{ width: 5 }}> </div>
-        <button onClick={() => handleAnswer(false)}>Неверно</button>
+    <div className={styles.container}>
+      <h3 className={styles.timer}>{timeLeft}</h3>
+      <GameButton className={styles.audio} onClick={playAudio} icon={SpeakerIcon} shape="round" />
+      <h3 className={styles.word}>{words[curItem].word}</h3>
+      <h2 className={styles.word2}>{shuffleWords[curItem].wordTranslate}</h2>
+      <div className={styles.btns}>
+        <Button className={styles.btn} onClick={() => handleAnswer(false)} variant="danger">
+          Неверно{' '}
+        </Button>{' '}
+        <Button className={styles.btn} onClick={() => handleAnswer(true)} variant="success">
+          Верно
+        </Button>{' '}
       </div>
     </div>
   );
