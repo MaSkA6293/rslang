@@ -22,8 +22,6 @@ import GameStartScreen from '../games/components/GameStartScreen/GameStartScreen
 import { useGetWordsWithPrms } from './hooks/useGetWordsWithPrms';
 import { useIsFromTextBook } from './hooks/useIsFromTextBook';
 import SprintDescription from './components/SprintDescription/SprintDescription';
-
-import checkIsWordNew from './Utils/checkIsWordNew';
 import { GetDefaultStatiscitObj } from './Utils/GetDefaultStatiscitObj';
 import { getObjToCreateUserWord } from './Utils/getObjToCreateUserWord';
 import { getObjToUpdateUserWord } from './Utils/getObjToUpdateUserWord';
@@ -65,7 +63,7 @@ function SprintGamePage() {
     isFromTextBook,
     userWords,
   });
-  const [newWords, setNewWord] = useState<string[]>([]);
+  const [newWords, setNewWord] = useState(0);
 
   useEffect(() => {
     if (isStatEror) {
@@ -106,10 +104,6 @@ function SprintGamePage() {
     setSeries(0);
   };
 
-  const checkNewWord = ({ wordId }: { wordId: string }) => {
-    const isWordNew = checkIsWordNew({ stat, wordId });
-    if (isWordNew) setNewWord((prev) => [...prev, wordId]);
-  };
 
   const handleRightAnswer = (word: IGetWordRes) => {
     setRightAnswers((prev) => [...prev, word]);
@@ -120,11 +114,12 @@ function SprintGamePage() {
       const userWord = userWords.find(
         (userWord) => userWord.wordId === word.id,
       );
-      checkNewWord({ wordId: word.id });
+     
       if (userWord) {
         const body = getObjToUpdateUserWord({ userWord, answer: 'right' });
         updateUserWord({ userId, wordId: word.id, body });
       } else {
+        setNewWord(prev => prev + 1)
         addUserWord({
           userId,
           wordId: word.id,
@@ -144,12 +139,11 @@ function SprintGamePage() {
         (userWord) => userWord.wordId === word.id,
       );
 
-      checkNewWord({ wordId: word.id });
-
       if (userWord) {
         const body = getObjToUpdateUserWord({ userWord, answer: 'wrong' });
         updateUserWord({ userId, wordId: word.id, body });
       } else {
+        setNewWord(prev => prev + 1)
         addUserWord({
           userId,
           wordId: word.id,

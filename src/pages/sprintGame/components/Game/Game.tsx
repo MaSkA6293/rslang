@@ -22,7 +22,7 @@ export default memo(function SprintGame({
   handleWrongAnswer,
 }: props) {
   const [curItem, setCurItem] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(6220);
+  const [timeLeft, setTimeLeft] = useState(10);
   const timerRef = useRef<ReturnType<typeof setInterval>>();
   const wordAudioUrl = new URL(words[curItem].audio, BACKEND_URL).toString();
   const audio = new Audio(wordAudioUrl);

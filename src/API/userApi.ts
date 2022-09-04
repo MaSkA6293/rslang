@@ -32,8 +32,9 @@ const baseQuary = fetchBaseQuery({
 const baseQueryWithReauth: BaseQueryFn = async (args, api, extraOptions) => {
   let result = await baseQuary(args, api, extraOptions)
   const {error} = result as Record<any, any>
-  console.log(result);
-  if (error && error.originalStatus === 401) {
+  console.log('Результат отправки запроса', result);
+  if (error?.originalStatus === 401) {
+    console.log('Токин истек, запрашиваем новый')
     // sending refresh token
     const { user } = (api.getState() as RootState).auth;
     const { userId, refreshToken } = user;
@@ -42,10 +43,13 @@ const baseQueryWithReauth: BaseQueryFn = async (args, api, extraOptions) => {
         authorization: `Bearer ${refreshToken}`,
       },
     });
-
+    console.log('Ответ от сервера по поводу новых токенов', refreshReq)
     if (refreshReq.ok && refreshReq.status === 200) {
+      console.log('Рефреш токин был валиден, сервер прислал новые токины, обновляем')
       const newTokens = await refreshReq.json();
+
       api.dispatch(setCredential({ ...user, ...newTokens }));
+      
       // try the original query with new access token
       result = await baseQuary(args, api, extraOptions);
     } else {

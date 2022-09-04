@@ -23,7 +23,6 @@ export interface IUserWordCreate {
 }
 
 export interface IResultGame {
-  newWords: string[];
   rightAnswers: number;
   wordCounter: number;
   wrongAnswers: number;

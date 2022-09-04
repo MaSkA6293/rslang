@@ -233,7 +233,6 @@ function AudioCallGame() {
       wordCounter,
       bestSeries,
       createdOn,
-      newWords: []
     };
     const prevResults = userStats?.optional;
     const prevGameResults = JSON.parse(userStats?.optional?.audioСall ?? '[]');
