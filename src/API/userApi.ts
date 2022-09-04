@@ -12,7 +12,7 @@ import {
   IUpdateUserRes,
   IupsertUserStatistic,
   IStatistics,
-  IUserStatisticsRes
+  IUserStatisticsRes,
 } from './types';
 
 const baseQuary = fetchBaseQuery({
@@ -30,10 +30,10 @@ const baseQuary = fetchBaseQuery({
 });
 
 const baseQueryWithReauth: BaseQueryFn = async (args, api, extraOptions) => {
-  let result = await baseQuary(args, api, extraOptions)
-  const {error, originalStatus} = result as Record<any, any>
+  let result = await baseQuary(args, api, extraOptions);
+  const { error, originalStatus } = result as Record<any, any>;
   console.log(result);
-  if (error && originalStatus === 401) {
+  if (error || originalStatus === 401) {
     // sending refresh token
     const { user } = (api.getState() as RootState).auth;
     const { userId, refreshToken } = user;
@@ -62,11 +62,11 @@ export const userApi = createApi({
   endpoints: (builder) => ({
     getUser: builder.query<IGetUserResponse, { userId: string }>({
       query: ({ userId }) => `users/${userId}`,
-      providesTags: ['Profile']
+      providesTags: ['Profile'],
     }),
     getUserStatistic: builder.query<IUserStatisticsRes, Pick<User, 'userId'>>({
       query: ({ userId }) => `/users/${userId}/statistics`,
-      providesTags: ['Statistic']
+      providesTags: ['Statistic'],
     }),
     upsertUserStatistic: builder.mutation<
       IUserStatisticsRes,
@@ -77,7 +77,7 @@ export const userApi = createApi({
         method: 'PUT',
         body,
       }),
-      invalidatesTags: ['Statistic']
+      invalidatesTags: ['Statistic'],
     }),
     register: builder.mutation<IUpdateUserRes, IUpdateUserRes>({
       query: (body) => ({
@@ -99,7 +99,7 @@ export const userApi = createApi({
         method: 'PUT',
         body,
       }),
-      invalidatesTags: ['Profile']
+      invalidatesTags: ['Profile'],
     }),
     deleteUser: builder.mutation<null, { userId: string }>({
       query: ({ userId }) => ({
