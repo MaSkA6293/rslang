@@ -1,85 +1,125 @@
-// /* eslint-disable no-redeclare */
-// /* eslint-disable no-return-assign */
-// import { testStat } from '../API/newtypes';
+import {
+  IdateStatObj,
+  ItestDatesStat,
+  ItestDayStat,
+  ItestGameResultStat,
+  ItestGamesStat,
+} from '../API/newtypes';
 
-// export function getDefaultStat(): testStat {
-//   return {
-//     learnedWords: 0,
-//     optional: {
-//       '04.09.22': {
-//         learnedWords: [],
-//         games: {
-//           sprint: {
-//             newWords: [],
-//             rightAnswers: 0,
-//             wrongAnswers: 0,
-//             bestSeries: 0,
-//           },
-//         },
-//       },
-//     },
-//   };
-// }
+export function getTimeToday() {
+  const today = new Date();
+  return `${today.getDate()}.${today.getMonth()}.${today.getFullYear()}`;
+}
 
-// export function getTimeToday() {
-//   const today = new Date();
-//   return `${today.getDate()}.${today.getMonth()}.${today.getFullYear()}`;
-// }
+export function makeDayDafaultStat(): IdateStatObj {
+  const date = getTimeToday();
+  const gamesName = ['sprint', 'autoCall'];
 
-// export function getDayDefaultStat(date: string) {
-//   const games = ['sprint', 'autoCall'];
+  const result: ItestGameResultStat = {
+    newWords: [],
+    rightAnswers: 0,
+    wrongAnswers: 0,
+    bestSeries: 0,
+  };
 
-//   const result = {
-//     newWords: [],
-//     rightAnswers: 0,
-//     wrongAnswers: 0,
-//     bestSeries: 0,
-//   };
+  const games: ItestGamesStat = {
+    ...Object.fromEntries(gamesName.map((name) => [name, result])),
+  };
 
-//   const gamesWithResults: Record<string, any> = {};
+  const dateValues: ItestDatesStat = {
+    learnedWords: [],
+    games,
+  };
 
-//   games.forEach(name => {
-//     gamesWithResults[name] = result
-//   })
+  return {
+    [date]: dateValues,
+  };
+}
 
-//   return {
-//     [date]: {
-//       learnedWords: [],
-//       games: {
-//         sprint: [],
-//       },
-//     },
-//   };
-// }
+export function makeStartedDefaultStat(): ItestDayStat {
+  return {
+    learnedWords: 0,
+    optional: {
+      ...makeDayDafaultStat(),
+    },
+  };
+}
 
-// function changeStatByLearnedWord({
-//   stat,
-//   learnedWordId,
-//   isToDelete,
-// }: {
-//   stat: testStat;
-// }): testStat {
-//   let { learnedWords, optional } = stat;
-//   const today = getTimeToday();
+export function changeStatByLearnedWord({
+  stat,
+  learnedWordId,
+  isToDelete,
+}: {
+  stat: ItestDayStat;
+  learnedWordId: string;
+  isToDelete: boolean;
+}): ItestDayStat {
+  const date = getTimeToday();
+  const { optional } = stat;
+  let dateObj = optional?.[date] ?? makeDayDafaultStat()[date];
+  let { learnedWords } = dateObj;
+  if (isToDelete) {
+    learnedWords = learnedWords.filter((word) => word !== learnedWordId);
+  } else {
+    learnedWords = learnedWords.includes(learnedWordId)
+      ? learnedWords
+      : [...learnedWords, learnedWordId];
+  }
 
-//   if (!Object.keys(optional).includes(today))
-//     optional = {
-//       ...optional,
-//       ...getDayDefaultStat(today),
-//     };
+  dateObj = { ...dateObj, learnedWords };
 
-//   const currentObj = optional[today as keyof typeof optional];
-//   let { learnedWords } = currentObj;
+  return {
+    learnedWords: 0,
+    optional: {
+      ...stat.optional,
+      ...{ [date]: dateObj },
+    },
+  };
+}
 
-//   if (isToDelete) {
-//     learnedWords = learnedWords.filter((a) => a !== learnedWordId);
-//   } else {
-//     learnedWords = learnedWords.includes(learnedWordId)
-//       ? learnedWords
-//       : [...learnedWords, learnedWordId];
-//   }
-// }
+export function updateStat({
+  stat,
+  gameName,
+  wordId,
+  series,
+  isRight,
+}: {
+  gameName: string,
+  stat: ItestDayStat,
+  wordId?: string;
+  isRight?: boolean;
+  series?: number;
+}): ItestDayStat{
+  const date = getTimeToday()
+  const {optional} = stat
+  const {games, learnedWords} = optional[date]
+  const results = games[gameName as keyof typeof games]
+  let {newWords, rightAnswers, bestSeries, wrongAnswers} = results
+  if (wordId) newWords = newWords.includes(wordId) ? newWords : [...newWords, wordId]
+  if (isRight !== undefined) {
+    rightAnswers = isRight ? rightAnswers + 1 : rightAnswers 
+    wrongAnswers = isRight ? wrongAnswers : wrongAnswers + 1
+  }
+  if (series) bestSeries = series > bestSeries ? series : bestSeries
+  
+  const curDateObj = {
+    learnedWords,
+    games: {
+      ...games,
+      [gameName]: {
+        newWords,
+        rightAnswers,
+        wrongAnswers,
+        bestSeries
+      }
+    }
+  }
 
-export function fuck() {
-  return 'fuck'
+  return {
+    learnedWords: 0,
+    optional: {
+      ...stat.optional,
+      [date]: curDateObj
+    }
+  }
 }

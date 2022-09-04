@@ -70,6 +70,7 @@ const baseQueryWithReauth: BaseQueryFn = async (args, api, extraOptions) => {
         // try the original query with new access token
         result = await baseQuary(args, api, extraOptions);
       } else {
+        console.log('Рефреш токин пришел невалидный, логаут')
         api.dispatch(logOut());
       }
       isQueueBusy = false
@@ -77,7 +78,7 @@ const baseQueryWithReauth: BaseQueryFn = async (args, api, extraOptions) => {
     } else {
       console.log("очередь, ждем")
       await wait()
-      result =  await baseQuary(args, api, extraOptions);
+      result = await baseQuary(args, api, extraOptions)
     }
   }
 
