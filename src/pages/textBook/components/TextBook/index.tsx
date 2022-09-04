@@ -34,8 +34,10 @@ function TextBook() {
     group,
   });
 
-  const { data: userWords = [], isLoading: isUserWordsLoading } =
-    useGetUserWordsQuery(user, { skip: !user.userId });
+  const {
+    data: userWords = [],
+    isLoading: isUserWordsLoading,
+  } = useGetUserWordsQuery(user, { skip: !user.userId });
 
   const {
     data: aggWords = [],
@@ -103,17 +105,17 @@ function TextBook() {
           {...{ isLoading }}
           error={isError ? 'Произошла ошибка' : ''}
         >
-          {view === textBookView.textBook ? (
-            <>
-              <ControlPanel />
-              <TextBookContent {...{ userWords, words }} userId={user.userId} />
-            </>
-          ) : (
+          {view === textBookView.dictionary && user.userId ? (
             <DifficultWords
               {...{ userWords }}
               user={user}
               dataWordsRender={aggWords}
             />
+          ) : (
+            <>
+              <ControlPanel />
+              <TextBookContent {...{ userWords, words }} userId={user.userId} />
+            </>
           )}
         </DelayLoader>
       </div>
