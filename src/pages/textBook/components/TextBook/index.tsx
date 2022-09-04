@@ -1,22 +1,55 @@
-import React from 'react';
-import './index.scss';
-import Button from 'react-bootstrap/Button';
 import classNames from 'classnames';
-import ControlPanel from '../ControlPanel';
-import TextBookContent from '../TextBookContent';
-import DifficultWords from '../DifficultWords';
-import { useAppSelector, useAppDispatch } from '../../../../app/hooks';
+import React from 'react';
+import Button from 'react-bootstrap/Button';
+import {
+  useGetAggregatedWordsQuery,
+  useGetUserWordsQuery,
+  useGetWordsQuery,
+} from '../../../../API/wordsApi';
+import { useAppDispatch, useAppSelector } from '../../../../app/hooks';
 import { selectCurrentUser } from '../../../../features/auth/authSlice';
 import {
+  selectTextBook,
   selectTextBookView,
   setTextBookView,
 } from '../../../../features/textBook/textBook';
 import { textBookView } from '../../../../types';
+import DelayLoader from '../../../games/components/DelayLoader/DelayLoader';
+import ControlPanel from '../ControlPanel';
+import DifficultWords from '../DifficultWords';
+import TextBookContent from '../TextBookContent';
+import './index.scss';
 
 function TextBook() {
   const view = useAppSelector(selectTextBookView);
   const user = useAppSelector(selectCurrentUser);
+  const userId = user.userId ? user.userId : '';
+
   const dispatch = useAppDispatch();
+
+  const { group, page } = useAppSelector(selectTextBook);
+
+  const { data: words = [], isLoading: isWordsLoading } = useGetWordsQuery({
+    page,
+    group,
+  });
+
+  const { data: userWords = [], isLoading: isUserWordsLoading, isFetching: isWFetch } =
+    useGetUserWordsQuery(user, { skip: !user.userId });
+
+  const {
+    data: aggWords = [],
+    isLoading: isAggWordsLoading,
+    isError,
+  } = useGetAggregatedWordsQuery(
+    {
+      userId,
+      filter: JSON.stringify({ $and: [{ 'userWord.difficulty': 'yes' }] }),
+    },
+    { skip: !userId || isWFetch},
+  );
+
+  const isLoading = isAggWordsLoading || isUserWordsLoading || isWordsLoading;
 
   const handleChange = (e: React.MouseEvent<HTMLElement>) => {
     const target = e.target as HTMLElement;
@@ -31,6 +64,10 @@ function TextBook() {
       dispatch(setTextBookView(textBookView.textBook));
     }
   };
+
+  React.useEffect(() => {
+    if (!user.userId) dispatch(setTextBookView(textBookView.textBook));
+  }, []);
 
   return (
     <div className="text-book">
@@ -62,15 +99,23 @@ function TextBook() {
             ''
           )}
         </div>
-
-        {view === textBookView.textBook ? (
-          <>
-            <ControlPanel />
-            <TextBookContent userId={user.userId} />
-          </>
-        ) : (
-          <DifficultWords user={user} />
-        )}
+        <DelayLoader
+          {...{ isLoading }}
+          error={isError ? 'Произошла ошибка' : ''}
+        >
+          {view === textBookView.textBook ? (
+            <>
+              <ControlPanel />
+              <TextBookContent {...{ userWords, words }} userId={user.userId} />
+            </>
+          ) : (
+            <DifficultWords
+              {...{ userWords }}
+              user={user}
+              dataWordsRender={aggWords}
+            />
+          )}
+        </DelayLoader>
       </div>
     </div>
   );

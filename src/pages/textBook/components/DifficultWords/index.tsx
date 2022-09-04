@@ -1,29 +1,26 @@
-import { useEffect, useState, useRef } from 'react';
-import Spinner from 'react-bootstrap/Spinner';
 import classNames from 'classnames';
-import './index.scss';
-import { User } from '../../../../features/auth/authSlice';
-import { useAppSelector } from '../../../../app/hooks';
-import { colorsOfLevels } from '../../types';
-import { selectTextBook } from '../../../../features/textBook/textBook';
-import { BACKEND_URL } from '../../../../constants';
-import Card from '../Card';
-import { getDefaultWord } from '../../utilites';
+import { useEffect, useRef, useState } from 'react';
 import {
-  useGetUserWordsQuery,
-  useGetAggregatedWordsQuery,
-} from '../../../../API/wordsApi';
-import {
-  IGetWordResAgregate,
-  IUserWords,
-  IGetWordRes,
+  IGetAggregatedWordsResponce,
+  IGetWordRes, IGetWordResAgregate,
+  IUserWords
 } from '../../../../API/types';
+import { useAppSelector } from '../../../../app/hooks';
+import { BACKEND_URL } from '../../../../constants';
+import { User } from '../../../../features/auth/authSlice';
+import { selectTextBook } from '../../../../features/textBook/textBook';
+import { colorsOfLevels } from '../../types';
+import { getDefaultWord } from '../../utilites';
+import Card from '../Card';
+import './index.scss';
 
 interface IDifficultWords {
   user: User;
+  userWords: IUserWords[]
+  dataWordsRender: IGetAggregatedWordsResponce[];
 }
 
-function DifficultWords({ user }: IDifficultWords) {
+function DifficultWords({ user, userWords, dataWordsRender }: IDifficultWords) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [paths, setPaths] = useState<[] | string[]>([]);
 
@@ -33,14 +30,8 @@ function DifficultWords({ user }: IDifficultWords) {
   const path = `${BACKEND_URL}/`;
 
   const { group } = useAppSelector(selectTextBook);
-  const { data: userWords = [], isLoading: userWordsLoading } =
-    useGetUserWordsQuery(user);
 
-  const { data: dataWordsRender = [], isLoading: dataWordsRenderLoading } =
-    useGetAggregatedWordsQuery({
-      userId,
-      filter: JSON.stringify({ $and: [{ 'userWord.difficulty': 'yes' }] }),
-    });
+
 
   const color: string = colorsOfLevels[group][1];
 
@@ -83,13 +74,6 @@ function DifficultWords({ user }: IDifficultWords) {
     },
     [],
   );
-
-  if (userWordsLoading || dataWordsRenderLoading)
-    return (
-      <div className="loading">
-        <Spinner animation="border" variant="primary" />
-      </div>
-    );
 
   return (
     <div className="page">

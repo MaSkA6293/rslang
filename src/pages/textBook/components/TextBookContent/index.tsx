@@ -1,46 +1,34 @@
-import { useEffect, useState, useRef } from 'react';
-import Spinner from 'react-bootstrap/Spinner';
-import './index.scss';
 import classNames from 'classnames';
-import {
-  selectTextBook,
-  setLearnedPage,
-  removeLearnedPage,
-  selectLearnedPages,
-} from '../../../../features/textBook/textBook';
-import { useAppSelector, useAppDispatch } from '../../../../app/hooks';
-import {
-  useGetUserWordsQuery,
-  useGetWordsQuery,
-} from '../../../../API/wordsApi';
-import { colorsOfLevels } from '../../types';
+import { useEffect, useRef, useState } from 'react';
 import { IGetWordRes, IUserWords } from '../../../../API/types';
+import { useAppDispatch, useAppSelector } from '../../../../app/hooks';
 import { BACKEND_URL } from '../../../../constants';
-import { selectCurrentUser } from '../../../../features/auth/authSlice';
+import {
+  removeLearnedPage,
+  selectLearnedPages, selectTextBook,
+  setLearnedPage
+} from '../../../../features/textBook/textBook';
+import { colorsOfLevels } from '../../types';
 import Card from '../Card';
+import './index.scss';
 
 interface ITextBookContent {
   userId: string | null;
+  userWords: IUserWords[];
+  words: IGetWordRes[]
 }
 
-function TextBookContent({ userId }: ITextBookContent) {
+function TextBookContent({ userId, userWords, words }: ITextBookContent) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [paths, setPaths] = useState<[] | string[]>([]);
   const audio = useRef(new Audio());
   const [learned, setLearned] = useState(false);
 
-  const user = useAppSelector(selectCurrentUser);
 
   const learnedPages = useAppSelector(selectLearnedPages);
   const path = `${BACKEND_URL}/`;
 
   const { group, page } = useAppSelector(selectTextBook);
-  const { data: userWords = [], isLoading: userWordsLoading } =
-    useGetUserWordsQuery(user);
-  const { data: words = [], isLoading: wordsLoading } = useGetWordsQuery({
-    page,
-    group,
-  });
 
   const color: string = colorsOfLevels[group][1];
 
@@ -133,15 +121,8 @@ function TextBookContent({ userId }: ITextBookContent) {
     [],
   );
 
-  if (userWordsLoading || wordsLoading)
-    return (
-      <div className="loading">
-        <Spinner animation="border" variant="primary" />
-      </div>
-    );
-
   return (
-    <div className="page">
+    <div className="page">  
       <div
         className={classNames(
           'page__container',

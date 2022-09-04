@@ -1,15 +1,15 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAppSelector } from '../../app/hooks';
-import { selectCurrentUser } from '../../features/auth/authSlice';
+import { selectUserId } from '../../features/auth/authSlice';
 
 export default function RequireAuth({
   children,
 }: {
   children: React.ReactElement;
 }) {
-  const { token } = useAppSelector(selectCurrentUser);
+  const userId = useAppSelector(selectUserId);
 
-  if (!token) return <Navigate to="/" replace />;
+  if (!userId) return <Navigate to="/" replace />;
   return children;
 }
