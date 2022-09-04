@@ -1,38 +1,35 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import '../games/styles/style.scss';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import crossIcon from '../games/assets/icons/cross.svg';
-import { IGetWordRes, IUserStatisticsRes } from '../../API/types';
-import {
-  useGetUserStatisticQuery,
-  useUpsertUserStatisticMutation,
-} from '../../API/userApi';
+import { IGetWordRes } from '../../API/types';
+import { useGetUserStatisticQuery, useUpsertUserStatisticMutation } from '../../API/userApi';
 import {
   useCreateUserWordMutation,
   useGetUserWordsQuery,
-  useUpdateUserWordMutation,
+  useUpdateUserWordMutation
 } from '../../API/wordsApi';
 import { useAppSelector } from '../../app/hooks';
 import { selectUserId } from '../../features/auth/authSlice';
-import SprintGame from './components/Game/Game';
+import { changeStatByLearnedWord, makeDayDafaultStat, makeStartedDefaultStat, updateStatWithPrms } from '../../hooks/statHelper';
+import GameButton from '../audioCallGame/components/GameButton';
+import crossIcon from '../games/assets/icons/cross.svg';
+import DelayLoader from '../games/components/DelayLoader/DelayLoader';
 import GameResults from '../games/components/GameResults/GameResults';
 import GameStartScreen from '../games/components/GameStartScreen/GameStartScreen';
+import '../games/styles/style.scss';
+import SprintGame from './components/Game/Game';
+import SprintDescription from './components/SprintDescription/SprintDescription';
 import { useGetWordsWithPrms } from './hooks/useGetWordsWithPrms';
 import { useIsFromTextBook } from './hooks/useIsFromTextBook';
-import SprintDescription from './components/SprintDescription/SprintDescription';
-import { GetDefaultStatiscitObj } from './Utils/GetDefaultStatiscitObj';
 import { getObjToCreateUserWord } from './Utils/getObjToCreateUserWord';
 import { getObjToUpdateUserWord } from './Utils/getObjToUpdateUserWord';
-import GetStatisticObj from './Utils/GetStatisticObj';
-import GameButton from '../audioCallGame/components/GameButton';
-import DelayLoader from '../games/components/DelayLoader/DelayLoader';
 
 const CorrectSound = require(`../games//assets/audio/correct-choice.mp3`);
 const WrongSound = require(`../games//assets/audio/wrong-choice.mp3`);
 
 function SprintGamePage() {
+  const gameName = 'sprint'
   const [group, setGroup] = useState(0);
   const navigate = useNavigate();
   const isFromTextBook = useIsFromTextBook();
@@ -45,12 +42,7 @@ function SprintGamePage() {
   const [series, setSeries] = useState(0);
   const [addUserWord] = useCreateUserWordMutation();
   const [updateUserWord] = useUpdateUserWordMutation();
-  const {
-    data: stat = {} as IUserStatisticsRes,
-    isLoading: isStatLoading,
-    isError: isStatEror,
-  } = useGetUserStatisticQuery({ userId }, { skip: !userId });
-  const [addStat, { isLoading: isSaving }] = useUpsertUserStatisticMutation();
+  
   const { data: userWords = [], isLoading: isUserWordsLoading } =
     useGetUserWordsQuery(
       { userId },
@@ -63,14 +55,14 @@ function SprintGamePage() {
     isFromTextBook,
     userWords,
   });
-  const [newWords, setNewWord] = useState(0);
+
+  const [updateStat] = useUpsertUserStatisticMutation()
+  const {data: stat, error, isLoading: isStatLoading} = useGetUserStatisticQuery({userId}, {skip: !userId})
 
   useEffect(() => {
-    if (isStatEror) {
-      const body = GetDefaultStatiscitObj();
-      addStat({ userId, body });
-    }
-  }, [isStatEror]);
+    type Ierror = {originalStatus: number}
+    if ((error as Ierror)?.originalStatus === 404) updateStat({userId, body: makeStartedDefaultStat()})
+  }, [error])
 
   const playAudio = (isGood: boolean) => {
 
@@ -85,15 +77,9 @@ function SprintGamePage() {
 
   const endGame = () => {
     setIsGameEnded(true);
-    const body = GetStatisticObj({
-      bestSeries: series,
-      gameName: 'sprint',
-      newWords,
-      rightAnswers: rightAnswers.length,
-      stat,
-      wrongAnswers: wrongAnswers.length,
-    });
-    addStat({ userId, body });
+    if (userId && stat) {
+      updateStat({userId, body: updateStatWithPrms({gameName, stat, series})})
+    }
   };
 
   const startGameAgain = () => {
@@ -111,20 +97,32 @@ function SprintGamePage() {
     playAudio(true)
 
     if (userId) {
+      let learnedStatus = 'default'
       const userWord = userWords.find(
         (userWord) => userWord.wordId === word.id,
       );
      
       if (userWord) {
-        const body = getObjToUpdateUserWord({ userWord, answer: 'right' });
+        const [choice, body] = getObjToUpdateUserWord({ userWord, answer: 'right' });
+        learnedStatus = choice
         updateUserWord({ userId, wordId: word.id, body });
       } else {
-        setNewWord(prev => prev + 1)
         addUserWord({
           userId,
           wordId: word.id,
           body: getObjToCreateUserWord(true),
         });
+      }
+
+      if (stat) {
+        let newstat = stat
+        if (learnedStatus === 'learned') {
+          newstat = changeStatByLearnedWord({stat: newstat, isToDelete: false, learnedWordId: word.id})
+        } else if (learnedStatus === 'unlearned') {
+          newstat = changeStatByLearnedWord({stat: newstat, isToDelete: true, learnedWordId: word.id})
+        }
+        newstat = updateStatWithPrms({stat: newstat, gameName, wordId: word.id, isRight: true} )
+        updateStat({userId, body: newstat})
       }
     }
   };
@@ -135,20 +133,32 @@ function SprintGamePage() {
     playAudio(false)
 
     if (userId) {
+      let learnedStatus = 'default'
       const userWord = userWords.find(
         (userWord) => userWord.wordId === word.id,
       );
 
       if (userWord) {
-        const body = getObjToUpdateUserWord({ userWord, answer: 'wrong' });
+        const [choice, body] = getObjToUpdateUserWord({ userWord, answer: 'wrong' });
+        learnedStatus = choice
         updateUserWord({ userId, wordId: word.id, body });
       } else {
-        setNewWord(prev => prev + 1)
         addUserWord({
           userId,
           wordId: word.id,
           body: getObjToCreateUserWord(false),
         });
+      }
+        
+      if (stat) {
+        let newstat = stat
+        if (learnedStatus === 'learned') {
+          newstat = changeStatByLearnedWord({stat: newstat, isToDelete: false, learnedWordId: word.id})
+        } else if (learnedStatus === 'unlearned') {
+          newstat = changeStatByLearnedWord({stat: newstat, isToDelete: true, learnedWordId: word.id})
+        }
+        newstat = updateStatWithPrms({stat: newstat, gameName, wordId: word.id, isRight: false} )
+        updateStat({userId, body: newstat})
       }
     }
   };
@@ -161,7 +171,7 @@ function SprintGamePage() {
     if (isFromTextBook) setGroup(dictionaryGroup);
   }, [isFromTextBook]);
 
-  const isLoading = isWordsLoading || isStatLoading;
+  const isLoading = isWordsLoading || isStatLoading as boolean;
 
   if (isGameEnded)
     return (
@@ -172,8 +182,7 @@ function SprintGamePage() {
               rightAnswers,
               wrongAnswers,
               startGameAgain,
-              toHome,
-              isSaving,
+              toHome
             }}
           />
         </div>

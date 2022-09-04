@@ -9,7 +9,6 @@ type props = {
   wrongAnswers: IGetWordRes[];
   startGameAgain: () => void;
   toHome: () => void,
-  isSaving: boolean
 };
 
 export default function GameResults({
@@ -17,7 +16,6 @@ export default function GameResults({
   wrongAnswers,
   startGameAgain,
   toHome,
-  isSaving
 }: props) {
   const correctCount = rightAnswers.length;
   const mistakesCount = wrongAnswers.length;
@@ -48,10 +46,10 @@ export default function GameResults({
       </div>
 
       <div className="game-finish__buttons">
-        <GameButton onClick={startGameAgain} variant="colored" disabled={isSaving}>
+        <GameButton onClick={startGameAgain} variant="colored" >
           Повторить
         </GameButton>
-        <GameButton onClick={toHome} variant="outlined" disabled={isSaving}>
+        <GameButton onClick={toHome} variant="outlined">
           Выйти
         </GameButton>
       </div>

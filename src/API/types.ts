@@ -1,3 +1,5 @@
+import { ItestDayStat } from "./newtypes";
+
 export interface IUserWords {
   id: string;
   wordId: string | null;
@@ -105,7 +107,7 @@ export interface IUserStatisticsRes {
 
 export interface IupsertUserStatistic {
   userId: string | null;
-  body: IUserStatisticsRes;
+  body: ItestDayStat;
 }
 
 export interface IGetAggregatedWords {

@@ -14,6 +14,7 @@ import {
   IStatistics,
   IUserStatisticsRes,
 } from './types';
+import { ItestDayStat } from './newtypes';
 
 const baseQuary = fetchBaseQuery({
   baseUrl: BACKEND_URL,
@@ -93,12 +94,12 @@ export const userApi = createApi({
       query: ({ userId }) => `users/${userId}`,
       providesTags: ['Profile'],
     }),
-    getUserStatistic: builder.query<IUserStatisticsRes, Pick<User, 'userId'>>({
+    getUserStatistic: builder.query<ItestDayStat, Pick<User, 'userId'>>({
       query: ({ userId }) => `/users/${userId}/statistics`,
       providesTags: ['Statistic'],
     }),
     upsertUserStatistic: builder.mutation<
-      IUserStatisticsRes,
+      ItestDayStat,
       IupsertUserStatistic
     >({
       query: ({ userId, body }) => ({

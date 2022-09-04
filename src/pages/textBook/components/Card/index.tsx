@@ -1,22 +1,21 @@
 import classNames from 'classnames';
-import { useEffect, useState } from 'react';
-import { useAppSelector } from '../../../../app/hooks';
-import { selectTextBookView } from '../../../../features/textBook/textBook';
-import './index.scss';
-import { BACKEND_URL } from '../../../../constants';
+import { useCallback, useEffect, useState } from 'react';
 import { IGetWordRes, IUserWords } from '../../../../API/types';
+import { useGetUserStatisticQuery, useUpsertUserStatisticMutation } from '../../../../API/userApi';
+import {
+  useCreateUserWordMutation, useUpdateUserWordMutation
+} from '../../../../API/wordsApi';
+import { useAppSelector } from '../../../../app/hooks';
+import { BACKEND_URL } from '../../../../constants';
+import { selectTextBookView } from '../../../../features/textBook/textBook';
+import { changeStatByLearnedWord } from '../../../../hooks/statHelper';
+import {
+  getNewWordLearned, modifyDifficulty, modifyLearned
+} from '../../utilites';
 import ButtonDifficult from '../buttonDifficult';
 import ButtonLearned from '../buttonLearned';
 import Progress from '../Progress';
-import {
-  useUpdateUserWordMutation,
-  useCreateUserWordMutation,
-} from '../../../../API/wordsApi';
-import {
-  modifyLearned,
-  modifyDifficulty,
-  getNewWordLearned,
-} from '../../utilites';
+import './index.scss';
 
 interface ICardInterface {
   card: IGetWordRes;
@@ -53,6 +52,29 @@ function Card({
 
   useEffect(() => () => stopAudio(), []);
 
+  const [updateStat] = useUpsertUserStatisticMutation();
+  const {
+    data: stat,
+  } = useGetUserStatisticQuery({ userId }, { skip: !userId });
+
+  const statHandleLearnedWords = useCallback(
+    ({
+      isToDelete,
+      learnedWordId,
+    }: {
+      isToDelete: boolean;
+      learnedWordId: string;
+    }) => {
+      if (userId && stat) {
+        updateStat({
+          userId,
+          body: changeStatByLearnedWord({ stat, learnedWordId, isToDelete }),
+        });
+      }
+    },
+    [stat, userId],
+  );
+
   const handlerClick = async (
     wordId: string,
     action: 'difficult' | 'learned',
@@ -61,6 +83,7 @@ function Card({
     const check = userWords.find((el) => el.wordId === wordId);
     if (check !== undefined) {
       if (action === 'learned') {
+        console.log('sefsesef')
         await wordUpdate({
           userId: userId !== null ? userId : '',
           wordId,

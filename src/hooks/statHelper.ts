@@ -45,6 +45,9 @@ export function makeStartedDefaultStat(): ItestDayStat {
   };
 }
 
+type typeArgs = {isToDelete: boolean, learnedWordId: string}
+export type handleStatLearning = (args: typeArgs) => void
+
 export function changeStatByLearnedWord({
   stat,
   learnedWordId,
@@ -77,7 +80,7 @@ export function changeStatByLearnedWord({
   };
 }
 
-export function updateStat({
+export function updateStatWithPrms({
   stat,
   gameName,
   wordId,
