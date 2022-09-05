@@ -1,4 +1,4 @@
-import { Col, Container, Row } from 'react-bootstrap';
+import { Col, Container, Row, Tab, Tabs } from 'react-bootstrap';
 
 import GameStatsCard from '../GameStatsCard';
 import StatsCard from '../StatsCard';
@@ -71,28 +71,27 @@ function Statistics({ stat }: StatisticsProps) {
         </section>
 
         <section>
-          <h2 className="fw-bold my-2">Статистика за все время</h2>
+          <h2 className="fw-bold mb-5">Статистика за все время</h2>
           <Row
-            className="justify-content-center px-3 mx-auto"
+            className="justify-content-center px-1 mx-auto"
             style={{ maxWidth: '40rem' }}
           >
-            <h3 className="fw-bold my-5">Количество новых слов</h3>
-            <LTStatsChart
-              metric="newWords"
-              title="Новых слов"
-              data={optional}
-            />
-          </Row>
-          <Row
-            className="justify-content-center px-3 mx-auto"
-            style={{ maxWidth: '40rem' }}
-          >
-            <h3 className="fw-bold my-5">Количество изученных слов</h3>
-            <LTStatsChart
-              metric="learnedWords"
-              title="Изучено слов"
-              data={optional}
-            />
+            <Tabs defaultActiveKey="newWords" className="mb-3">
+              <Tab eventKey="newWords" title="Кол-во новых слов">
+                <LTStatsChart
+                  metric="newWords"
+                  title="Новых слов"
+                  data={optional}
+                />
+              </Tab>
+              <Tab eventKey="learnedWords" title="Кол-во изученных слов">
+                <LTStatsChart
+                  metric="learnedWords"
+                  title="Изучено слов"
+                  data={optional}
+                />
+              </Tab>
+            </Tabs>
           </Row>
         </section>
       </>
