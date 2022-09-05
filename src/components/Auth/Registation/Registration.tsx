@@ -1,22 +1,18 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable no-console */
-/* eslint-disable jsx-a11y/click-events-have-key-events */
-/* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable react/jsx-props-no-spreading */
-/* eslint-disable jsx-a11y/label-has-associated-control */
 import { useEffect, useState } from 'react';
+import { Button, Form, Spinner } from 'react-bootstrap';
 import { useForm } from 'react-hook-form';
 import { useLoginMutation, useRegisterMutation } from '../../../API/userApi';
 import { useAppDispatch } from '../../../app/hooks';
 import { setCredential } from '../../../features/auth/authSlice';
-import styles from './Registration.module.scss';
 
 export interface registerRequest {
   name: string;
   email: string;
   password: string;
 }
+
+
 
 export default function Registration() {
   const dispatch = useAppDispatch()
@@ -29,9 +25,15 @@ export default function Registration() {
     formState: { errors, isValid },
     handleSubmit,
     resetField,
+    setFocus
   } = useForm<registerRequest>({
     mode: 'onChange',
   });
+
+  useEffect(() => {
+    setFocus('name')
+  }, [])
+  
 
   const onSubmit = async (request: registerRequest) => {
     userRegister(request)
@@ -67,38 +69,33 @@ export default function Registration() {
       });
   };
 
-  useEffect(() => {
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, []);
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
-      <h1>Регистрация</h1>
-      <label>
-        Name:
-        <input
-          className={styles.input}
+    <Form onSubmit={handleSubmit(onSubmit)} className='flexColumn'>
+      <Form.Group>
+        <Form.Label>Имя</Form.Label>
+        <Form.Control
           type="text"
+          placeholder="Введите ваше имя"
           {...register('name', {
+            minLength: {
+              value: 3,
+              message: 'Минимум 3 символов',
+            },
             required: 'Поле обязательно к заполнению',
           })}
         />
-      </label>
-      <div className={styles.errorWrap}>
         {errors?.name && (
-          <p className={styles.errorText}>
-            {(errors?.name?.message as String) || 'Error!'}
-          </p>
+          <Form.Text className="text-muted">
+            {(errors?.name?.message) || 'Error!'}
+          </Form.Text>
         )}
-      </div>
-      <label>
-        Email:
-        <input
-          className={styles.input}
+      </Form.Group>
+      <Form.Group>
+        <Form.Label>Адрес электронной почты</Form.Label>
+        <Form.Control
           type="email"
+          placeholder="Введите адрес почты"
           {...register('email', {
             required: 'Поле обязательно к заполнению',
             pattern: {
@@ -106,44 +103,54 @@ export default function Registration() {
                 /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
               message: 'Почта некорректна',
             },
+            onChange: () => setError(''),
           })}
         />
-      </label>
-      <div className={styles.errorWrap}>
         {errors?.email && (
-          <p className={styles.errorText}>
-            {(errors?.email?.message as String) || 'Error!'}
-          </p>
+          <Form.Text className="text-muted">
+            {(errors?.email?.message) || 'Error!'}
+          </Form.Text>
         )}
-      </div>
-      <label>
-        Password:
-        <input
-          className={styles.input}
+      </Form.Group>
+      <Form.Group>
+        <Form.Label>Пароль</Form.Label>
+        <Form.Control
           type="password"
+          placeholder="Введите пароль"
           {...register('password', {
             required: 'Поле обязательно к заполнению',
             minLength: {
               value: 8,
               message: 'Минимум 8 символов',
             },
+            onChange: () => setError(''),
           })}
         />
-      </label>
-      <div className={styles.errorWrap}>
         {errors?.password && (
-          <p className={styles.errorText}>
-            {(errors?.password?.message as String) || 'Error!'}
-          </p>
+          <Form.Text className="text-muted">
+            {(errors?.password?.message) || 'Error!'}
+          </Form.Text>
         )}
-      </div>
-      <input
-        disabled={!isValid || isLoading}
-        className={styles.btn}
-        type="submit"
-        value={isLoading ? 'Загрузка' : 'Отправить'}
+        <Form.Text className="text-muted">{error}</Form.Text>
+      </Form.Group>
+      <Button className='auth__btn' type="submit" variant="primary" disabled={!isValid || isLoading}>
+       {isLoading
+       ?(
+        <Spinner
+        as="span"
+        animation="border"
+        variant='warning'
+        size="sm"
+        role="status"
+        aria-hidden="true"
       />
-      <p>{error}</p>
-    </form>
+       )
+       : (
+        'Зарегистрироваться'
+       )
+       }
+      </Button>
+      
+    </Form>
   );
 }

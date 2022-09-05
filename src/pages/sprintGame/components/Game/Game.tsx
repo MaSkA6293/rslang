@@ -27,6 +27,7 @@ export default memo(function SprintGame({
   const wordAudioUrl = new URL(words[curItem].audio, BACKEND_URL).toString();
   const audio = new Audio(wordAudioUrl);
   const shuffleWords = useMemo(() => shuffleArray(words), [words]);
+  const shuffleWords2 = useMemo(() => shuffleArray(words), [words]);
 
   const playAudio = () => {
     audio.play();
@@ -36,11 +37,8 @@ export default memo(function SprintGame({
     if (curItem >= words.length - 1) endGame();
     setCurItem((prev) => prev + 1);
   };
-
   const handleAnswer = (userAnswer: boolean) => {
-    const shuffleWord = shuffleWords[curItem].word;
-    const { word } = words[curItem];
-    const isWasTrue = shuffleWord === word;
+    const isWasTrue = shuffleWords[curItem].id === shuffleWords2[curItem].id;
 
     if (userAnswer === isWasTrue) {
       handleRightAnswer(words[curItem]);
@@ -51,10 +49,26 @@ export default memo(function SprintGame({
     handleNextItem();
   };
 
+  const handleKeyboard = (e: KeyboardEvent) => {
+    const { code } = e
+    if (code === 'ArrowRight') {
+      handleAnswer(true)
+    } else if (code === 'ArrowLeft') {
+      handleAnswer(false)
+    } else if (code === 'Space') {
+      playAudio()
+    }
+  }
+
   useEffect(() => {
     timerRef.current = setInterval(() => {
       setTimeLeft((prev) => prev - 1);
     }, 1000);
+
+    window.addEventListener('keyup', handleKeyboard);
+    return () => {
+      window.removeEventListener('keyup', handleKeyboard);
+    };
   }, []);
 
   useEffect(() => {
@@ -65,7 +79,7 @@ export default memo(function SprintGame({
     <div className={styles.container}>
       <h3 className={styles.timer}>{timeLeft}</h3>
       <GameButton className={styles.audio} onClick={playAudio} icon={SpeakerIcon} shape="round" />
-      <h3 className={styles.word}>{words[curItem].word}</h3>
+      <h3 className={styles.word}>{shuffleWords2[curItem].word}</h3>
       <h2 className={styles.word2}>{shuffleWords[curItem].wordTranslate}</h2>
       <div className={styles.btns}>
         <Button className={styles.btn} onClick={() => handleAnswer(false)} variant="danger">

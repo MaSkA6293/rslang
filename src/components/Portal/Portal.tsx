@@ -6,7 +6,7 @@ type props = {
   children: React.ReactNode;
 };
 
-export default function Modal({ open, children }: props) {
+export default function Portal({ open, children }: props) {
   if (!open) return null;
 
   return createPortal(

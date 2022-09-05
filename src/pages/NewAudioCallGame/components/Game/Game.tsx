@@ -36,9 +36,10 @@ function NewAudioCallGame({
 }: props) {
   const [startPoint, setStartPoint] = useState(0);
   const rightIndex = useMemo(() => getRandomIntInclusive(0, 4), [startPoint]);
-  const shuffleWords: IGetWordRes[] = useMemo(() => shuffleArray(
-    words.slice(startPoint, startPoint + 5),
-  ), [startPoint])
+  const shuffleWords: IGetWordRes[] = useMemo(
+    () => shuffleArray(words.slice(startPoint, startPoint + 5)),
+    [startPoint],
+  );
   const wordAudioUrl = new URL(
     shuffleWords[rightIndex].audio,
     BACKEND_URL,
@@ -79,12 +80,13 @@ function NewAudioCallGame({
 
   const handleAnswer = (index: number) => {
     if (!hasAnswered) {
+      const isWasTrue = rightIndex === index;
+      console.log(shuffleWords[rightIndex].word)
+      isWasTrue
+        ? handleRightAnswer(shuffleWords[rightIndex])
+        : handleWrongAnswer(shuffleWords[rightIndex]);
       setHasAnswered(true);
       setSelectedIndex(index);
-      const isWasTrue = rightIndex === index;
-      isWasTrue
-        ? handleRightAnswer(words[rightIndex])
-        : handleWrongAnswer(words[rightIndex]);
     } else {
       handleNextWord();
     }
