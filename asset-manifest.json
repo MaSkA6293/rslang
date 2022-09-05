@@ -1,0 +1,23 @@
+{
+  "files": {
+    "main.css": "/static/css/main.fec0e60e.css",
+    "main.js": "/static/js/main.22f2b2f0.js",
+    "static/media/advantages-image.webp": "/static/media/advantages-image.46971ad43dcaa047d4e8.webp",
+    "static/media/wrong-choice.mp3": "/static/media/wrong-choice.c29ae74986f51a25ece1.mp3",
+    "static/media/correct-choice.mp3": "/static/media/correct-choice.2944938830ac5d97fe17.mp3",
+    "static/media/rs_school_js.svg": "/static/media/rs_school_js.ad178c0df28bc133be34.svg",
+    "static/media/git.svg": "/static/media/git.2d32650eac169d245a2d1256479f7553.svg",
+    "static/media/speaker.svg": "/static/media/speaker.3363722c89e84186ca043eccc51f6859.svg",
+    "index.html": "/index.html",
+    "static/media/audio-play.svg": "/static/media/audio-play.1fa2a568857f31f0bf2d.svg",
+    "static/media/cross.svg": "/static/media/cross.72c82b866b49e3040c1a534b6ef17d07.svg",
+    "static/media/wrong.svg": "/static/media/wrong.ccaf779a0aa2ca93e382e01660873a6e.svg",
+    "static/media/correct.svg": "/static/media/correct.ad4aa607ca02181fc16909b84bac7ee5.svg",
+    "main.fec0e60e.css.map": "/static/css/main.fec0e60e.css.map",
+    "main.22f2b2f0.js.map": "/static/js/main.22f2b2f0.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.fec0e60e.css",
+    "static/js/main.22f2b2f0.js"
+  ]
+}
