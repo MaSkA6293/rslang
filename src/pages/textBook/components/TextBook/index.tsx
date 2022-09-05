@@ -1,27 +1,23 @@
 import classNames from 'classnames';
-import React, { useCallback, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import Button from 'react-bootstrap/Button';
-import {LearningContext} from '../../utilites/Context'
 import {
   useGetUserStatisticQuery,
-  useUpsertUserStatisticMutation,
+  useUpsertUserStatisticMutation
 } from '../../../../API/userApi';
 import {
   useGetAggregatedWordsQuery,
   useGetUserWordsQuery,
-  useGetWordsQuery,
+  useGetWordsQuery
 } from '../../../../API/wordsApi';
 import { useAppDispatch, useAppSelector } from '../../../../app/hooks';
 import { selectCurrentUser } from '../../../../features/auth/authSlice';
 import {
   selectTextBook,
   selectTextBookView,
-  setTextBookView,
+  setTextBookView
 } from '../../../../features/textBook/textBook';
-import {
-  changeStatByLearnedWord,
-  makeStartedDefaultStat,
-} from '../../../../hooks/statHelper';
+import { getTimeToday, makeDefaultDayStat, makeStartedDefaultStat } from '../../../../hooks/statHelper';
 import { textBookView } from '../../../../types';
 import DelayLoader from '../../../games/components/DelayLoader/DelayLoader';
 import ControlPanel from '../ControlPanel';
@@ -66,14 +62,15 @@ function TextBook() {
   } = useGetUserStatisticQuery({ userId }, { skip: !userId });
 
   useEffect(() => {
-    type Ierror = { originalStatus: number };
-    if ((statError as Ierror)?.originalStatus === 404) {
-      updateStat({ userId, body: makeStartedDefaultStat() });
+    const date = getTimeToday()
+    if (!isStatLoading && (statError || !stat)) {
+      if (statError) updateStat({userId, body: makeStartedDefaultStat()})
+      if (stat && !Object.keys(stat.optional).includes(date)) {
+        const body = makeDefaultDayStat({stat})
+        updateStat({userId, body})
+      }
     }
-  }, [statError]);
-
-
-
+   }, [isStatLoading])
 
   const isLoading =
     isAggWordsLoading || isUserWordsLoading || isWordsLoading || isStatLoading;
@@ -130,23 +127,18 @@ function TextBook() {
           {...{ isLoading }}
           error={isError ? 'Произошла ошибка' : ''}
         >
-          <LearningContext.Provider value={statHandleLearnedWords}>
-            {view === textBookView.dictionary && user.userId ? (
-              <DifficultWords
-                {...{ userWords }}
-                user={user}
-                dataWordsRender={aggWords}
-              />
-            ) : (
-              <>
-                <ControlPanel />
-                <TextBookContent
-                  {...{ userWords, words }}
-                  userId={user.userId}
-                />
-              </>
-            )}
-          </LearningContext.Provider>
+          {view === textBookView.dictionary && user.userId ? (
+            <DifficultWords
+              {...{ userWords }}
+              user={user}
+              dataWordsRender={aggWords}
+            />
+          ) : (
+            <>
+              <ControlPanel />
+              <TextBookContent {...{ userWords, words }} userId={user.userId} />
+            </>
+          )}
         </DelayLoader>
       </div>
     </div>

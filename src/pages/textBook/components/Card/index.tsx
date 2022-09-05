@@ -83,7 +83,8 @@ function Card({
     const check = userWords.find((el) => el.wordId === wordId);
     if (check !== undefined) {
       if (action === 'learned') {
-        console.log('sefsesef')
+        statHandleLearnedWords({isToDelete: check.optional.learned, learnedWordId: check.id})
+        console.log('1', check.optional.learned)
         await wordUpdate({
           userId: userId !== null ? userId : '',
           wordId,
@@ -93,6 +94,7 @@ function Card({
         return;
       }
       if (action === 'difficult') {
+        console.log('2')
         await wordUpdate({
           userId: userId !== null ? userId : '',
           wordId,
@@ -105,6 +107,7 @@ function Card({
 
     if (check === undefined) {
       if (action === 'learned') {
+        console.log(3)
         const word = getNewWordLearned();
         word.optional.learned = true;
         await wordCreate({
@@ -116,6 +119,7 @@ function Card({
         return;
       }
       if (action === 'difficult') {
+        console.log(4)
         const word = getNewWordLearned();
         word.difficulty = 'yes';
         await wordCreate({

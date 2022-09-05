@@ -11,7 +11,7 @@ import {
 } from '../../API/wordsApi';
 import { useAppSelector } from '../../app/hooks';
 import { selectUserId } from '../../features/auth/authSlice';
-import { changeStatByLearnedWord, makeDayDafaultStat, makeStartedDefaultStat, updateStatWithPrms } from '../../hooks/statHelper';
+import { changeStatByLearnedWord, getTimeToday, makeDayDafaultStat, makeDefaultDayStat, makeStartedDefaultStat, updateStatWithPrms } from '../../hooks/statHelper';
 import GameButton from '../audioCallGame/components/GameButton';
 import crossIcon from '../games/assets/icons/cross.svg';
 import DelayLoader from '../games/components/DelayLoader/DelayLoader';
@@ -57,12 +57,18 @@ function SprintGamePage() {
   });
 
   const [updateStat] = useUpsertUserStatisticMutation()
-  const {data: stat, error, isLoading: isStatLoading} = useGetUserStatisticQuery({userId}, {skip: !userId})
+  const {data: stat, error: statError, isLoading: isStatLoading} = useGetUserStatisticQuery({userId}, {skip: !userId})
 
   useEffect(() => {
-    type Ierror = {originalStatus: number}
-    if ((error as Ierror)?.originalStatus === 404) updateStat({userId, body: makeStartedDefaultStat()})
-  }, [error])
+    const date = getTimeToday()
+    if (!isStatLoading && (statError || !stat)) {
+      if (statError) updateStat({userId, body: makeStartedDefaultStat()})
+      if (stat && !Object.keys(stat.optional).includes(date)) {
+        const body = makeDefaultDayStat({stat})
+        updateStat({userId, body})
+      }
+    }
+   }, [isStatLoading])
 
   const playAudio = (isGood: boolean) => {
 

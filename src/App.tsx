@@ -19,7 +19,7 @@ function App() {
           <Route path="/textbook" element={<TextbookPage />} />
           <Route path="/audioCall" element={<AudioCallGamePage />} />
           <Route path="/sprint" element={<SprintGamePage />} />
-          <Route path="/statistics" element={<StatisticsPage />} />
+          <Route path="/statistics" element={<RequireAuth><StatisticsPage /></RequireAuth>}/>
           <Route path='/profile' element={<RequireAuth><Profile /></RequireAuth>} />
           <Route path="*" element={<Error />} />
         </Route>

@@ -45,6 +45,17 @@ export function makeStartedDefaultStat(): ItestDayStat {
   };
 }
 
+
+export function makeDefaultDayStat({stat}: {stat: ItestDayStat}): ItestDayStat {
+  return {
+    learnedWords: 0,
+    optional: {
+      ...stat.optional,
+      ...makeDayDafaultStat(),
+    },
+  }
+}
+
 type typeArgs = {isToDelete: boolean, learnedWordId: string}
 export type handleStatLearning = (args: typeArgs) => void
 
@@ -62,8 +73,10 @@ export function changeStatByLearnedWord({
   let dateObj = optional?.[date] ?? makeDayDafaultStat()[date];
   let { learnedWords } = dateObj;
   if (isToDelete) {
+    console.log('deleting')
     learnedWords = learnedWords.filter((word) => word !== learnedWordId);
   } else {
+    console.log('non deleting')
     learnedWords = learnedWords.includes(learnedWordId)
       ? learnedWords
       : [...learnedWords, learnedWordId];
