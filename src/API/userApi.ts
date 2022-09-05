@@ -12,8 +12,9 @@ import {
   IUpdateUserRes,
   IupsertUserStatistic,
   IStatistics,
-  IUserStatisticsRes
+  IUserStatisticsRes,
 } from './types';
+import { ItestDayStat } from './newtypes';
 
 const baseQuary = fetchBaseQuery({
   baseUrl: BACKEND_URL,
@@ -29,27 +30,56 @@ const baseQuary = fetchBaseQuery({
   },
 });
 
-const baseQueryWithReauth: BaseQueryFn = async (args, api, extraOptions) => {
-  let result = await baseQuary(args, api, extraOptions)
-  const {error, originalStatus} = result as Record<any, any>
-  console.log(result);
-  if (error && originalStatus === 401) {
-    // sending refresh token
-    const { user } = (api.getState() as RootState).auth;
-    const { userId, refreshToken } = user;
-    const refreshReq = await fetch(`${BACKEND_URL}/users/${userId}/tokens`, {
-      headers: {
-        authorization: `Bearer ${refreshToken}`,
-      },
-    });
+let isQueueBusy = false;
 
-    if (refreshReq.ok && refreshReq.status === 200) {
-      const newTokens = await refreshReq.json();
-      api.dispatch(setCredential({ ...user, ...newTokens }));
-      // try the original query with new access token
-      result = await baseQuary(args, api, extraOptions);
+async function wait() {
+  return new Promise((res) => {
+    setTimeout(() => {
+      res(2);
+    }, 500);
+  });
+}
+
+const baseQueryWithReauth: BaseQueryFn = async (args, api, extraOptions) => {
+  let result = await baseQuary(args, api, extraOptions);
+
+  const { error } = result as Record<any, any>;
+  console.log('Результат отправки запроса', result);
+  if (error?.originalStatus === 401) {
+    if (!isQueueBusy) {
+      isQueueBusy = true;
+      console.log("занимаем очередь")
+      console.log('Токин истек, запрашиваем новый');
+
+      // sending refresh token
+      const { user } = (api.getState() as RootState).auth;
+      const { userId, refreshToken } = user;
+      const refreshReq = await fetch(`${BACKEND_URL}/users/${userId}/tokens`, {
+        headers: {
+          authorization: `Bearer ${refreshToken}`,
+        },
+      });
+      console.log('Ответ от сервера по поводу новых токенов', refreshReq);
+      if (refreshReq.ok && refreshReq.status === 200) {
+        console.log(
+          'Рефреш токин был валиден, сервер прислал новые токины, обновляем',
+        );
+        const newTokens = await refreshReq.json();
+
+        api.dispatch(setCredential({ ...user, ...newTokens }));
+
+        // try the original query with new access token
+        result = await baseQuary(args, api, extraOptions);
+      } else {
+        console.log('Рефреш токин пришел невалидный, логаут')
+        api.dispatch(logOut());
+      }
+      isQueueBusy = false
+      console.log("очередь особождена")
     } else {
-      api.dispatch(logOut());
+      console.log("очередь, ждем")
+      await wait()
+      result = await baseQuary(args, api, extraOptions)
     }
   }
 
@@ -62,14 +92,14 @@ export const userApi = createApi({
   endpoints: (builder) => ({
     getUser: builder.query<IGetUserResponse, { userId: string }>({
       query: ({ userId }) => `users/${userId}`,
-      providesTags: ['Profile']
+      providesTags: ['Profile'],
     }),
-    getUserStatistic: builder.query<IUserStatisticsRes, Pick<User, 'userId'>>({
+    getUserStatistic: builder.query<ItestDayStat, Pick<User, 'userId'>>({
       query: ({ userId }) => `/users/${userId}/statistics`,
-      providesTags: ['Statistic']
+      providesTags: ['Statistic'],
     }),
     upsertUserStatistic: builder.mutation<
-      IUserStatisticsRes,
+      ItestDayStat,
       IupsertUserStatistic
     >({
       query: ({ userId, body }) => ({
@@ -77,7 +107,7 @@ export const userApi = createApi({
         method: 'PUT',
         body,
       }),
-      invalidatesTags: ['Statistic']
+      invalidatesTags: ['Statistic'],
     }),
     register: builder.mutation<IUpdateUserRes, IUpdateUserRes>({
       query: (body) => ({
@@ -99,7 +129,7 @@ export const userApi = createApi({
         method: 'PUT',
         body,
       }),
-      invalidatesTags: ['Profile']
+      invalidatesTags: ['Profile'],
     }),
     deleteUser: builder.mutation<null, { userId: string }>({
       query: ({ userId }) => ({

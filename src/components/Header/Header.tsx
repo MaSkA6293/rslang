@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAppSelector } from '../../app/hooks';
-import { selectToken } from '../../features/auth/authSlice';
+import { selectUserId } from '../../features/auth/authSlice';
 import Nav from '../Nav';
 import Burger from './components/burger';
 import MobileMenu from './components/mobileMenu';
@@ -10,7 +10,7 @@ import './index.scss';
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
-  const token = useAppSelector(selectToken);
+  const userId = useAppSelector(selectUserId);
 
   useEffect(() => {
     document.body.style.overflow = isOpen ? 'hidden' : 'auto';
@@ -22,7 +22,7 @@ export default function Header() {
         <Nav closeMobileMenu={() => undefined} />
         <Burger isOpen={isOpen} onClick={() => setIsOpen(!isOpen)} />
         <MobileMenu isOpen={isOpen} closeMenu={() => setIsOpen(false)} />
-        {token ? <ProfileBtn /> : <SignInBtn />}
+        {userId ? <ProfileBtn /> : <SignInBtn />}
       </div>
     </div>
   );

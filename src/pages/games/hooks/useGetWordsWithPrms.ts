@@ -35,7 +35,6 @@ export function useGetWordsWithPrms({
   const filterData = useMemo(() => {
     if (!data || !data.length) return [];
     if (!isFromTextBook) return data;
-    // console.log('learnedWords', learnedWords)
     return data.filter((word) =>
       learnedWords.length === 0
         ? true
@@ -44,7 +43,6 @@ export function useGetWordsWithPrms({
   }, [data]);
 
   useEffect(() => {
-    // console.log('filterData', filterData)
     const total = [...words, ...filterData];
     const isPagesEnd =
       pageIndex >= pagesRandom.length - 1 || (isFromTextBook && page <= 0);

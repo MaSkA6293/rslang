@@ -6,3 +6,4 @@ export function shuffleArray<T>(array: T[]) {
   }
   return copyArr
 }
+

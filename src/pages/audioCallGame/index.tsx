@@ -2,8 +2,8 @@ import AudioCallGame from './components/AudioCallGame';
 
 import './index.scss';
 
-function AudioCallGamePage() {
+function AudioCallPageTest() {
   return <AudioCallGame />;
 }
 
-export default AudioCallGamePage;
+export default AudioCallPageTest;

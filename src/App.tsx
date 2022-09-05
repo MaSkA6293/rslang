@@ -1,14 +1,14 @@
 import { Route, Routes } from 'react-router-dom';
 import './App.scss';
-import MainPage from './pages/main';
 import Error from './components/Error/Error';
-import TextbookPage from './pages/textBook';
-import AudioCallGamePage from './pages/audioCallGame';
+import Layout from './components/Layout/Layout';
+import RequireAuth from './components/RequireAuth/RequireAuth';
+import MainPage from './pages/main';
+import NewAudioCallPage from './pages/NewAudioCallGame';
+import Profile from './pages/Profile/Profile';
 import SprintGamePage from './pages/sprintGame';
 import StatisticsPage from './pages/statistics';
-import RequireAuth from './components/RequireAuth/RequireAuth';
-import Profile from './pages/Profile/Profile';
-import Layout from './components/Layout/Layout';
+import TextbookPage from './pages/textBook';
 
 function App() {
   return (
@@ -17,9 +17,9 @@ function App() {
         <Route path='/' element={<Layout/>}>
           <Route index element={<MainPage />} />
           <Route path="/textbook" element={<TextbookPage />} />
-          <Route path="/audioCall" element={<AudioCallGamePage />} />
+          <Route path="/audioCall" element={<NewAudioCallPage />} />
           <Route path="/sprint" element={<SprintGamePage />} />
-          <Route path="/statistics" element={<StatisticsPage />} />
+          <Route path="/statistics" element={<RequireAuth><StatisticsPage /></RequireAuth>}/>
           <Route path='/profile' element={<RequireAuth><Profile /></RequireAuth>} />
           <Route path="*" element={<Error />} />
         </Route>

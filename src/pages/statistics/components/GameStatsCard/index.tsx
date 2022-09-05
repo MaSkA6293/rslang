@@ -1,11 +1,10 @@
 import { Card, ListGroup } from 'react-bootstrap';
-import { GamesIds, IGameStats } from '../../types';
+import { ItestGameResultStat } from '../../../../API/newtypes';
 import { getPrcntStr } from '../../utils';
 
 type GameStatsCardProps = {
-  id: GamesIds;
   title: string;
-  stats: IGameStats;
+  result: ItestGameResultStat;
 };
 
 enum Metrics {
@@ -22,13 +21,13 @@ const METRIC_TITLES = {
   bestSeries: 'Самая длинная серия правильных ответов',
 };
 
-function GameStatsCard({
-  id,
-  title,
-  stats: { newWords, rightAnswers, totalAnswers, bestSeries },
-}: GameStatsCardProps) {
+function GameStatsCard({ title, result }: GameStatsCardProps) {
+  console.log(result)
+  const { bestSeries, newWords, rightAnswers, wrongAnswers } = result;
+  const totalAnswers = rightAnswers + wrongAnswers;
+
   const statsValues = {
-    newWords,
+    newWords: newWords.length,
     bestSeries,
     rightAnswers: getPrcntStr(rightAnswers, totalAnswers),
   };
@@ -40,7 +39,7 @@ function GameStatsCard({
         <ListGroup variant="flush">
           {METRIC_KEYS.map((metric) => (
             <ListGroup.Item
-              key={`${id}_stats_${metric}`}
+              key={metric}
               className="d-flex justify-content-between align-items-center"
             >
               <div className="text-muted text-start">

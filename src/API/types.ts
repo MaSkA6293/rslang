@@ -1,3 +1,5 @@
+import { ItestDayStat } from "./newtypes";
+
 export interface IUserWords {
   id: string;
   wordId: string | null;
@@ -23,7 +25,6 @@ export interface IUserWordCreate {
 }
 
 export interface IResultGame {
-  newWords: string[];
   rightAnswers: number;
   wordCounter: number;
   wrongAnswers: number;
@@ -106,7 +107,7 @@ export interface IUserStatisticsRes {
 
 export interface IupsertUserStatistic {
   userId: string | null;
-  body: IUserStatisticsRes;
+  body: ItestDayStat;
 }
 
 export interface IGetAggregatedWords {

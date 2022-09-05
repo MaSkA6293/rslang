@@ -4,7 +4,6 @@ export function GetDefaultStatiscitObj(): IUserStatisticsRes {
   function getDefaultResultObj(): IResultGame {
     return {
       wordCounter: 0,
-      newWords: [],
       rightAnswers: 0,
       wrongAnswers: 0,
       bestSeries: 0,

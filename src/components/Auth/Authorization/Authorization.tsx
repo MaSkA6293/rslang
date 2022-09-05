@@ -39,6 +39,7 @@ export default function Authorization() {
       .unwrap()
       .then((userData) => {
         dispatch(setCredential({ ...userData }));
+        dispatch(setCredential({ ...userData, ...{token: null} }));
       })
       .catch((e) => {
         if (e.originalStatus === 404) {
