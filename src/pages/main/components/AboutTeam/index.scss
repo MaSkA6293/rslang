@@ -1,0 +1,18 @@
+.about-team {
+  padding: 0 2% 2% 2%;
+
+  &__title {
+    font-size: 31px;
+    color: #6c6cfc;
+    margin: 20px 0;
+  }
+
+  &__cards {
+    display: flex;
+    width: 60%;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+    align-items: center;
+    margin: 0 auto;
+  }
+}

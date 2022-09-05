@@ -1,0 +1,45 @@
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  position: relative;
+}
+
+.timer {
+  position: absolute;
+  top: -20px;
+  right: -30px;
+}
+
+.audio {
+  position: absolute;
+  top: -45px;
+  left: 42%;
+  @media screen and (max-width: 480px) {
+    top: -20px;
+    left: -10%;
+  }
+}
+
+.word {
+  margin-top: .6em;
+}
+
+.word2 {
+  margin-top: .4em;
+}
+
+.btns {
+  margin-top: 1em;
+  display: flex;
+  gap: 2em;
+}
+
+.btn {
+  min-width: 120px;
+
+  @media screen and (max-width: 480px) {
+    min-width: auto;
+  }
+}

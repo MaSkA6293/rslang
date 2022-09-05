@@ -1,0 +1,23 @@
+@import '~bootstrap/scss/bootstrap';
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.App {
+  display: flex;
+  flex-direction: column;
+  min-width: 320px;
+  height: 100%;
+  text-align: center;
+  min-height: 100vh;
+}
+
+.flexColumn {
+  display: flex;
+  flex-direction: column;
+  gap: .5em;
+}
+

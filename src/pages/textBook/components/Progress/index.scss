@@ -1,0 +1,31 @@
+.progress {
+  &__list {
+    list-style: none;
+    text-align: left;
+    margin: 10px 0 0 0;
+    padding: 0;
+  }
+
+  &__item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 10px;
+    font-size: 20px;
+
+    @media (max-width: 940px) {
+      font-size: 18px;
+    }
+
+    &-right {
+      color: green;
+    }
+
+    &-wrong {
+      color: #c22929;
+    }
+
+    &-progress {
+      color: #6c6cfc;
+    }
+  }
+}

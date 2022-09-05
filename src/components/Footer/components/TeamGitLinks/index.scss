@@ -1,0 +1,46 @@
+.footer {
+  &__git-img {
+    width: 40px;
+    height: 40px;
+    background-image: url('../../../../pages/main/assets/git.svg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-repeat: no-repeat;
+  }
+
+  &__team {
+    display: flex;
+    flex: 1;
+    list-style: none;
+    font-size: 30px;
+    justify-content: center;
+    align-items: center;
+
+    .team {
+      &__item {
+        margin: 0 20px;
+
+        @media (max-width: 450px) {
+          margin: 0 8px;
+          font-size: 25px;
+        }
+
+        .item {
+          &__link {
+            text-decoration: none;
+            color: black;
+            transition: 0.3s ease;
+
+            &:visited {
+              color: black;
+            }
+
+            &:hover {
+              color: #6c6cfc;
+            }
+          }
+        }
+      }
+    }
+  }
+}

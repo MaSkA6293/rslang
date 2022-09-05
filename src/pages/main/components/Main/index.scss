@@ -1,0 +1,11 @@
+.main-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &__container {
+    max-width: 1280px;
+    width: 100%;
+    padding: 0 1%;
+  }
+}
