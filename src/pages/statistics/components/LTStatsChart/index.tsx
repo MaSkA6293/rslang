@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import {
   XAxis,
   YAxis,
@@ -10,47 +9,61 @@ import {
   ResponsiveContainer,
   Area,
 } from 'recharts';
-import { IWordsStats } from '../../types';
+import { IdateStatObj } from '../../../../API/newtypes';
+import {
+  convertDateToString,
+  convertStringToDate,
+  getDateRange,
+} from '../../utils';
+
+type IMetric = 'newWords' | 'learnedWords';
 
 interface LTStatsChartProps {
-  data: IWordsStats[];
-  metric: keyof IWordsStats;
+  data: IdateStatObj;
+  metric: IMetric;
   title: string;
 }
 
-const accumulateData = (
-  statsArr: IWordsStats[],
-  metric: keyof IWordsStats,
-  totalKey: string,
-) => {
-  let metricTotal = 0;
-  return statsArr.map((stats) => {
-    if (typeof stats[metric] === 'number') {
-      metricTotal += stats[metric] as number;
-    }
-    return {
-      ...stats,
-      [metric]: stats[metric],
-      [totalKey]: metricTotal,
-    };
+const dateSorter = (d1: string, d2: string) =>
+  convertStringToDate(d1).valueOf() - convertStringToDate(d2).valueOf();
+
+const getDailyStats = (metric: IMetric, data: IdateStatObj[string]) => {
+  if (metric === 'newWords') {
+    const words = new Set([
+      ...data.games.audioCall.newWords,
+      ...data.games.sprint.newWords,
+    ]);
+    return words.size;
+  }
+  if (metric === 'learnedWords') {
+    return data.learnedWords.length;
+  }
+  return 0;
+};
+
+const getAccData = (data: IdateStatObj, metric: IMetric) => {
+  let total = 0;
+  const dates = Object.keys(data).sort(dateSorter);
+  const today = new Date();
+  const startDate = convertStringToDate(dates[0]);
+
+  return getDateRange(startDate, today).map((date) => {
+    const dateKey = convertDateToString(date);
+    const day = dateKey in data ? getDailyStats(metric, data[dateKey]) : 0;
+    total += day;
+    return { date: dateKey, day, total };
   });
 };
 
 function LTStatsChart({ data, metric, title }: LTStatsChartProps) {
-  const metricTotal = `${metric}Total`;
-
-  const [accData, setAccData] = useState<IWordsStats[]>([]);
-
-  useEffect(() => {
-    setAccData(accumulateData(data, metric, metricTotal));
-  }, [data]);
+  const dataByDate = getAccData(data, metric);
 
   return (
     <ResponsiveContainer width="100%" height={300}>
       <ComposedChart
         width={500}
         height={300}
-        data={accData}
+        data={dataByDate}
         margin={{
           top: 10,
           right: 30,
@@ -65,9 +78,9 @@ function LTStatsChart({ data, metric, title }: LTStatsChartProps) {
         <Tooltip
           formatter={(val: number, name: string) => {
             switch (name) {
-              case metricTotal:
+              case 'total':
                 return [val, `${title} всего`];
-              case metric:
+              case 'day':
                 return [val, `${title} за день`];
               default:
                 return val;
@@ -81,9 +94,9 @@ function LTStatsChart({ data, metric, title }: LTStatsChartProps) {
           align="center"
           formatter={(val: string) => {
             switch (val) {
-              case metricTotal:
+              case 'total':
                 return `${title} всего`;
-              case metric:
+              case 'day':
                 return `${title} за день`;
               default:
                 return val;
@@ -93,12 +106,12 @@ function LTStatsChart({ data, metric, title }: LTStatsChartProps) {
 
         <Area
           type="monotone"
-          dataKey={metricTotal}
+          dataKey="total"
           stroke="#82ca9d"
           fill="#82ca9d"
           strokeWidth={2}
         />
-        <Bar dataKey={metric} fill="#8884d8" stackId={0} />
+        <Bar dataKey="day" fill="#8884d8" stackId={0} />
       </ComposedChart>
     </ResponsiveContainer>
   );

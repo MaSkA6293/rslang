@@ -26,15 +26,24 @@ export const groupBy = <T extends Record<string, any>>(
 
 export const getDayString = (date: Date) => date.toISOString().slice(0, 10);
 
-const DAY_IN_MS = 24 * 60 * 60 * 1000;
+export const convertStringToDate = (d: string) => {
+  const [day, month, year] = d.split('.').map(Number);
+  return new Date(year, month, day);
+};
 
-export const getDateRange = (startDate: Date, endDate: Date) => {
-  const startDateInMs = startDate.valueOf();
-  const numberOfDays =
-    Math.ceil((endDate.valueOf() - startDate.valueOf()) / DAY_IN_MS) + 1;
-  return [...Array(numberOfDays).fill(null)].map((_, i) =>
-    getDayString(new Date(startDateInMs + i * DAY_IN_MS)),
-  );
+export const convertDateToString = (date: Date) =>
+  `${date.getDate()}.${date.getMonth()}.${date.getFullYear()}`;
+
+export const getDateRange = (start: Date, end: Date) => {
+  const arr = [];
+  for (
+    let dt = new Date(start);
+    dt <= new Date(end);
+    dt.setDate(dt.getDate() + 1)
+  ) {
+    arr.push(new Date(dt));
+  }
+  return arr;
 };
 
 export const aggregateGameResults = (results: IResultGame[]) => {
