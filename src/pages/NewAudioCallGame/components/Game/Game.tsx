@@ -81,7 +81,6 @@ function NewAudioCallGame({
   const handleAnswer = (index: number) => {
     if (!hasAnswered) {
       const isWasTrue = rightIndex === index;
-      console.log(shuffleWords[rightIndex].word)
       isWasTrue
         ? handleRightAnswer(shuffleWords[rightIndex])
         : handleWrongAnswer(shuffleWords[rightIndex]);

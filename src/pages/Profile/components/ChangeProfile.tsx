@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Form, Spinner } from 'react-bootstrap';
 import { useForm } from 'react-hook-form';
 import { useUpdateUserMutation } from '../../../API/userApi';
@@ -13,50 +13,63 @@ export interface registerRequest {
 }
 
 type props = {
-  name: string, email: string
-  handleClose: () => void
-}
+  nameInitial: string;
+  emailInitial: string;
+  handleClose: () => void;
+};
 
-export default function ChangeProfile({name = '', email = '', handleClose}: props) {
+export default function ChangeProfile({
+  nameInitial,
+  emailInitial,
+  handleClose,
+}: props) {
+  const [name, setName] = useState(nameInitial)
+  const [email, setEmail] = useState(emailInitial)
   const [error, setError] = useState('');
   const { userId } = useAppSelector(selectCurrentUser);
-  const [updateUser, {isLoading}] = useUpdateUserMutation()
+  const [updateUser, { isLoading }] = useUpdateUserMutation();
+
+  const handleInputName = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setName(e.target.value)
+  }
+
+  const handleInputEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value)
+  }
 
   const {
     register,
     formState: { errors, isValid },
     handleSubmit,
     resetField,
-    setFocus
+    setFocus,
   } = useForm<registerRequest>({
     mode: 'onChange',
   });
 
   useEffect(() => {
-    setFocus('name')
-  }, [])
-  
+    setFocus('name');
+  }, []);
 
   const onSubmit = async (request: registerRequest) => {
-    updateUser({userId, body: request})
+    updateUser({ userId, body: request })
       .unwrap()
       .then(() => {
         setError('Данные обновлены');
         setTimeout(() => {
-          handleClose()
+          handleClose();
         }, 1500);
         resetField('email');
         resetField('name');
         resetField('password');
       })
       .catch(() => {
-        setError('Произошла непредвиденная ошибка')
+        setError('Произошла непредвиденная ошибка');
       });
   };
 
-
   return (
-    <Form onSubmit={handleSubmit(onSubmit)} className='flexColumn'>
+    <Form onSubmit={handleSubmit(onSubmit)} className="flexColumn">
       <Form.Group>
         <Form.Label>Имя</Form.Label>
         <Form.Control
@@ -70,10 +83,11 @@ export default function ChangeProfile({name = '', email = '', handleClose}: prop
             },
             required: 'Поле обязательно к заполнению',
           })}
+          onChange={handleInputName}
         />
         {errors?.name && (
           <Form.Text className="text-muted">
-            {(errors?.name?.message) || 'Error!'}
+            {errors?.name?.message || 'Error!'}
           </Form.Text>
         )}
       </Form.Group>
@@ -92,10 +106,11 @@ export default function ChangeProfile({name = '', email = '', handleClose}: prop
             },
             onChange: () => setError(''),
           })}
+          onChange={handleInputEmail}
         />
         {errors?.email && (
           <Form.Text className="text-muted">
-            {(errors?.email?.message) || 'Error!'}
+            {errors?.email?.message || 'Error!'}
           </Form.Text>
         )}
       </Form.Group>
@@ -115,29 +130,30 @@ export default function ChangeProfile({name = '', email = '', handleClose}: prop
         />
         {errors?.password && (
           <Form.Text className="text-muted">
-            {(errors?.password?.message) || 'Error!'}
+            {errors?.password?.message || 'Error!'}
           </Form.Text>
         )}
         <Form.Text className="text-muted">{error}</Form.Text>
       </Form.Group>
-      <Button style={{marginTop: '1em'}} type="submit" variant="primary" disabled={!isValid || isLoading}>
-       {isLoading
-       ?(
-        <Spinner
-        as="span"
-        animation="border"
-        variant='warning'
-        size="sm"
-        role="status"
-        aria-hidden="true"
-      />
-       )
-       : (
-        'Обновить данные'
-       )
-       }
+      <Button
+        style={{ marginTop: '1em' }}
+        type="submit"
+        variant="primary"
+        disabled={!isValid || isLoading}
+      >
+        {isLoading ? (
+          <Spinner
+            as="span"
+            animation="border"
+            variant="warning"
+            size="sm"
+            role="status"
+            aria-hidden="true"
+          />
+        ) : (
+          'Обновить данные'
+        )}
       </Button>
-      
     </Form>
   );
 }

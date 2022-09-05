@@ -22,10 +22,10 @@ export default memo(function SprintGame({
   handleWrongAnswer,
 }: props) {
   const [curItem, setCurItem] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(10);
+  const [timeLeft, setTimeLeft] = useState(52);
   const timerRef = useRef<ReturnType<typeof setInterval>>();
   const shuffleWords = useMemo(() => shuffleArray(words), [words]);
-  const shuffleWords2 = useMemo(() => shuffleArray(words), [words]);
+  const shuffleWords2 = useMemo(() => shuffleArray(shuffleWords), [shuffleWords]);
   const wordAudioUrl = new URL(
     shuffleWords2[curItem].audio,
     BACKEND_URL,
@@ -40,9 +40,11 @@ export default memo(function SprintGame({
     if (curItem >= words.length - 1) endGame();
     setCurItem((prev) => prev + 1);
   };
+
+  
   const handleAnswer = (userAnswer: boolean) => {
     const isWasTrue = shuffleWords[curItem].id === shuffleWords2[curItem].id;
-
+ 
     if (userAnswer === isWasTrue) {
       handleRightAnswer(shuffleWords2[curItem]);
     } else {
@@ -53,6 +55,7 @@ export default memo(function SprintGame({
 
   const handleKeyboard = (e: KeyboardEvent) => {
     const { code } = e;
+
     if (code === 'ArrowRight') {
       handleAnswer(true);
     } else if (code === 'ArrowLeft') {
@@ -66,12 +69,15 @@ export default memo(function SprintGame({
     timerRef.current = setInterval(() => {
       setTimeLeft((prev) => prev - 1);
     }, 1000);
+  }, [])
+  
 
+  useEffect(() => {
     window.addEventListener('keyup', handleKeyboard);
     return () => {
       window.removeEventListener('keyup', handleKeyboard);
     };
-  }, []);
+  });
 
   useEffect(() => {
     if (timeLeft <= 0) endGame();
