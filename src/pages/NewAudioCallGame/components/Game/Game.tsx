@@ -8,7 +8,7 @@ import { shuffleArray } from '../../../games/Utils/suffleArray';
 import CorrectIcon from '../../assets/icons/correct.svg';
 import SpeakerIcon from '../../assets/icons/speaker.svg';
 import WrongIcon from '../../assets/icons/wrong.svg';
-import GameButton from '../GameButton';
+import GameButton from '../../../games/components/GameButton';
 import './index.scss';
 
 const WrongSound = require(`../../assets/audio/wrong-choice.mp3`);

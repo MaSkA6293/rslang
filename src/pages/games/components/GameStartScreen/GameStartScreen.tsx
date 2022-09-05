@@ -1,5 +1,5 @@
 import React from 'react'
-import GameButton from '../../../audioCallGame/components/GameButton';
+import GameButton from '../GameButton';
 import Difficult from '../Difficult/Difficult';
 
 interface props {

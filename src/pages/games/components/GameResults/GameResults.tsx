@@ -1,7 +1,7 @@
 import { IGetWordRes } from '../../../../API/types';
-import GameButton from '../../../audioCallGame/components/GameButton';
-import WordsList from '../../../audioCallGame/components/WordsList';
-import { numWord } from '../../../audioCallGame/utils';
+import { numWord } from '../../../NewAudioCallGame/utils';
+import GameButton from '../GameButton';
+import WordsList from '../WordsList/WordsList';
 import './GameResults.scss';
 
 type props = {

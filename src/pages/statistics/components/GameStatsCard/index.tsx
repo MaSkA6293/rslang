@@ -22,7 +22,6 @@ const METRIC_TITLES = {
 };
 
 function GameStatsCard({ title, result }: GameStatsCardProps) {
-  console.log(result)
   const { bestSeries, newWords, rightAnswers, wrongAnswers } = result;
   const totalAnswers = rightAnswers + wrongAnswers;
 

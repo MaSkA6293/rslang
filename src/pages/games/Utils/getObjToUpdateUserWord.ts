@@ -12,10 +12,10 @@ export function getObjToUpdateUserWord({
   userWord,
   answer,
 }: prms): [choice: string, body: IUserWordCreate] {
-  let { difficulty } = userWord;
+  const { difficulty } = userWord;
   let { series, fail, success, learned } = userWord.optional;
 
-  let choice = 'nothing'
+  let choice = 'default'
 
   if (answer === 'right') {
     success += 1;
@@ -27,11 +27,11 @@ export function getObjToUpdateUserWord({
         choice = 'learned'
       }
       learned = isLearned ? true : learned;
-      difficulty = isLearned ? 'no' : difficulty;
     }
     
   } else {
     choice = 'unlearned'
+    learned = false
     series = 0;
     fail += 1;
   }

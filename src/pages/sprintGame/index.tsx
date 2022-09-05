@@ -12,7 +12,6 @@ import {
 import { useAppSelector } from '../../app/hooks';
 import { selectUserId } from '../../features/auth/authSlice';
 import { changeStatByLearnedWord, getTimeToday, makeDayDafaultStat, makeDefaultDayStat, makeStartedDefaultStat, updateStatWithPrms } from '../../hooks/statHelper';
-import GameButton from '../audioCallGame/components/GameButton';
 import crossIcon from '../games/assets/icons/cross.svg';
 import DelayLoader from '../games/components/DelayLoader/DelayLoader';
 import GameResults from '../games/components/GameResults/GameResults';
@@ -24,6 +23,7 @@ import { useGetWordsWithPrms } from '../games/hooks/useGetWordsWithPrms';
 import { useIsFromTextBook } from '../games/hooks/useIsFromTextBook';
 import { getObjToCreateUserWord } from '../games/Utils/getObjToCreateUserWord';
 import { getObjToUpdateUserWord } from '../games/Utils/getObjToUpdateUserWord';
+import GameButton from '../games/components/GameButton';
 
 const CorrectSound = require(`../games//assets/audio/correct-choice.mp3`);
 const WrongSound = require(`../games//assets/audio/wrong-choice.mp3`);
@@ -49,7 +49,7 @@ function SprintGamePage() {
       { skip: !userId, refetchOnMountOrArgChange: true },
     );
   const { words, isLoading: isWordsLoading } = useGetWordsWithPrms({
-    amount: 120,
+    amount: 60,
     group,
     skip: !isGameStarted || isUserWordsLoading,
     isFromTextBook,

@@ -107,7 +107,6 @@ export function updateStatWithPrms({
   const date = getTimeToday()
   const {optional} = stat
   const {games, learnedWords} = optional[date]
-  console.log('gameName', gameName)
   const results = games[gameName as keyof typeof games]
   let {newWords, rightAnswers, bestSeries, wrongAnswers} = results
   if (wordId) newWords = newWords.includes(wordId) ? newWords : [...newWords, wordId]
