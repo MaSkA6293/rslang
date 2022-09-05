@@ -22,7 +22,7 @@ export default function Auth({ show, handleClose }: props) {
           <Button size="sm" onClick={() => setIsLog((prev) => !prev)}>
             {isLog
               ? 'У вас еще нет аккаунта? Зарегистрируйтесь.'
-              : 'У вас уже есть аккаут. Авторизуйтесь.'}
+              : 'У вас уже есть аккаут? Авторизуйтесь.'}
           </Button>
         </div>
       </Modal>

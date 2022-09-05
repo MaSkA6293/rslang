@@ -48,7 +48,6 @@ export default memo(function SprintGame({
     } else {
       handleWrongAnswer(shuffleWords2[curItem]);
     }
-    console.log('asd', shuffleWords2[curItem].word)
     handleNextItem();
   };
 
