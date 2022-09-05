@@ -32,7 +32,7 @@ interface ICardInterface {
   userWords: IUserWords[];
   difficult: 'yes' | 'no';
   learned: boolean;
-  statistics: { right: number; wrong: number };
+  statistics: { right: number; wrong: number; series: number };
 }
 
 function Card({
@@ -217,7 +217,11 @@ function Card({
               )}
             </div>
             {statistics.right !== 0 || statistics.wrong !== 0 ? (
-              <Progress right={statistics.right} wrong={statistics.wrong} />
+              <Progress
+                right={statistics.right}
+                wrong={statistics.wrong}
+                series={statistics.series}
+              />
             ) : (
               ''
             )}

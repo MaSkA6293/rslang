@@ -2,8 +2,9 @@ import classNames from 'classnames';
 import { useEffect, useRef, useState } from 'react';
 import {
   IGetAggregatedWordsResponce,
-  IGetWordRes, IGetWordResAgregate,
-  IUserWords
+  IGetWordRes,
+  IGetWordResAgregate,
+  IUserWords,
 } from '../../../../API/types';
 import { useAppSelector } from '../../../../app/hooks';
 import { BACKEND_URL } from '../../../../constants';
@@ -16,7 +17,7 @@ import './index.scss';
 
 interface IDifficultWords {
   user: User;
-  userWords: IUserWords[]
+  userWords: IUserWords[];
   dataWordsRender: IGetAggregatedWordsResponce[];
 }
 
@@ -30,8 +31,6 @@ function DifficultWords({ user, userWords, dataWordsRender }: IDifficultWords) {
   const path = `${BACKEND_URL}/`;
 
   const { group } = useAppSelector(selectTextBook);
-
-
 
   const color: string = colorsOfLevels[group][1];
 
@@ -86,10 +85,11 @@ function DifficultWords({ user, userWords, dataWordsRender }: IDifficultWords) {
                 (el: IUserWords) => el.wordId === word._id,
               );
 
-              const statistics = { right: 0, wrong: 0 };
+              const statistics = { right: 0, wrong: 0, series: 0 };
               if (userWord) {
                 statistics.right = userWord.optional.success;
                 statistics.wrong = userWord.optional.fail;
+                statistics.series = userWord.optional.series;
               }
 
               const key = i;
