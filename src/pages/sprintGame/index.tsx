@@ -199,7 +199,7 @@ function SprintGamePage() {
     <div className="audio-call-game">
       <div className="audio-call-game__container">
         {isGameStarted ? (
-          <DelayLoader error={!words.length ? 'Вы перешли с учебника, все слова на странице изучены, поменяйте страницу или зайдите с главного меню.' : ''} isLoading={isLoading}>
+          <DelayLoader error={!isWordsLoading && !words.length ? 'Вы перешли с учебника, все слова на странице изучены, поменяйте страницу или зайдите с главного меню.' : ''} isLoading={isLoading}>
             <SprintGame
               {...{
                 endGame,

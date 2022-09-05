@@ -21,19 +21,25 @@ export interface ItestDayStat {
   optional: IdateStatObj
 }
 
-// export interface testStat {
-//   learnedWords: number;
-//   optional: {
-//     string: {
-//       learnedWords: string[];
-//       games: {
-//         sprint: {
-//           newWords: string[];
-//           rightAnswers: number;
-//           wrongAnswers: number;
-//           bestSeries: number;
-//         };
-//       };
-//     };
-//   };
-// }
+export interface testStat {
+  learnedWords: number;
+  optional: {
+    string: { // дата в стиле "05.09.22"
+      learnedWords: string[];
+      games: {
+        audioCall: {
+          newWords: string[];
+          rightAnswers: number;
+          wrongAnswers: number;
+          bestSeries: number;
+        },
+        sprint: {
+          newWords: string[];
+          rightAnswers: number;
+          wrongAnswers: number;
+          bestSeries: number;
+        };
+      };
+    };
+  };
+}

@@ -199,7 +199,7 @@ function NewAudioCallPage() {
     <div className="audio-call-game">
         <div className="audio-call-game__container">
           {isGameStarted ? (
-            <DelayLoader error={words.length < 5 ? 'Минимальное количество слов для игры - 5. Изученные слова не задействуются. Выберите другую страницу или игру.' : ''} isLoading={isLoading}>
+            <DelayLoader error={!isWordsLoading && words.length < 5 ? 'Минимальное количество слов для игры - 5. Изученные слова не задействуются. Выберите другую страницу или игру.' : ''} isLoading={isLoading}>
               <NewAudioCallGame
               {...{
                 endGame,

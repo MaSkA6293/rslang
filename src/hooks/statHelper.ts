@@ -13,7 +13,7 @@ export function getTimeToday() {
 
 export function makeDayDafaultStat(): IdateStatObj {
   const date = getTimeToday();
-  const gamesName = ['sprint', 'autoCall'];
+  const gamesName = ['audioCall', 'sprint'];
 
   const result: ItestGameResultStat = {
     newWords: [],
@@ -73,10 +73,8 @@ export function changeStatByLearnedWord({
   let dateObj = optional?.[date] ?? makeDayDafaultStat()[date];
   let { learnedWords } = dateObj;
   if (isToDelete) {
-    console.log('deleting')
     learnedWords = learnedWords.filter((word) => word !== learnedWordId);
   } else {
-    console.log('non deleting')
     learnedWords = learnedWords.includes(learnedWordId)
       ? learnedWords
       : [...learnedWords, learnedWordId];
@@ -109,6 +107,7 @@ export function updateStatWithPrms({
   const date = getTimeToday()
   const {optional} = stat
   const {games, learnedWords} = optional[date]
+  console.log('gameName', gameName)
   const results = games[gameName as keyof typeof games]
   let {newWords, rightAnswers, bestSeries, wrongAnswers} = results
   if (wordId) newWords = newWords.includes(wordId) ? newWords : [...newWords, wordId]
