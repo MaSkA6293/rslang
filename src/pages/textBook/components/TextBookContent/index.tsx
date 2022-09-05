@@ -5,8 +5,9 @@ import { useAppDispatch, useAppSelector } from '../../../../app/hooks';
 import { BACKEND_URL } from '../../../../constants';
 import {
   removeLearnedPage,
-  selectLearnedPages, selectTextBook,
-  setLearnedPage
+  selectLearnedPages,
+  selectTextBook,
+  setLearnedPage,
 } from '../../../../features/textBook/textBook';
 import { colorsOfLevels } from '../../types';
 import Card from '../Card';
@@ -15,7 +16,7 @@ import './index.scss';
 interface ITextBookContent {
   userId: string | null;
   userWords: IUserWords[];
-  words: IGetWordRes[]
+  words: IGetWordRes[];
 }
 
 function TextBookContent({ userId, userWords, words }: ITextBookContent) {
@@ -23,7 +24,6 @@ function TextBookContent({ userId, userWords, words }: ITextBookContent) {
   const [paths, setPaths] = useState<[] | string[]>([]);
   const audio = useRef(new Audio());
   const [learned, setLearned] = useState(false);
-
 
   const learnedPages = useAppSelector(selectLearnedPages);
   const path = `${BACKEND_URL}/`;
@@ -122,7 +122,7 @@ function TextBookContent({ userId, userWords, words }: ITextBookContent) {
   );
 
   return (
-    <div className="page">  
+    <div className="page">
       <div
         className={classNames(
           'page__container',
@@ -134,10 +134,11 @@ function TextBookContent({ userId, userWords, words }: ITextBookContent) {
             const userWord = userWords.find(
               (el: IUserWords) => el.wordId === item.id,
             );
-            const statistics = { right: 0, wrong: 0 };
+            const statistics = { right: 0, wrong: 0, series: 0 };
             if (userWord) {
               statistics.right = userWord.optional.success;
               statistics.wrong = userWord.optional.fail;
+              statistics.series = userWord.optional.series;
             }
 
             return (

@@ -1,16 +1,22 @@
 import classNames from 'classnames';
 import { useCallback, useEffect, useState } from 'react';
 import { IGetWordRes, IUserWords } from '../../../../API/types';
-import { useGetUserStatisticQuery, useUpsertUserStatisticMutation } from '../../../../API/userApi';
 import {
-  useCreateUserWordMutation, useUpdateUserWordMutation
+  useGetUserStatisticQuery,
+  useUpsertUserStatisticMutation,
+} from '../../../../API/userApi';
+import {
+  useCreateUserWordMutation,
+  useUpdateUserWordMutation,
 } from '../../../../API/wordsApi';
 import { useAppSelector } from '../../../../app/hooks';
 import { BACKEND_URL } from '../../../../constants';
 import { selectTextBookView } from '../../../../features/textBook/textBook';
 import { changeStatByLearnedWord } from '../../../../hooks/statHelper';
 import {
-  getNewWordLearned, modifyDifficulty, modifyLearned
+  getNewWordLearned,
+  modifyDifficulty,
+  modifyLearned,
 } from '../../utilites';
 import ButtonDifficult from '../buttonDifficult';
 import ButtonLearned from '../buttonLearned';
@@ -26,7 +32,7 @@ interface ICardInterface {
   userWords: IUserWords[];
   difficult: 'yes' | 'no';
   learned: boolean;
-  statistics: { right: number; wrong: number };
+  statistics: { right: number; wrong: number; series: number };
 }
 
 function Card({
@@ -53,9 +59,10 @@ function Card({
   useEffect(() => () => stopAudio(), []);
 
   const [updateStat] = useUpsertUserStatisticMutation();
-  const {
-    data: stat,
-  } = useGetUserStatisticQuery({ userId }, { skip: !userId });
+  const { data: stat } = useGetUserStatisticQuery(
+    { userId },
+    { skip: !userId },
+  );
 
   const statHandleLearnedWords = useCallback(
     ({
@@ -83,8 +90,11 @@ function Card({
     const check = userWords.find((el) => el.wordId === wordId);
     if (check !== undefined) {
       if (action === 'learned') {
-        statHandleLearnedWords({isToDelete: check.optional.learned, learnedWordId: check.id})
-        console.log('1', check.optional.learned)
+        statHandleLearnedWords({
+          isToDelete: check.optional.learned,
+          learnedWordId: check.wordId !== null ? check.wordId : '',
+        });
+        console.log('1', check.optional.learned);
         await wordUpdate({
           userId: userId !== null ? userId : '',
           wordId,
@@ -94,7 +104,7 @@ function Card({
         return;
       }
       if (action === 'difficult') {
-        console.log('2')
+        console.log('2');
         await wordUpdate({
           userId: userId !== null ? userId : '',
           wordId,
@@ -107,7 +117,7 @@ function Card({
 
     if (check === undefined) {
       if (action === 'learned') {
-        console.log(3)
+        console.log(3);
         const word = getNewWordLearned();
         word.optional.learned = true;
         await wordCreate({
@@ -115,11 +125,12 @@ function Card({
           wordId,
           body: word,
         });
+        statHandleLearnedWords({ isToDelete: false, learnedWordId: wordId });
         setLoading(false);
         return;
       }
       if (action === 'difficult') {
-        console.log(4)
+        console.log(4);
         const word = getNewWordLearned();
         word.difficulty = 'yes';
         await wordCreate({
@@ -206,7 +217,11 @@ function Card({
               )}
             </div>
             {statistics.right !== 0 || statistics.wrong !== 0 ? (
-              <Progress right={statistics.right} wrong={statistics.wrong} />
+              <Progress
+                right={statistics.right}
+                wrong={statistics.wrong}
+                series={statistics.series}
+              />
             ) : (
               ''
             )}

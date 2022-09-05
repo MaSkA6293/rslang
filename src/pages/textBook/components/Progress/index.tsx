@@ -4,9 +4,10 @@ import './index.scss';
 interface IProgress {
   right: number;
   wrong: number;
+  series: number;
 }
 
-function Progress({ right, wrong }: IProgress) {
+function Progress({ right, wrong, series }: IProgress) {
   let process = 0;
   if (right > 0) {
     process = Math.round((right * 100) / (right + wrong));
@@ -22,6 +23,9 @@ function Progress({ right, wrong }: IProgress) {
       </li>
       <li className={classNames('progress__item', 'progress__item-progress')}>
         Прогресс <span className="progress__value">{process}%</span>
+      </li>
+      <li className={classNames('progress__item', 'progress__item-progress')}>
+        Серия <span className="progress__value">{series}</span>
       </li>
     </ul>
   );
