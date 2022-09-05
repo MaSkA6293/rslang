@@ -49,7 +49,7 @@ export default function Profile() {
                 <Modal centered show={show} onHide={handleClose}>
                   <div className={styles.modalWrap}>
                     <ChangeProfile
-                      {...{ name: data.name, email: data.email, handleClose }}
+                      {...{ nameInitial: data.name, emailInitial: data.email, handleClose }}
                     />
                   </div>
                 </Modal>
