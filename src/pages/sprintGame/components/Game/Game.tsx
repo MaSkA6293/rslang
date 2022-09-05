@@ -5,8 +5,8 @@ import { IGetWordRes } from '../../../../API/types';
 import { shuffleArray } from '../../../games/Utils/suffleArray';
 import SpeakerIcon from '../../../games/assets/icons/speaker.svg';
 import { BACKEND_URL } from '../../../../constants';
-import GameButton from '../../../audioCallGame/components/GameButton';
 import styles from './Game.module.scss';
+import GameButton from '../../../games/components/GameButton';
 
 interface props {
   handleRightAnswer: (answer: IGetWordRes) => void;
@@ -22,7 +22,7 @@ export default memo(function SprintGame({
   handleWrongAnswer,
 }: props) {
   const [curItem, setCurItem] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(52);
+  const [timeLeft, setTimeLeft] = useState(60);
   const timerRef = useRef<ReturnType<typeof setInterval>>();
   const shuffleWords = useMemo(() => shuffleArray(words), [words]);
   const shuffleWords2 = useMemo(() => shuffleArray(shuffleWords), [shuffleWords]);
