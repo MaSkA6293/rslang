@@ -1,7 +1,7 @@
 export default function AudioCallDescription() {
   return (
     <>
-      <h1 className="audio-call-game__title game-title">Спринт</h1>
+      <h1 className="audio-call-game__title game-title">Аудиовызов</h1>
       <p className="audio-call-game__text">
         Тренировка улучшает восприятие речи на слух.
       </p>

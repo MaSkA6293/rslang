@@ -1,0 +1,16 @@
+.wraper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.btnWrap {
+display: flex;
+gap: .5em;
+margin-top: .3em;
+}
+
+.modalWrap {
+  padding: 2em;
+}

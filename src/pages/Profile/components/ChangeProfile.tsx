@@ -2,54 +2,85 @@
 import { useEffect, useState } from 'react';
 import { Button, Form, Spinner } from 'react-bootstrap';
 import { useForm } from 'react-hook-form';
-import { useLoginMutation } from '../../../API/userApi';
-import { useAppDispatch } from '../../../app/hooks';
-import { setCredential } from '../../../features/auth/authSlice';
+import { useUpdateUserMutation } from '../../../API/userApi';
+import { useAppSelector } from '../../../app/hooks';
+import { selectCurrentUser } from '../../../features/auth/authSlice';
 
-export interface loginRequest {
+export interface registerRequest {
+  name: string;
   email: string;
   password: string;
 }
-export default function Authorization() {
-  const dispatch = useAppDispatch();
-  const [userLogin, { isLoading }] = useLoginMutation();
+
+type props = {
+  name: string, email: string
+  handleClose: () => void
+}
+
+export default function ChangeProfile({name = '', email = '', handleClose}: props) {
   const [error, setError] = useState('');
+  const { userId } = useAppSelector(selectCurrentUser);
+  const [updateUser, {isLoading}] = useUpdateUserMutation()
 
   const {
     register,
     formState: { errors, isValid },
     handleSubmit,
-    setFocus,
-  } = useForm<loginRequest>({
+    resetField,
+    setFocus
+  } = useForm<registerRequest>({
     mode: 'onChange',
   });
 
-  const onSubmit = async (request: loginRequest) => {
-    userLogin(request)
+  useEffect(() => {
+    setFocus('name')
+  }, [])
+  
+
+  const onSubmit = async (request: registerRequest) => {
+    updateUser({userId, body: request})
       .unwrap()
-      .then((userData) => {
-        dispatch(setCredential({ ...userData }));
+      .then(() => {
+        setError('Данные обновлены');
+        setTimeout(() => {
+          handleClose()
+        }, 1500);
+        resetField('email');
+        resetField('name');
+        resetField('password');
       })
-      .catch((e) => {
-        if (e.originalStatus === 404) {
-          setError('Пользователь не существует');
-        } else if (e.originalStatus === 403) {
-          setError('Неправильный пароль');
-        } else {
-          setError('Произошла непредвиденная ошибка');
-        }
+      .catch(() => {
+        setError('Произошла непредвиденная ошибка')
       });
   };
 
-  useEffect(() => {
-    setFocus('email');
-  }, []);
 
   return (
     <Form onSubmit={handleSubmit(onSubmit)} className='flexColumn'>
       <Form.Group>
+        <Form.Label>Имя</Form.Label>
+        <Form.Control
+          type="text"
+          value={name}
+          placeholder="Введите ваше имя"
+          {...register('name', {
+            minLength: {
+              value: 3,
+              message: 'Минимум 3 символов',
+            },
+            required: 'Поле обязательно к заполнению',
+          })}
+        />
+        {errors?.name && (
+          <Form.Text className="text-muted">
+            {(errors?.name?.message) || 'Error!'}
+          </Form.Text>
+        )}
+      </Form.Group>
+      <Form.Group>
         <Form.Label>Адрес электронной почты</Form.Label>
         <Form.Control
+          value={email}
           type="email"
           placeholder="Введите адрес почты"
           {...register('email', {
@@ -87,9 +118,9 @@ export default function Authorization() {
             {(errors?.password?.message) || 'Error!'}
           </Form.Text>
         )}
+        <Form.Text className="text-muted">{error}</Form.Text>
       </Form.Group>
-      <Form.Text className="text-muted">{error}</Form.Text>
-      <Button className='auth__btn' type="submit" variant="primary" disabled={!isValid || isLoading}>
+      <Button style={{marginTop: '1em'}} type="submit" variant="primary" disabled={!isValid || isLoading}>
        {isLoading
        ?(
         <Spinner
@@ -102,10 +133,11 @@ export default function Authorization() {
       />
        )
        : (
-        'Авторизоваться'
+        'Обновить данные'
        )
        }
       </Button>
+      
     </Form>
   );
 }

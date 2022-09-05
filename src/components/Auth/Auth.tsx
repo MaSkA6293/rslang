@@ -1,40 +1,31 @@
-/* eslint-disable jsx-a11y/no-static-element-interactions */
-/* eslint-disable jsx-a11y/click-events-have-key-events */
-import React, { useState } from 'react';
-import Modal from '../Modal/Modal';
-import styles from './Auth.module.scss';
+import { useState } from 'react';
+import { Button, Modal } from 'react-bootstrap';
+import Portal from '../Portal/Portal';
 import Authorization from './Authorization/Authorization';
 import Registration from './Registation/Registration';
+import styles from './Auth.module.scss';
+import './index.scss'
 
-export interface AuthModal {
-  close: () => void;
-}
+type props = {
+  show: boolean;
+  handleClose: () => void;
+};
 
-export default function Auth({ close }: AuthModal) {
-  const [view, setView] = useState<'reg' | 'log'>('log')
-  const handleMouse = (e: React.MouseEvent) => {
-    if (e.button === 0) close()
-  }
+export default function Auth({ show, handleClose }: props) {
+  const [isLog, setIsLog] = useState(true);
 
   return (
-    <Modal open>
-      <div onMouseDown={handleMouse} className={styles.formWrapper}>
-        <div onMouseDown={(e) => e.stopPropagation()} className={styles.formInner}>
-        <button className={styles.closeBtn} onClick={close}>x</button>
-          {
-            view === 'reg'
-            ? <Registration />
-            : <Authorization />
-          }
-          <div>
-            {view === 'reg' ? (
-              <button onClick={() => setView('log')}>Уже есть аккаунт</button>
-            ) : (
-              <button onClick={() => setView('reg')}>Зарегистрироваться</button>
-            )}
-          </div>
+    <Portal open>
+      <Modal centered show={show} onHide={handleClose}>
+        <div className={styles.wrapper}>
+          {isLog ? <Authorization /> : <Registration />}
+          <Button size="sm" onClick={() => setIsLog((prev) => !prev)}>
+            {isLog
+              ? 'У вас еще нет аккаунта? Зарегистрируйтесь.'
+              : 'У вас уже есть аккаут? Авторизуйтесь.'}
+          </Button>
         </div>
-      </div>
-    </Modal>
+      </Modal>
+    </Portal>
   );
 }
