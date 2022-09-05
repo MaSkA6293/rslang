@@ -44,12 +44,9 @@ const baseQueryWithReauth: BaseQueryFn = async (args, api, extraOptions) => {
   let result = await baseQuary(args, api, extraOptions);
 
   const { error } = result as Record<any, any>;
-  console.log('Результат отправки запроса', result);
   if (error?.originalStatus === 401) {
     if (!isQueueBusy) {
       isQueueBusy = true;
-      console.log("занимаем очередь")
-      console.log('Токин истек, запрашиваем новый');
 
       // sending refresh token
       const { user } = (api.getState() as RootState).auth;
@@ -59,11 +56,8 @@ const baseQueryWithReauth: BaseQueryFn = async (args, api, extraOptions) => {
           authorization: `Bearer ${refreshToken}`,
         },
       });
-      console.log('Ответ от сервера по поводу новых токенов', refreshReq);
       if (refreshReq.ok && refreshReq.status === 200) {
-        console.log(
-          'Рефреш токин был валиден, сервер прислал новые токины, обновляем',
-        );
+   
         const newTokens = await refreshReq.json();
 
         api.dispatch(setCredential({ ...user, ...newTokens }));
@@ -71,13 +65,10 @@ const baseQueryWithReauth: BaseQueryFn = async (args, api, extraOptions) => {
         // try the original query with new access token
         result = await baseQuary(args, api, extraOptions);
       } else {
-        console.log('Рефреш токин пришел невалидный, логаут')
         api.dispatch(logOut());
       }
       isQueueBusy = false
-      console.log("очередь особождена")
     } else {
-      console.log("очередь, ждем")
       await wait()
       result = await baseQuary(args, api, extraOptions)
     }

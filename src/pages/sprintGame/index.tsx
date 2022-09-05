@@ -110,6 +110,7 @@ function SprintGamePage() {
      
       if (userWord) {
         const [choice, body] = getObjToUpdateUserWord({ userWord, answer: 'right' });
+        console.log('body', body)
         learnedStatus = choice
         updateUserWord({ userId, wordId: word.id, body });
       } else {
@@ -146,6 +147,7 @@ function SprintGamePage() {
 
       if (userWord) {
         const [choice, body] = getObjToUpdateUserWord({ userWord, answer: 'wrong' });
+        console.log('body', body)
         learnedStatus = choice
         updateUserWord({ userId, wordId: word.id, body });
       } else {
