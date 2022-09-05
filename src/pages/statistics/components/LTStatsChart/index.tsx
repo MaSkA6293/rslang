@@ -22,7 +22,6 @@ interface LTStatsChartProps {
   data: IdateStatObj;
   metric: IMetric;
   title: string;
-  syncId: string;
 }
 
 const dateSorter = (d1: string, d2: string) =>
@@ -56,7 +55,7 @@ const getAccData = (data: IdateStatObj, metric: IMetric) => {
   });
 };
 
-function LTStatsChart({ data, metric, title, syncId }: LTStatsChartProps) {
+function LTStatsChart({ data, metric, title }: LTStatsChartProps) {
   const dataByDate = getAccData(data, metric);
 
   return (
@@ -72,7 +71,6 @@ function LTStatsChart({ data, metric, title, syncId }: LTStatsChartProps) {
           bottom: 0,
         }}
         barCategoryGap="10%"
-        syncId={syncId}
       >
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="date" scale="auto" />

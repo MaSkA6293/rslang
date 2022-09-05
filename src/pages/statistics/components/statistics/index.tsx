@@ -81,7 +81,6 @@ function Statistics({ stat }: StatisticsProps) {
               metric="newWords"
               title="Новых слов"
               data={optional}
-              syncId="ltStats"
             />
           </Row>
           <Row
@@ -93,7 +92,6 @@ function Statistics({ stat }: StatisticsProps) {
               metric="learnedWords"
               title="Изучено слов"
               data={optional}
-              syncId="ltStats"
             />
           </Row>
         </section>
