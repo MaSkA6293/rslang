@@ -49,7 +49,7 @@ function SprintGamePage() {
       { skip: !userId, refetchOnMountOrArgChange: true },
     );
   const { words, isLoading: isWordsLoading } = useGetWordsWithPrms({
-    amount: 20,
+    amount: 60,
     group,
     skip: !isGameStarted || isUserWordsLoading,
     isFromTextBook,

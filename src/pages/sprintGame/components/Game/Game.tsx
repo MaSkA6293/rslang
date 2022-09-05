@@ -25,7 +25,17 @@ export default memo(function SprintGame({
   const [timeLeft, setTimeLeft] = useState(60);
   const timerRef = useRef<ReturnType<typeof setInterval>>();
   const shuffleWords = useMemo(() => shuffleArray(words), [words]);
-  const shuffleWords2 = useMemo(() => shuffleArray(shuffleWords), [shuffleWords]);
+  const shuffleWords2 = useMemo(() => {
+    let arr: IGetWordRes[] = []
+    let i = 0
+    while (arr.length < shuffleWords.length) {
+      const newArr = shuffleArray(shuffleWords.slice(i, i + 2)) 
+      i += 2
+
+      arr = [...arr ,...newArr]
+    }
+    return arr
+  }, [shuffleWords]);
   const wordAudioUrl = new URL(
     shuffleWords2[curItem].audio,
     BACKEND_URL,
