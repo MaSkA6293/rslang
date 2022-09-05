@@ -1,40 +1,36 @@
-import { useState, useEffect, useReducer } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { skipToken } from '@reduxjs/toolkit/dist/query';
+import { useEffect, useReducer, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-import { useAppSelector } from '../../../../app/hooks';
-import { selectPath } from '../../../../features/app/app';
-import { selectTextBook } from '../../../../features/textBook/textBook';
-import { selectCurrentUser } from '../../../../features/auth/authSlice';
 import {
-  IGetWordRes,
-  IResultGame,
-  IUserStatisticsRes,
-  IUserWordCreate,
+  IGetWordRes, IUserWordCreate
 } from '../../../../API/types';
+import {
+  useGetUserStatisticQuery
+} from '../../../../API/userApi';
 import {
   useCreateUserWordMutation,
   useGetUserWordsQuery,
   useGetWordsQuery,
-  useUpdateUserWordMutation,
+  useUpdateUserWordMutation
 } from '../../../../API/wordsApi';
-import {
-  useGetUserStatisticQuery,
-  useUpsertUserStatisticMutation,
-} from '../../../../API/userApi';
+import { useAppSelector } from '../../../../app/hooks';
+import { selectPath } from '../../../../features/app/app';
+import { selectCurrentUser } from '../../../../features/auth/authSlice';
+import { selectTextBook } from '../../../../features/textBook/textBook';
 import { GameActions, GameState, GameStates } from '../../types';
 
-import { getBestSeriesCount, getNewUserWord, shuffle } from '../../utils';
-import { gameReducer } from './reducer';
-import GameStart from '../GameStart';
-import GameIteraion from '../GameIteration';
-import GameFinish from '../GameFinish';
+import { getNewUserWord, shuffle } from '../../utils';
 import GameButton from '../GameButton';
+import GameFinish from '../GameFinish';
+import GameIteraion from '../GameIteration';
+import GameStart from '../GameStart';
 import LevelSelect from '../LevelSelect';
+import { gameReducer } from './reducer';
 
-import './index.scss';
-import CrossIcon from '../../assets/icons/cross.svg';
 import { groupType, pageType } from '../../../../types';
+import CrossIcon from '../../assets/icons/cross.svg';
+import './index.scss';
 
 const WORDS_PER_GAME_COUNT = 10;
 
@@ -51,7 +47,7 @@ const initialGameState: GameState = {
   wordsResults: [],
 };
 
-function AudioCallGame() {
+function AudioCallGameTest() {
   const navigate = useNavigate();
 
   const { userId } = useAppSelector(selectCurrentUser);
@@ -215,41 +211,12 @@ function AudioCallGame() {
 
   // save statistics
 
-  const [useUpsertUserStats, { isLoading: isUStatsUpdating }] =
-    useUpsertUserStatisticMutation();
 
-  const saveStats = () => {
-    if (userId === null) return;
-    const rightAnswers = gameState.wordsResults.filter((r) => r).length;
-    const wrongAnswers = gameState.wordsResults.length - rightAnswers;
-    const wordCounter = gameState.words.filter(
-      (w) => !userWords?.some(({ wordId }) => wordId === w.id),
-    ).length;
-    const bestSeries = getBestSeriesCount(gameState.wordsResults, true);
-    const createdOn = new Date();
-    const currentResult: IResultGame = {
-      rightAnswers,
-      wrongAnswers,
-      wordCounter,
-      bestSeries,
-      createdOn,
-    };
-    const prevResults = userStats?.optional;
-    const prevGameResults = JSON.parse(userStats?.optional?.audioСall ?? '[]');
-    const updatedStats = {
-      learnedWords: userStats?.learnedWords || 0,
-      optional: {
-        ...prevResults,
-        audioСall: JSON.stringify([...prevGameResults, currentResult]),
-      },
-    } as IUserStatisticsRes
-    useUpsertUserStats({ userId, body: updatedStats });
-  };
+
 
   useEffect(() => {
     if (gameState.state === GameStates.Finished) {
       saveResults();
-      saveStats();
     }
   }, [gameState.state]);
 
@@ -289,7 +256,7 @@ function AudioCallGame() {
             }))}
             onRestart={handleRestart}
             onClose={handleClose}
-            isSaving={isUWordCreating || isUWordUpdating || isUStatsUpdating}
+            isSaving={isUWordCreating || isUWordUpdating}
           />
         ) : null}
       </div>
@@ -304,4 +271,4 @@ function AudioCallGame() {
   );
 }
 
-export default AudioCallGame;
+export default AudioCallGameTest;

@@ -40,7 +40,7 @@ export default function GameResults({
         <WordsList words={rightAnswers} />
 
         <div className="list-title">
-          Не знаю: <span className="badge badge--fail">{mistakesCount}</span>
+          Ошибок: <span className="badge badge--fail">{mistakesCount}</span>
         </div>
         <WordsList words={wrongAnswers} />
       </div>

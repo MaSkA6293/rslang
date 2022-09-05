@@ -20,10 +20,10 @@ import GameStartScreen from '../games/components/GameStartScreen/GameStartScreen
 import '../games/styles/style.scss';
 import SprintGame from './components/Game/Game';
 import SprintDescription from './components/SprintDescription/SprintDescription';
-import { useGetWordsWithPrms } from './hooks/useGetWordsWithPrms';
-import { useIsFromTextBook } from './hooks/useIsFromTextBook';
-import { getObjToCreateUserWord } from './Utils/getObjToCreateUserWord';
-import { getObjToUpdateUserWord } from './Utils/getObjToUpdateUserWord';
+import { useGetWordsWithPrms } from '../games/hooks/useGetWordsWithPrms';
+import { useIsFromTextBook } from '../games/hooks/useIsFromTextBook';
+import { getObjToCreateUserWord } from '../games/Utils/getObjToCreateUserWord';
+import { getObjToUpdateUserWord } from '../games/Utils/getObjToUpdateUserWord';
 
 const CorrectSound = require(`../games//assets/audio/correct-choice.mp3`);
 const WrongSound = require(`../games//assets/audio/wrong-choice.mp3`);
@@ -49,7 +49,7 @@ function SprintGamePage() {
       { skip: !userId, refetchOnMountOrArgChange: true },
     );
   const { words, isLoading: isWordsLoading } = useGetWordsWithPrms({
-    amount: 20,
+    amount: 10,
     group,
     skip: !isGameStarted || isUserWordsLoading,
     isFromTextBook,
@@ -199,7 +199,7 @@ function SprintGamePage() {
     <div className="audio-call-game">
       <div className="audio-call-game__container">
         {isGameStarted ? (
-          <DelayLoader isLoading={isLoading}>
+          <DelayLoader error={!words.length ? 'Вы перешли с учебника, все слова на странице изучены, поменяйте страницу или зайдите с главного меню.' : ''} isLoading={isLoading}>
             <SprintGame
               {...{
                 endGame,

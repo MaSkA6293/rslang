@@ -2,7 +2,7 @@
 import { Button } from 'react-bootstrap';
 import { useEffect, useRef, useState, memo, useMemo } from 'react';
 import { IGetWordRes } from '../../../../API/types';
-import { shuffleArray } from '../../Utils/suffleArray';
+import { shuffleArray } from '../../../games/Utils/suffleArray';
 import SpeakerIcon from '../../../games/assets/icons/speaker.svg';
 import { BACKEND_URL } from '../../../../constants';
 import GameButton from '../../../audioCallGame/components/GameButton';

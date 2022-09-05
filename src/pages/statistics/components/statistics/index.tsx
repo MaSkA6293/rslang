@@ -13,9 +13,6 @@ interface StatisticsProps {
   stat: ItestDayStat
 }
 
-
-
-
 function Statistics({ stat }: StatisticsProps) {
   const date = getTimeToday()
   const {optional} = stat
