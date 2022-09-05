@@ -23,19 +23,10 @@ export default function ChangeProfile({
   emailInitial,
   handleClose,
 }: props) {
-  const [name, setName] = useState(nameInitial)
-  const [email, setEmail] = useState(emailInitial)
   const [error, setError] = useState('');
   const { userId } = useAppSelector(selectCurrentUser);
   const [updateUser, { isLoading }] = useUpdateUserMutation();
 
-  const handleInputName = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setName(e.target.value)
-  }
-
-  const handleInputEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value)
-  }
 
   const {
     register,
@@ -43,12 +34,15 @@ export default function ChangeProfile({
     handleSubmit,
     resetField,
     setFocus,
+    setValue
   } = useForm<registerRequest>({
     mode: 'onChange',
   });
 
   useEffect(() => {
     setFocus('name');
+    setValue('name', nameInitial)
+    setValue('email', emailInitial)
   }, []);
 
   const onSubmit = async (request: registerRequest) => {
@@ -74,7 +68,6 @@ export default function ChangeProfile({
         <Form.Label>Имя</Form.Label>
         <Form.Control
           type="text"
-          value={name}
           placeholder="Введите ваше имя"
           {...register('name', {
             minLength: {
@@ -83,7 +76,6 @@ export default function ChangeProfile({
             },
             required: 'Поле обязательно к заполнению',
           })}
-          onChange={handleInputName}
         />
         {errors?.name && (
           <Form.Text className="text-muted">
@@ -94,7 +86,6 @@ export default function ChangeProfile({
       <Form.Group>
         <Form.Label>Адрес электронной почты</Form.Label>
         <Form.Control
-          value={email}
           type="email"
           placeholder="Введите адрес почты"
           {...register('email', {
@@ -106,7 +97,6 @@ export default function ChangeProfile({
             },
             onChange: () => setError(''),
           })}
-          onChange={handleInputEmail}
         />
         {errors?.email && (
           <Form.Text className="text-muted">
