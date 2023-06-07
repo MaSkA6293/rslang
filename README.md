@@ -2,7 +2,7 @@
 
 RS Lang – the application for learning English language
 
-[Deploy](https://rs-lang-project.netlify.app/)
+[Deploy](https://rs-lang-learn-english-2022.netlify.app/)
 
 [Technical task](https://github.com/rolling-scopes-school/tasks/blob/master/tasks/stage-2/rs-lang/rslang.md)
 
